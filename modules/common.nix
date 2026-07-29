@@ -39,6 +39,7 @@
   # `console` is a NixOS-only Stylix option.  Keep it in the public registry
   # and resolver, but do not emit that option from the shared module: the same
   # module is imported by Home Manager and Darwin, where the option is absent.
+  generatedConfigTargets = builtins.filter (target: target != "console") generatedTargets;
   manageStylixScheme = config.themeBroker.manageStylixScheme;
   selected =
     if brokerEnabled
@@ -289,7 +290,7 @@ in {
         stylix.targets.zed.enable = lib.mkForce false;
       }
     ]
-    ++ generatedConfig generatedTargets
-    ++ disabledGeneratedConfig generatedTargets
+    ++ generatedConfig generatedConfigTargets
+    ++ disabledGeneratedConfig generatedConfigTargets
     ++ nativeConfig));
 }

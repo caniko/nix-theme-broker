@@ -116,6 +116,7 @@
     "light-soft" = "Gruvbox Light Soft";
   };
   extensionIds = extensions: map (extension: extension.vscodeExtUniqueId or "") extensions;
+  forcedValue = value: value.content or value;
   vscodeNative = eval {
     themeBroker.enable = true;
     themeBroker.selection.provider = "gruvbox";
@@ -214,6 +215,8 @@ in
   assert catppuccinNative.config.catppuccin.flavor == "mocha";
   assert catppuccinNative.config.catppuccin.accent == "mauve";
   assert catppuccinNative.config.catppuccin.alacritty.enable;
+  assert !(forcedValue catppuccinNative.config.catppuccin.vscode.profiles.default.enable);
+  assert !(forcedValue catppuccinNative.config.catppuccin.vscode.profiles.default.icons.enable);
   assert catppuccinNative.config.themeBroker.resolved.targets.vscode.adapter == "catppuccin-vscode";
   assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."workbench.colorTheme" == "Catppuccin Mocha";
   assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."workbench.iconTheme" == "catppuccin-mocha";

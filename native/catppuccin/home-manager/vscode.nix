@@ -10,6 +10,11 @@
     mocha = "Catppuccin Mocha";
   };
 in {
+  catppuccin.vscode.profiles.default = {
+    enable = lib.mkForce false;
+    icons.enable = lib.mkForce false;
+  };
+
   programs.vscode.profiles.default = {
     extensions = lib.mkAfter (with pkgs.vscode-extensions; [
       catppuccin.catppuccin-vsc

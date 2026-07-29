@@ -128,24 +128,30 @@
   generatedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
-        builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
-        && targetSelections ? ${target}
+        targetSelections ? ${target}
         && targetSelections.${target}.backend == "generated"
+        && builtins.elem config.themeBroker.platform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce true);
     })
     targets;
   disabledGeneratedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
-        builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
-        && targetSelections ? ${target}
+        targetSelections ? ${target}
         && targetSelections.${target}.backend == "native"
+        && builtins.elem config.themeBroker.platform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce false);
     })
     targets;
 in {
   options.themeBroker = {
     enable = lib.mkEnableOption "theme broker";
+
+    platform = lib.mkOption {
+      type = lib.types.enum ["homeManager" "nixos" "darwin"];
+      default = "homeManager";
+      internal = true;
+    };
 
     registry = {
       providers = lib.mkOption {

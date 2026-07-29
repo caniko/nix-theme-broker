@@ -93,7 +93,7 @@
           target = "vscode";
           platforms = ["homeManager"];
           priority = 100;
-          autoSafe = true;
+          autoSafe = false;
           provenance = {
             tier = "maintained";
             repository = "https://github.com/jdinhify/vscode-theme-gruvbox";

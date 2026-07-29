@@ -20,12 +20,14 @@ in {
       catppuccin.catppuccin-vsc
       catppuccin.catppuccin-vsc-icons
     ]);
-    userSettings = {
-      "workbench.colorTheme" = lib.mkForce themeNames.${selected.variant};
-      "workbench.iconTheme" = lib.mkForce "catppuccin-${selected.variant}";
-    } // lib.optionalAttrs (selected.accent != null) {
-      "catppuccin.accentColor" = lib.mkForce selected.accent;
-    };
+    userSettings =
+      {
+        "workbench.colorTheme" = lib.mkForce themeNames.${selected.variant};
+        "workbench.iconTheme" = lib.mkForce "catppuccin-${selected.variant}";
+      }
+      // lib.optionalAttrs (selected.accent != null) {
+        "catppuccin.accentColor" = lib.mkForce selected.accent;
+      };
   };
 
   stylix.targets.vscode.enable = lib.mkForce false;

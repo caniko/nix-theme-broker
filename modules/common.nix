@@ -112,14 +112,16 @@
       )
       (import ../native/gruvbox/vim.nix {inherit lib pkgs selected;}))
     (lib.mkIf (
-        themeBrokerPlatform == "homeManager"
+        themeBrokerPlatform
+        == "homeManager"
         && targetSelections ? vscode
         && targetSelections.vscode.backend == "native"
         && targetSelections.vscode.adapter == "gruvbox-vscode"
       )
       (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
     (lib.mkIf (
-        themeBrokerPlatform == "homeManager"
+        themeBrokerPlatform
+        == "homeManager"
         && targetSelections ? vscode
         && targetSelections.vscode.backend == "native"
         && targetSelections.vscode.adapter == "catppuccin-vscode"

@@ -1,4 +1,7 @@
-{lib, pkgs}:
+{
+  lib,
+  pkgs,
+}:
 pkgs.vscode-utils.buildVscodeMarketplaceExtension {
   mktplcRef = {
     publisher = "navernoedenis";

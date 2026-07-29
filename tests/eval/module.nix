@@ -200,9 +200,11 @@ in
   assert vscodeNative.config.stylix.targets.vscode.enable == false;
   assert builtins.all (
     row:
-      row.settings."workbench.colorTheme" == vscodeThemeNames.${row.variant}
+      row.settings."workbench.colorTheme"
+      == vscodeThemeNames.${row.variant}
       && row.settings."workbench.iconTheme" == "gruvbox-material-icons"
-  ) vscodeVariants;
+  )
+  vscodeVariants;
   assert builtins.all (result: result.config.themeBroker.resolved.targets.neovim.backend == "native" && result.config.themeBroker.resolved.targets.vim.backend == "native") nativeVariants;
   assert mixed.config.themeBroker.resolved.targets.neovim.backend == "native";
   assert mixed.config.themeBroker.resolved.targets.alacritty.backend == "generated";

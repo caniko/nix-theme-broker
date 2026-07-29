@@ -347,8 +347,8 @@
             colorTheme = pkgs.vscode-extensions.jdinhlife.gruvbox;
             iconTheme = import ./native/gruvbox/vscode-icons.nix {inherit lib pkgs;};
           in pkgs.runCommand "theme-broker-vscode-adapter" {} ''
-            test -f ${colorTheme}/extension/package.json
-            test -f ${iconTheme}/extension/package.json
+            test -f ${colorTheme}/share/vscode/extensions/jdinhlife.gruvbox/package.json
+            test -f ${iconTheme}/share/vscode/extensions/navernoedenis.gruvbox-material-icons/package.json
             touch "$out"
           '';
           catppuccin-manifest =

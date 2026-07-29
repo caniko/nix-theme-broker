@@ -4,7 +4,7 @@
   providers,
   adapters,
 }: let
-  targetNames = ["alacritty" "bat" "console" "foot" "kitty" "waybar" "neovim" "vim"];
+  targetNames = ["alacritty" "bat" "console" "foot" "kitty" "waybar" "neovim" "vim" "vscode"];
   base = {
     options = {
       stylix = {
@@ -107,6 +107,32 @@
     themeBroker.targets.neovim.backend = "native";
     themeBroker.targets.vim.backend = "native";
   };
+  vscodeThemeNames = {
+    "dark-hard" = "Gruvbox Dark Hard";
+    "dark-medium" = "Gruvbox Dark Medium";
+    "dark-soft" = "Gruvbox Dark Soft";
+    "light-hard" = "Gruvbox Light Hard";
+    "light-medium" = "Gruvbox Light Medium";
+    "light-soft" = "Gruvbox Light Soft";
+  };
+  extensionIds = extensions: map (extension: extension.vscodeExtUniqueId or "") extensions;
+  vscodeNative = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-hard";
+    themeBroker.targets.vscode.backend = "native";
+  };
+  vscodeVariants = map (variant: let
+    result = eval {
+      themeBroker.enable = true;
+      themeBroker.selection.provider = "gruvbox";
+      themeBroker.selection.variant = variant;
+      themeBroker.targets.vscode.backend = "native";
+    };
+  in {
+    inherit variant;
+    settings = result.config.programs.vscode.profiles.default.userSettings;
+  }) (builtins.attrNames vscodeThemeNames);
   nativeVariants = map (variant:
     eval {
       themeBroker.enable = true;
@@ -164,6 +190,18 @@ in
   assert native.config.themeBroker.resolved.targets.neovim.adapter == "gruvbox-neovim";
   assert lib.hasInfix "colorscheme(\"gruvbox\")" native.config.programs.neovim.extraLuaConfig;
   assert lib.hasInfix "colorscheme gruvbox" native.config.programs.vim.extraConfig;
+  assert vscodeNative.config.themeBroker.resolved.targets.vscode.backend == "native";
+  assert vscodeNative.config.themeBroker.resolved.targets.vscode.adapter == "gruvbox-vscode";
+  assert vscodeNative.config.programs.vscode.profiles.default.userSettings."workbench.colorTheme" == "Gruvbox Dark Hard";
+  assert vscodeNative.config.programs.vscode.profiles.default.userSettings."workbench.iconTheme" == "gruvbox-material-icons";
+  assert builtins.elem "jdinhlife.gruvbox" (extensionIds vscodeNative.config.programs.vscode.profiles.default.extensions);
+  assert builtins.elem "navernoedenis.gruvbox-material-icons" (extensionIds vscodeNative.config.programs.vscode.profiles.default.extensions);
+  assert vscodeNative.config.stylix.targets.vscode.enable == false;
+  assert builtins.all (
+    row:
+      row.settings."workbench.colorTheme" == vscodeThemeNames.${row.variant}
+      && row.settings."workbench.iconTheme" == "gruvbox-material-icons"
+  ) vscodeVariants;
   assert builtins.all (result: result.config.themeBroker.resolved.targets.neovim.backend == "native" && result.config.themeBroker.resolved.targets.vim.backend == "native") nativeVariants;
   assert mixed.config.themeBroker.resolved.targets.neovim.backend == "native";
   assert mixed.config.themeBroker.resolved.targets.alacritty.backend == "generated";
@@ -176,6 +214,13 @@ in
   assert catppuccinNative.config.catppuccin.flavor == "mocha";
   assert catppuccinNative.config.catppuccin.accent == "mauve";
   assert catppuccinNative.config.catppuccin.alacritty.enable;
+  assert catppuccinNative.config.themeBroker.resolved.targets.vscode.adapter == "catppuccin-vscode";
+  assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."workbench.colorTheme" == "Catppuccin Mocha";
+  assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."workbench.iconTheme" == "catppuccin-mocha";
+  assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."catppuccin.accentColor" == "mauve";
+  assert builtins.elem "catppuccin.catppuccin-vsc" (extensionIds catppuccinNative.config.programs.vscode.profiles.default.extensions);
+  assert builtins.elem "catppuccin.catppuccin-vsc-icons" (extensionIds catppuccinNative.config.programs.vscode.profiles.default.extensions);
+  assert catppuccinNative.config.stylix.targets.vscode.enable == false;
   assert assertions generated;
   assert assertions native;
   assert !(

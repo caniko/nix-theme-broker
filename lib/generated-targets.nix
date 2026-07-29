@@ -31,4 +31,8 @@
     platforms = ["homeManager" "nixos" "darwin"];
     autoSafe = true;
   };
+  vscode = {
+    platforms = ["homeManager"];
+    autoSafe = false;
+  };
 }

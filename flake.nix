@@ -86,6 +86,28 @@
             transparency = true;
           };
         }
+        {
+          schema = "theme-broker.adapter/v1";
+          id = "gruvbox-vscode";
+          provider = "gruvbox";
+          target = "vscode";
+          platforms = ["homeManager"];
+          priority = 100;
+          autoSafe = true;
+          provenance = {
+            tier = "maintained";
+            repository = "https://github.com/jdinhify/vscode-theme-gruvbox";
+            revision = "ca3b8ad203e84a884ca33fb84b5795cf43032709";
+            license = "MIT";
+          };
+          capabilities = {
+            variants = "all";
+            accent = "none";
+            namedOverrides = false;
+            roleOverrides = false;
+            transparency = false;
+          };
+        }
       ];
     adapters = map themeBrokerLib.mkAdapter rawAdapters;
     syntheticProvider = lib.recursiveUpdate gruvbox {
@@ -319,6 +341,14 @@
           '';
           catppuccin-target-inventory = pkgs.runCommand "theme-broker-catppuccin-target-inventory" {} ''
             test ${toString (builtins.length (builtins.attrNames catppuccinManifest.targets))} -ge 80
+            touch "$out"
+          '';
+          vscode-adapter = let
+            colorTheme = pkgs.vscode-extensions.jdinhlife.gruvbox;
+            iconTheme = import ./native/gruvbox/vscode-icons.nix {inherit lib pkgs;};
+          in pkgs.runCommand "theme-broker-vscode-adapter" {} ''
+            test -f ${colorTheme}/extension/package.json
+            test -f ${iconTheme}/extension/package.json
             touch "$out"
           '';
           catppuccin-manifest =

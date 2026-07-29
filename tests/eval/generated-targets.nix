@@ -2,7 +2,7 @@
   themeLib = import ../../lib {inherit lib;};
   registry = themeLib.generatedTargets;
   validPlatforms = ["homeManager" "nixos" "darwin"];
-  expected = ["alacritty" "bat" "console" "foot" "ghostty" "helix" "kitty" "waybar"];
+  expected = ["alacritty" "bat" "console" "foot" "ghostty" "helix" "kitty" "vscode" "waybar"];
 in
   assert builtins.all (name: builtins.hasAttr name registry) expected;
   assert builtins.all (

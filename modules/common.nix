@@ -39,7 +39,6 @@
   # `console` is a NixOS-only Stylix option.  Keep it in the public registry
   # and resolver, but do not emit that option from the shared module: the same
   # module is imported by Home Manager and Darwin, where the option is absent.
-  generatedConfigTargets = builtins.filter (target: target != "console") generatedTargets;
   manageStylixScheme = config.themeBroker.manageStylixScheme;
   selected =
     if brokerEnabled
@@ -111,18 +110,36 @@
         && targetSelections.vim.adapter == "gruvbox-vim"
       )
       (import ../native/gruvbox/vim.nix {inherit lib pkgs selected;}))
+    (lib.mkIf (
+        themeBrokerPlatform == "homeManager"
+        && targetSelections ? vscode
+        && targetSelections.vscode.backend == "native"
+        && targetSelections.vscode.adapter == "gruvbox-vscode"
+      )
+      (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
+    (lib.mkIf (
+        themeBrokerPlatform == "homeManager"
+        && targetSelections ? vscode
+        && targetSelections.vscode.backend == "native"
+        && targetSelections.vscode.adapter == "catppuccin-vscode"
+      )
+      (import ../native/catppuccin/home-manager/vscode.nix {inherit lib pkgs selected;}))
   ];
   generatedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
-        targetSelections ? ${target} && targetSelections.${target}.backend == "generated"
+        targetSelections ? ${target}
+        && targetSelections.${target}.backend == "generated"
+        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce true);
     })
     targets;
   disabledGeneratedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
-        targetSelections ? ${target} && targetSelections.${target}.backend == "native"
+        targetSelections ? ${target}
+        && targetSelections.${target}.backend == "native"
+        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce false);
     })
     targets;
@@ -266,7 +283,7 @@ in {
         stylix.targets.zed.enable = lib.mkForce false;
       }
     ]
-    ++ generatedConfig generatedConfigTargets
-    ++ disabledGeneratedConfig generatedConfigTargets
+    ++ generatedConfig generatedTargets
+    ++ disabledGeneratedConfig generatedTargets
     ++ nativeConfig));
 }

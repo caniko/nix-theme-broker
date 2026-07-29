@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/theme-broker/normalized-theme/v1",
+  "title": "Theme Broker normalized theme",
+  "type": "object",
+  "required": ["provider", "variant", "metadata", "named", "roles", "ansi", "base16", "formatted"],
+  "properties": {
+    "provider": {"type": "string"},
+    "variant": {"type": "string"},
+    "accent": {"type": ["string", "null"]},
+    "metadata": {"type": "object"},
+    "named": {"type": "object", "additionalProperties": {"$ref": "#/$defs/color"}},
+    "roles": {"type": "object"},
+    "ansi": {"type": "object"},
+    "base16": {
+      "type": "object",
+      "required": ["base00", "base01", "base02", "base03", "base04", "base05", "base06", "base07", "base08", "base09", "base0A", "base0B", "base0C", "base0D", "base0E", "base0F"],
+      "additionalProperties": {"$ref": "#/$defs/color"}
+    },
+    "base24": {"type": ["object", "null"]},
+    "formatted": {"type": "object"}
+  },
+  "$defs": {
+    "color": {
+      "type": "object",
+      "required": ["hex", "withHashtag", "with0x", "rgb"],
+      "properties": {
+        "hex": {"type": "string", "pattern": "^[0-9a-f]{6}$"},
+        "withHashtag": {"type": "string", "pattern": "^#[0-9a-f]{6}$"},
+        "with0x": {"type": "string", "pattern": "^0x[0-9a-f]{6}$"},
+        "rgb": {
+          "type": "object",
+          "required": ["r", "g", "b"],
+          "properties": {
+            "r": {"type": "integer", "minimum": 0, "maximum": 255},
+            "g": {"type": "integer", "minimum": 0, "maximum": 255},
+            "b": {"type": "integer", "minimum": 0, "maximum": 255}
+          }
+        },
+        "sourceName": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

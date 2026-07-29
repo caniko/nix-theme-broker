@@ -1,0 +1,49 @@
+# Theme Broker for Nix
+
+This flake exposes a palette-neutral `themeBroker` module and provider library.
+Gruvbox's six variants and Catppuccin's four appearances normalize into
+semantic roles, ANSI, Base16, and optional Base24 projections. The broker also
+ships curated Gruvbox Vim/Neovim adapters, a Catppuccin Alacritty bridge, and a
+deterministic generated/native backend resolver.
+
+For example, the Atlas Home Manager profile selects `gruvbox/dark-hard` and
+lets Stylix consume the broker's Base16 projection:
+
+```nix
+themeBroker = {
+  enable = true;
+  selection = {
+    provider = "gruvbox";
+    variant = "dark-hard";
+  };
+};
+```
+
+Stylix remains the generic target engine. Native integrations are opt-in per
+managed target:
+
+```nix
+themeBroker = {
+  enable = true;
+  selection = {
+    provider = "catppuccin";
+    variant = "mocha";
+    accent = "mauve";
+  };
+  targets.alacritty.backend = "native";
+};
+```
+
+Generic target IDs come from the checked-in `lib/generated-targets.nix`
+compatibility registry for the pinned Stylix release. The broker records only
+availability and platform metadata; Stylix still owns each target
+implementation.
+
+Use `backend = "generated"` to force Stylix, `backend = "native"` to require
+an allowed adapter, or `backend = "auto"` (the default) to prefer an exact
+native adapter. Inspect `themeBroker.resolved.targets` with `nix eval --json`.
+
+The flake exports `packages.<system>.support-matrix-json` and
+`support-matrix-markdown`, plus the provider, normalized-theme, and adapter
+schemas. Nix evaluation reads only locked inputs and reviewed files; updater
+scripts never run during a build.

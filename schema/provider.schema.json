@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/theme-broker/provider/v1",
+  "title": "Theme Broker provider",
+  "type": "object",
+  "required": ["schema", "id", "name", "description", "provenance", "defaults", "variants"],
+  "properties": {
+    "schema": {"const": "theme-broker.provider/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "name": {"type": "string"},
+    "description": {"type": "string"},
+    "provenance": {
+      "type": "object",
+      "required": ["repository", "revision", "license"],
+      "properties": {
+        "repository": {"type": "string", "format": "uri"},
+        "revision": {"type": "string", "minLength": 1},
+        "license": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    },
+    "defaults": {
+      "type": "object",
+      "required": ["variant"],
+      "properties": {
+        "variant": {"type": "string"},
+        "accent": {"type": ["string", "null"]}
+      },
+      "additionalProperties": false
+    },
+    "variants": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"$ref": "#/$defs/variant"}
+    }
+  },
+  "$defs": {
+    "color": {
+      "type": "string",
+      "pattern": "^#?[0-9A-Fa-f]{6}$"
+    },
+    "colorValue": {
+      "oneOf": [
+        {"$ref": "#/$defs/color"},
+        {"type": "string", "pattern": "^@[A-Za-z0-9_-]+$"}
+      ]
+    },
+    "colorMap": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/colorValue"}
+    },
+    "variant": {
+      "type": "object",
+      "required": ["metadata", "named", "roles", "ansi", "base16"],
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "required": ["appearance", "contrast"],
+          "properties": {
+            "appearance": {"enum": ["dark", "light"]},
+            "contrast": {"enum": ["hard", "medium", "soft"]}
+          },
+          "additionalProperties": true
+        },
+        "named": {"$ref": "#/$defs/colorMap"},
+        "roles": {"type": "object"},
+        "accents": {"$ref": "#/$defs/colorMap"},
+        "accentBindings": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]}},
+        "ansi": {
+          "type": "object",
+          "required": ["normal", "bright"],
+          "properties": {
+            "normal": {"$ref": "#/$defs/ansiMap"},
+            "bright": {"$ref": "#/$defs/ansiMap"}
+          },
+          "additionalProperties": true
+        },
+        "base16": {"$ref": "#/$defs/base16"},
+        "base24": {"type": ["object", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "ansiMap": {
+      "type": "object",
+      "required": ["black", "red", "green", "yellow", "blue", "magenta", "cyan", "white"],
+      "additionalProperties": {"$ref": "#/$defs/colorValue"}
+    },
+    "base16": {
+      "type": "object",
+      "required": ["base00", "base01", "base02", "base03", "base04", "base05", "base06", "base07", "base08", "base09", "base0A", "base0B", "base0C", "base0D", "base0E", "base0F"],
+      "additionalProperties": {"$ref": "#/$defs/colorValue"}
+    }
+  },
+  "additionalProperties": true
+}

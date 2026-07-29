@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/theme-broker/adapter/v1",
+  "title": "Theme Broker native adapter",
+  "type": "object",
+  "required": ["schema", "id", "provider", "target", "platforms", "provenance", "capabilities"],
+  "properties": {
+    "schema": {"const": "theme-broker.adapter/v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "provider": {"type": "string"},
+    "target": {"type": "string"},
+    "platforms": {"type": "array", "items": {"enum": ["homeManager", "nixos", "darwin"]}, "minItems": 1},
+    "priority": {"type": "integer"},
+    "autoSafe": {"type": "boolean"},
+    "provenance": {
+      "type": "object",
+      "required": ["tier", "repository", "revision", "license"],
+      "properties": {
+        "tier": {"enum": ["official", "canonical", "maintained", "community", "local"]},
+        "repository": {"type": "string", "format": "uri"},
+        "revision": {"type": "string"},
+        "license": {"type": "string"}
+      }
+    },
+    "capabilities": {"type": "object"},
+    "module": {}
+  },
+  "additionalProperties": true
+}

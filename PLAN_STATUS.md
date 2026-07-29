@@ -41,7 +41,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-080 | partial | all ten variants, fourteen Catppuccin accents, resolver cases, and Linux/Darwin module evaluations run; x86_64-darwin is omitted because pinned nixpkgs 26.11 dropped that system |
 | TB-081 | complete | explicit Catppuccin, Gruvbox, native-manifest, and golden update wrappers with AST/no-IFD/stale checks |
 | TB-082 | complete | independent schema/version policy, changelog, compatibility window, and release checklist |
-| TB-083 | blocked | cannot publish a release: target remote has no refs |
+| TB-083 | complete | v1 implementation published at `11b27d3a11ad1d609ce9d609c9d181d54b2e8118` on `origin/trunk`; canix consumes the immutable GitHub revision |
 | TB-090–TB-093 | pending | post-MVP / v1 work |
 
 The Atlas deployment slice selects Gruvbox `dark-hard` through the parent

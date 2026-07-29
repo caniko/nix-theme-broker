@@ -118,3 +118,4 @@ Generated from the provider and native-adapter registries.
 | catppuccin-zsh-syntax-highlighting | catppuccin | zsh-syntax-highlighting | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | gruvbox-vim | gruvbox | vim | homeManager, nixos, darwin | canonical | 5d15b2765f59754d7ac263c88a0f6e3e58124951 |
 | gruvbox-neovim | gruvbox | neovim | homeManager, nixos, darwin | maintained | 154eb5ff5b96d0641307113fa385eaf0d36d9796 |
+| gruvbox-vscode | gruvbox | vscode | homeManager | maintained | ca3b8ad203e84a884ca33fb84b5795cf43032709 |

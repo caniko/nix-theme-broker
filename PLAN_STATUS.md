@@ -16,9 +16,9 @@ place but the task's full acceptance matrix is still pending.
 | TB-013 | complete | public library and normalized schema |
 | TB-014 | complete | reusable conformance harness, golden fixtures, explicit `scripts/update-golden.py`, and stale-golden check |
 | TB-020 | complete | locked palette input, four variants, fourteen accents |
-| TB-021 | partial | pinned Tinted-compatible fixtures and golden checks pass; the checkout does not yet import a separate Tinted source input for re-generation |
+| TB-021 | complete | explicit pinned Tinted source input, all four Catppuccin variants, and source-backed Base16 conformance check |
 | TB-022 | complete | reviewed JSON snapshot, canonical-source comparison, and deterministic updater |
-| TB-023 | partial | six variants, reviewed JSON source, projections, and golden checks pass; separate Tinted source re-generation remains pending |
+| TB-023 | complete | six variants, reviewed JSON source, and source-backed Base16 conformance check for every Gruvbox variant |
 | TB-024 | complete | built-in registry and full variant/accent conformance run in the evaluation check |
 | TB-030 | complete | Stylix Base16 bridge leaves non-color settings alone |
 | TB-031 | partial | explicit pinned Stylix compatibility registry and aliases; dynamic option introspection is intentionally not enabled because it recurses through the module system |

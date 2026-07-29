@@ -98,7 +98,7 @@ Generated from the provider and native-adapter registries.
 | catppuccin-thunderbird | catppuccin | thunderbird | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-tmux | catppuccin | tmux | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-tofi | catppuccin | tofi | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
-| catppuccin-tty | catppuccin | tty | nixos | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
+| catppuccin-tty | catppuccin | console | nixos | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-vesktop | catppuccin | vesktop | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-vicinae | catppuccin | vicinae | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-vivaldi | catppuccin | vivaldi | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
@@ -113,9 +113,9 @@ Generated from the provider and native-adapter registries.
 | catppuccin-xfce4-terminal | catppuccin | xfce4-terminal | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-yazi | catppuccin | yazi | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-zathura | catppuccin | zathura | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
-| catppuccin-zed-editor | catppuccin | zed-editor | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
+| catppuccin-zed-editor | catppuccin | zed | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-zellij | catppuccin | zellij | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-zsh-syntax-highlighting | catppuccin | zsh-syntax-highlighting | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
-| gruvbox-vim | gruvbox | vim | homeManager, nixos, darwin | canonical | 5d15b2765f59754d7ac263c88a0f6e3e58124951 |
-| gruvbox-neovim | gruvbox | neovim | homeManager, nixos, darwin | maintained | 154eb5ff5b96d0641307113fa385eaf0d36d9796 |
+| gruvbox-vim | gruvbox | vim | homeManager | canonical | 5d15b2765f59754d7ac263c88a0f6e3e58124951 |
+| gruvbox-neovim | gruvbox | neovim | homeManager | maintained | 154eb5ff5b96d0641307113fa385eaf0d36d9796 |
 | gruvbox-vscode | gruvbox | vscode | homeManager | maintained | ca3b8ad203e84a884ca33fb84b5795cf43032709 |

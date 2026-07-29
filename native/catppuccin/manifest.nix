@@ -591,7 +591,7 @@
     };
     neovim = {
       id = "neovim";
-      optionPath = ["catppuccin" "neovim"];
+      optionPath = ["catppuccin" "nvim"];
       platforms = ["homeManager"];
       variants = "all";
       accent = "none";

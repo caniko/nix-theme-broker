@@ -1,9 +1,9 @@
 # Custom adapters
 
-Register a local adapter only when its source and capabilities are pinned:
+Declare a local adapter only when its source and capabilities are pinned:
 
 ```nix
-themeBroker.registry.adapters = [{
+myAdapter = {
   schema = "theme-broker.adapter/v1";
   id = "my-editor-theme";
   provider = "my-theme";
@@ -16,8 +16,15 @@ themeBroker.registry.adapters = [{
     license = "MIT";
   };
   capabilities = {variants = "all"; accent = "none";};
-}];
+  autoSafe = true;
+  class = "simple";
+  optionPath = ["programs" "my-editor" "theme"];
+};
 ```
 
 The normal resolver performs validation, target aliasing, trust filtering, and
-stable tie-breaking. Do not add activation-time network fetches.
+stable tie-breaking. Pass simple adapters through the platform module's
+`themeBrokerAdapters` argument so their option paths are part of the module's
+fixed shape; they then become the default active registry. Registry-only
+adapters without a declared renderer are never selected. Do not add
+activation-time network fetches.

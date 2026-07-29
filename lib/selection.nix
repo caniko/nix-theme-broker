@@ -10,7 +10,10 @@
     if builtins.hasAttr providerId providers
     then providers.${providerId}
     else throw "themeBroker: unknown provider `${providerId}`";
-  variantId = selection.variant or selectedProvider.defaults.variant;
+  variantId =
+    if selection.variant or null == null
+    then selectedProvider.defaults.variant
+    else selection.variant;
   variant =
     if builtins.hasAttr variantId selectedProvider.variants
     then selectedProvider.variants.${variantId}

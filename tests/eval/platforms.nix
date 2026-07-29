@@ -4,7 +4,34 @@
   providers,
   adapters,
 }: let
-  targetNames = ["alacritty" "bat" "console" "foot" "kitty" "waybar" "neovim" "vim"];
+  themeLib = import ../../lib {inherit lib;};
+  targetNames = ["alacritty" "bat" "btop" "chromium" "console" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "starship" "tmux" "waybar" "zed"];
+  selections = [
+    {
+      provider = "catppuccin";
+      variant = "mocha";
+      accent = "mauve";
+      base00 = "#1e1e2e";
+    }
+    {
+      provider = "catppuccin";
+      variant = "latte";
+      accent = "blue";
+      base00 = "#eff1f5";
+    }
+    {
+      provider = "gruvbox";
+      variant = "dark-hard";
+      accent = null;
+      base00 = "#1d2021";
+    }
+    {
+      provider = "gruvbox";
+      variant = "light-hard";
+      accent = null;
+      base00 = "#f9f5d7";
+    }
+  ];
   base = {
     options = {
       stylix = {
@@ -45,9 +72,20 @@
     nixos = ../../modules/nixos.nix;
     darwin = ../../modules/darwin.nix;
   };
-  eval = platform:
+  platformTargets = platform:
+    builtins.filter (
+      target: builtins.elem platform themeLib.generatedTargets.${target}.platforms
+    )
+    targetNames;
+  eval = platform: selection:
     lib.evalModules {
-      specialArgs = {inherit pkgs;};
+      specialArgs = {
+        cosmicLib = null;
+        inherit pkgs;
+        themeBrokerPlatform = platform;
+        themeBrokerProviders = providers;
+        themeBrokerAdapters = adapters;
+      };
       modules = [
         base
         {
@@ -55,25 +93,50 @@
           _module.args = {
             themeBrokerProviders = providers;
             themeBrokerAdapters = adapters;
-            themeBrokerPlatform = platform;
           };
         }
         {
           themeBroker = {
             enable = true;
-            selection.provider = "gruvbox";
-            selection.variant = "dark-hard";
-            targets.alacritty.backend = "generated";
+            selection = {
+              inherit (selection) provider variant accent;
+            };
+            targets = lib.genAttrs (platformTargets platform) (_: {
+              backend = "generated";
+            });
           };
         }
       ];
     };
-  platforms = map (platform: let
-    result = eval platform;
-  in {
-    inherit platform;
-    selected = result.config.themeBroker.selected.provider;
-    backend = result.config.themeBroker.resolved.targets.alacritty.backend;
-  }) ["homeManager" "nixos" "darwin"];
+  platforms = ["homeManager" "nixos" "darwin"];
+  cases =
+    lib.concatMap (
+      platform:
+        map (selection: let
+          result = eval platform selection;
+          configTargets = platformTargets platform;
+        in {
+          inherit platform;
+          selected = result.config.themeBroker.selected.provider;
+          variant = result.config.themeBroker.selected.variant;
+          base00 = result.config.stylix.base16Scheme.base00;
+          backends = map (target: result.config.themeBroker.resolved.targets.${target}.backend) configTargets;
+          adapters = map (target: result.config.themeBroker.resolved.targets.${target}.adapter) configTargets;
+          generatedEnabled = map (target: result.config.stylix.targets.${target}.enable) configTargets;
+          inherit selection;
+        })
+        selections
+    )
+    platforms;
 in
-  assert builtins.all (row: row.selected == "gruvbox" && row.backend == "generated") platforms; true
+  assert builtins.all (
+    row:
+      row.selected
+      == row.selection.provider
+      && row.variant == row.selection.variant
+      && row.base00 == row.selection.base00
+      && builtins.all (backend: backend == "generated") row.backends
+      && builtins.all (adapter: adapter == null) row.adapters
+      && builtins.all (enabled: enabled) row.generatedEnabled
+  )
+  cases; true

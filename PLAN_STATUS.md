@@ -21,8 +21,8 @@ place but the task's full acceptance matrix is still pending.
 | TB-023 | complete | six variants, reviewed JSON source, and source-backed Base16 conformance check for every Gruvbox variant |
 | TB-024 | complete | built-in registry and full variant/accent conformance run in the evaluation check |
 | TB-030 | complete | Stylix Base16 bridge leaves non-color settings alone |
-| TB-031 | partial | explicit pinned Stylix compatibility registry and aliases; dynamic option introspection is intentionally not enabled because it recurses through the module system |
-| TB-032 | partial | representative platform module evaluation and generated-target checks exist; the full per-provider/per-target platform matrix is still pending |
+| TB-031 | partial | explicit pinned Stylix compatibility registry covers the installed Canix targets supported by the pinned modules; dynamic option introspection remains intentionally disabled |
+| TB-032 | complete | Home Manager, NixOS, and Darwin fixtures cover the registered platform-correct generated targets across both providers and light/dark selections |
 | TB-040 | complete | adapter descriptors, JSON schema, strict trust/platform/capability validator, and merge/evaluation tests |
 | TB-041 | complete | deterministic generated/native/auto resolver with R-001 through R-015 table coverage |
 | TB-042 | complete | managed target coordination, direct-scheme conflict assertion, and managed=false escape hatch |

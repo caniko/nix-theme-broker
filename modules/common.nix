@@ -3,6 +3,7 @@
   lib,
   options,
   pkgs,
+  cosmicLib ? null,
   themeBrokerAdapters ? [],
   themeBrokerPlatform ? "homeManager",
   themeBrokerProviders,
@@ -36,104 +37,162 @@
   # stable IDs the broker may coordinate without copying those implementations.
   generatedRegistry = themeLib.generatedTargets;
   generatedTargets = builtins.attrNames generatedRegistry;
-  # `console` is a NixOS-only Stylix option.  Keep it in the public registry
-  # and resolver, but do not emit that option from the shared module: the same
-  # module is imported by Home Manager and Darwin, where the option is absent.
-  generatedConfigTargets = builtins.filter (target: target != "console") generatedTargets;
+  cosmicAvailable =
+    lib.hasAttrByPath ["wayland" "desktopManager" "cosmic" "appearance"] options
+    && cosmicLib != null;
+  complexRendererIds = ["catppuccin-vscode" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
+  declaredAdapters = map themeLib.mkAdapter themeBrokerAdapters;
+  declaredAdaptersById = lib.listToAttrs (map (adapter: {
+      name = adapter.id;
+      value = adapter;
+    })
+    declaredAdapters);
+  hasRenderer = adapter: let
+    declared = declaredAdaptersById.${adapter.id} or null;
+  in
+    declared
+    != null
+    && adapter == declared
+    && (
+      ((adapter.class or "simple") == "simple" && builtins.isList (adapter.optionPath or null))
+      || builtins.elem adapter.id complexRendererIds
+    );
+  renderableAdapters = builtins.filter hasRenderer registryCfg.adapters;
+  generatedConfigTargets =
+    builtins.filter (
+      target:
+        (generatedRegistry.${target}.engine or "stylix")
+        == "stylix"
+        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
+    )
+    generatedTargets;
   manageStylixScheme = config.themeBroker.manageStylixScheme;
-  selected =
-    if brokerEnabled
-    then
-      themeLib.resolveSelection {
-        providers = registryCfg.providers;
-        selection = selectionCfg;
-      }
-    else null;
+  selected = themeLib.resolveSelection {
+    providers = registryCfg.providers;
+    selection = selectionCfg;
+  };
   targetSelections =
-    if !brokerEnabled
-    then {}
-    else
-      lib.mapAttrs (
-        target: targetCfg: (
-          themeLib.resolveBackend {
-            providerId = selected.provider;
-            variantId = selected.variant;
-            selection =
-              selectionCfg
-              // {
-                accent = selected.accent;
-                backend =
-                  if targetCfg.backend == "auto"
-                  then policyCfg.defaultBackend
-                  else targetCfg.backend;
-                nativeOptions = targetCfg.nativeOptions;
-              };
-            targetId = target;
-            platform = themeBrokerPlatform;
-            generatedAvailable =
-              builtins.elem target generatedTargets
-              && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or []);
-            adapters = registryCfg.adapters;
-            policy = policyCfg;
-          }
-          // {nativeOptions = targetCfg.nativeOptions;}
-        )
+    lib.mapAttrs (
+      target: targetCfg: (
+        themeLib.resolveBackend {
+          providerId = selected.provider;
+          variantId = selected.variant;
+          selection =
+            selectionCfg
+            // {
+              accent = selected.accent;
+              backend =
+                if targetCfg.backend == "auto"
+                then policyCfg.defaultBackend
+                else targetCfg.backend;
+              nativeOptions = targetCfg.nativeOptions;
+            };
+          targetId = target;
+          platform = themeBrokerPlatform;
+          generatedAvailable =
+            builtins.elem target generatedTargets
+            && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
+            && (
+              (generatedRegistry.${target}.engine or "stylix")
+              != "cosmic-manager"
+              || (
+                if cosmicLib == null
+                then throw "themeBroker: COSMIC generated target requires cosmicLib"
+                else if !cosmicAvailable
+                then throw "themeBroker: COSMIC generated target requires cosmic-manager options"
+                else if selected.metadata.appearance != "dark"
+                then throw "themeBroker: COSMIC generated target supports dark variants only"
+                else true
+              )
+            );
+          adapters = renderableAdapters;
+          policy = policyCfg;
+        }
+        // {nativeOptions = targetCfg.nativeOptions;}
       )
-      targetsCfg;
-  nativeConfig = [
-    (lib.mkIf (
-        themeBrokerPlatform
-        == "homeManager"
-        && targetSelections ? alacritty
-        && targetSelections.alacritty.backend == "native"
-        && targetSelections.alacritty.adapter == "catppuccin-alacritty"
-      ) {
+    )
+    targetsCfg;
+  adaptersById = lib.listToAttrs (map (adapter: {
+      name = adapter.id;
+      value = adapter;
+    })
+    registryCfg.adapters);
+  simpleNativeConfig =
+    map (
+      adapter:
+        if (adapter.class or "simple") != "simple"
+        then {}
+        else
+          lib.setAttrByPath adapter.optionPath (
+            lib.mkIf (
+              targetSelections ? ${adapter.target}
+              && targetSelections.${adapter.target}.backend == "native"
+              && targetSelections.${adapter.target}.adapter == adapter.id
+            ) ({enable = true;} // (adapter.optionValues or {}))
+          )
+    )
+    (builtins.filter (
+        adapter:
+          (adapter.class or "simple")
+          == "simple"
+          && builtins.elem themeBrokerPlatform (adapter.platforms or [])
+          && builtins.isList (adapter.optionPath or null)
+      )
+      declaredAdapters);
+  catppuccinNative = builtins.any (
+    targetCfg: let
+      adapter =
+        if targetCfg.adapter == null
+        then {}
+        else adaptersById.${targetCfg.adapter} or {};
+    in
+      (adapter.module or null) == "catppuccin"
+  ) (builtins.attrValues targetSelections);
+  nativeConfig =
+    [
+      (lib.mkIf catppuccinNative {
         catppuccin = {
           enable = true;
           autoEnable = lib.mkForce false;
           flavor = selected.variant;
           accent = selected.accent;
-          alacritty.enable = true;
         };
       })
-    (lib.mkIf (
-        targetSelections ? neovim
-        && targetSelections.neovim.backend == "native"
-        && targetSelections.neovim.adapter == "gruvbox-neovim"
-      )
-      (import ../native/gruvbox/neovim.nix {
-        inherit lib pkgs selected;
-        transparent = config.themeBroker.targets.neovim.nativeOptions.transparent or false;
-      }))
-    (lib.mkIf (
+    ]
+    ++ simpleNativeConfig
+    ++ lib.optional (themeBrokerPlatform == "homeManager") (lib.mkMerge [
+      (lib.mkIf (
+          targetSelections ? neovim
+          && targetSelections.neovim.backend == "native"
+          && targetSelections.neovim.adapter == "gruvbox-neovim"
+        ) (import ../native/gruvbox/neovim.nix {
+          inherit lib pkgs selected;
+          transparent = config.themeBroker.targets.neovim.nativeOptions.transparent or false;
+        }))
+      (lib.mkIf (
         targetSelections ? vim
         && targetSelections.vim.backend == "native"
         && targetSelections.vim.adapter == "gruvbox-vim"
-      )
-      (import ../native/gruvbox/vim.nix {inherit lib pkgs selected;}))
-    (lib.mkIf (
-        themeBrokerPlatform
-        == "homeManager"
-        && targetSelections ? vscode
+      ) (import ../native/gruvbox/vim.nix {inherit lib pkgs selected;}))
+    ])
+    ++ lib.optional (themeBrokerPlatform == "homeManager") (lib.mkMerge [
+      (lib.mkIf (
+        targetSelections ? vscode
         && targetSelections.vscode.backend == "native"
         && targetSelections.vscode.adapter == "gruvbox-vscode"
-      )
-      (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
-    (lib.mkIf (
-        themeBrokerPlatform
-        == "homeManager"
-        && targetSelections ? vscode
+      ) (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
+      (lib.mkIf (
+        targetSelections ? vscode
         && targetSelections.vscode.backend == "native"
         && targetSelections.vscode.adapter == "catppuccin-vscode"
-      )
-      (import ../native/catppuccin/home-manager/vscode.nix {inherit lib pkgs selected;}))
-  ];
+      ) (import ../native/catppuccin/home-manager/vscode.nix {inherit lib pkgs selected;}))
+    ]);
   generatedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
         targetSelections ? ${target}
         && targetSelections.${target}.backend == "generated"
-        && builtins.elem config.themeBroker.platform (generatedRegistry.${target}.platforms or [])
+        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce true);
     })
     targets;
@@ -142,10 +201,26 @@
       stylix.targets.${target}.enable = lib.mkIf (
         targetSelections ? ${target}
         && targetSelections.${target}.backend == "native"
-        && builtins.elem config.themeBroker.platform (generatedRegistry.${target}.platforms or [])
+        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce false);
     })
     targets;
+  cosmicConfig =
+    if themeBrokerPlatform == "homeManager" && cosmicAvailable
+    then
+      import ../targets/cosmic-manager.nix {
+        inherit cosmicLib lib selected;
+        enabled = targetSelections ? cosmic && targetSelections.cosmic.backend == "generated";
+      }
+    else {};
+  ghosttyConfig =
+    if themeBrokerPlatform == "homeManager"
+    then {
+      programs.ghostty.settings.window-theme = lib.mkIf (
+        targetSelections ? ghostty && targetSelections.ghostty.backend == "generated"
+      ) "ghostty";
+    }
+    else {};
 in {
   options.themeBroker = {
     enable = lib.mkEnableOption "theme broker";
@@ -176,9 +251,9 @@ in {
         description = "Theme provider ID.";
       };
       variant = lib.mkOption {
-        type = lib.types.str;
-        default = "dark-medium";
-        description = "Provider-defined variant ID.";
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Provider-defined variant ID; null uses the provider default.";
       };
       accent = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
@@ -272,11 +347,10 @@ in {
     };
   };
 
-  config = lib.mkIf brokerEnabled (lib.mkMerge ([
+  config = lib.mkIf brokerEnabled (lib.mkMerge (
+    [
       {
         themeBroker.selected = selected;
-        # Keep the flat form for compatibility while exposing the documented
-        # `resolved.targets` debugging path.
         themeBroker.resolved = targetSelections // {targets = targetSelections;};
         themeBroker.generatedTargets = generatedTargets;
         stylix.enable = lib.mkDefault true;
@@ -284,15 +358,15 @@ in {
         catppuccin.autoEnable = lib.mkForce false;
         assertions = lib.mkIf manageStylixScheme [
           {
-            assertion = options.stylix.base16Scheme.value == selected.formatted.base16Scheme;
+            assertion = config.stylix.base16Scheme == selected.formatted.base16Scheme;
             message = "themeBroker: stylix.base16Scheme conflicts with the broker selection; remove the direct scheme or set themeBroker.manageStylixScheme = false.";
           }
         ];
-        # Canix's Zed profile owns its font and theme settings directly.
-        stylix.targets.zed.enable = lib.mkForce false;
       }
     ]
     ++ generatedConfig generatedConfigTargets
     ++ disabledGeneratedConfig generatedConfigTargets
-    ++ nativeConfig));
+    ++ nativeConfig
+    ++ [cosmicConfig ghosttyConfig]
+  ));
 }

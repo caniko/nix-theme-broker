@@ -26,6 +26,13 @@ map (
       profiles = item.profiles or false;
     };
     optionPath = item.optionPath;
+    optionValues =
+      item.optionValues
+      or (
+        if item.id == "zed-editor"
+        then {icons.enable = true;}
+        else {}
+      );
     class = item.class or "simple";
     module = "catppuccin";
   }

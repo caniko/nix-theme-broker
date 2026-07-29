@@ -28,6 +28,9 @@ VS Code, GTK icons, cursors, and NixOS assets) with official provenance. The
 support matrix is the authoritative per-target list; a target is only applied
 when it is explicitly enrolled under `themeBroker.targets.<id>`.
 
-`community` artifacts are not trusted by default. A local adapter is
-explicitly registered in `themeBroker.registry.adapters`; it is never fetched
-from a remote registry or downloaded during activation.
+`community` artifacts are not trusted by default. A local simple adapter is
+declared through the platform module's `themeBrokerAdapters` argument with an
+`optionPath`; the exact active registry entry must match that declared renderer
+before resolution. It is never fetched from a remote registry or downloaded
+during activation. Automatic native selection also requires exact
+accent/override fidelity and `autoSafe = true`.

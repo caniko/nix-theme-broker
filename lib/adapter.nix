@@ -10,6 +10,8 @@
   aliases = {
     code = "vscode";
     nvim = "neovim";
+    tty = "console";
+    zed-editor = "zed";
   };
 
   canonicalTarget = target: aliases.${target} or target;
@@ -22,8 +24,13 @@
   }: let
     caps = adapter.capabilities or {};
     accentExact = selection.accent == null || (caps.accent or "none") == "all" || (caps.accent or "none") == "exact";
-    overrideRequested = (selection.overrides or {}) != {};
-    overrideExact = !overrideRequested || (caps.namedOverrides or false) || (caps.roleOverrides or false);
+    overrides = selection.overrides or {};
+    overrideExact =
+      ((overrides.named or {}) == {} || (caps.namedOverrides or false))
+      && ((overrides.roles or {}) == {} || (caps.roleOverrides or false))
+      && (overrides.ansi or {}) == {}
+      && (overrides.base16 or {}) == {}
+      && (overrides.base24 or {}) == {};
     fidelity =
       if accentExact && overrideExact
       then "exact"
@@ -98,6 +105,15 @@ in {
       adapters;
     graded = lib.sortOn (adapter: rank adapter) (map (adapter: let grade = capabilityMatch {inherit selection adapter policy;}; in adapter // grade // {reason = candidateReason adapter grade;}) matching);
     native = builtins.head (graded ++ [null]);
+    automaticNative =
+      lib.findFirst (
+        candidate:
+          (candidate.accepted or false)
+          && candidate.fidelity == "exact"
+          && (candidate.autoSafe or false)
+      )
+      null
+      graded;
     requested = selection.backend or "auto";
     backend =
       if requested == "generated"
@@ -112,7 +128,7 @@ in {
         else if !(native.accepted or false)
         then throw "themeBroker: target `${canonicalId}` requested native backend for provider `${providerId}`, variant `${variantId}`, but adapter `${native.id}` is ${native.fidelity} fidelity and cannot preserve the requested accent or overrides. Use backend = \"generated\" or relax fidelity policy."
         else "native"
-      else if native != null && (native.accepted or false) && policy.preferNative
+      else if automaticNative != null && policy.preferNative
       then "native"
       else if generatedAvailable
       then
@@ -121,7 +137,7 @@ in {
         else if native != null && !(native.accepted or false) && (policy.onUnsupported or "fallback") == "warn"
         then lib.warn "themeBroker: target `${canonicalId}` is falling back to Stylix because native fidelity is unsupported" "generated"
         else "generated"
-      else if native != null && (native.accepted or false)
+      else if automaticNative != null
       then "native"
       else throw "themeBroker: target `${canonicalId}` has neither a generated Stylix target nor an allowed native adapter for provider `${providerId}` variant `${variantId}`. Candidates: ${lib.concatStringsSep "; " (map (candidate: candidate.reason) graded)}";
     rejectionReasons = map (candidate: candidate.reason) graded;
@@ -131,11 +147,17 @@ in {
     inherit backend;
     adapter =
       if backend == "native"
-      then native.id
+      then
+        if requested == "auto"
+        then automaticNative.id
+        else native.id
       else null;
     fidelity =
       if backend == "native"
-      then native.fidelity
+      then
+        if requested == "auto"
+        then automaticNative.fidelity
+        else native.fidelity
       else "exact";
     provider = providerId;
     variant = variantId;
@@ -145,11 +167,19 @@ in {
       if backend == "native"
       then [
         "native adapter supports the selected variant"
-        "trust tier `${native.provenance.tier or "community"}` is allowed"
-        "native backend policy selected `${native.id}`"
+        "trust tier `${(
+          if requested == "auto"
+          then automaticNative
+          else native
+        ).provenance.tier or "community"}` is allowed"
+        "native backend policy selected `${
+          if requested == "auto"
+          then automaticNative.id
+          else native.id
+        }`"
       ]
       else if native == null
       then ["Stylix generated target selected" "no matching native adapter was registered"]
-      else ["Stylix generated target selected" "native candidate `${native.id}` did not meet fidelity policy"] ++ rejectionReasons;
+      else ["Stylix generated target selected" "native candidate `${native.id}` did not meet automatic-selection policy"] ++ rejectionReasons;
   };
 }

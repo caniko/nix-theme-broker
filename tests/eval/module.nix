@@ -4,7 +4,8 @@
   providers,
   adapters,
 }: let
-  targetNames = ["alacritty" "bat" "console" "foot" "kitty" "waybar" "neovim" "vim" "vscode"];
+  themeLib = import ../../lib {inherit lib;};
+  targetNames = ["alacritty" "bat" "btop" "console" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "starship" "tmux" "waybar" "zed" "neovim" "vim" "vscode"];
   base = {
     options = {
       stylix = {
@@ -80,25 +81,32 @@
       };
     };
   };
-  broker = {
+  broker = moduleAdapters: {
     imports = [../../modules/common.nix];
     _module.args = {
       themeBrokerProviders = providers;
-      themeBrokerAdapters = adapters;
-      themeBrokerPlatform = "homeManager";
+      themeBrokerAdapters = moduleAdapters;
     };
   };
-  eval = extra:
+  evalWithAdapters = moduleAdapters: extra:
     lib.evalModules {
-      specialArgs = {inherit pkgs;};
-      modules = [base broker {config = extra;}];
+      specialArgs = {
+        cosmicLib = null;
+        inherit pkgs;
+        themeBrokerPlatform = "homeManager";
+        themeBrokerProviders = providers;
+        themeBrokerAdapters = moduleAdapters;
+      };
+      modules = [base (broker moduleAdapters) {themeBroker.platform = "homeManager";} {config = extra;}];
     };
+  eval = evalWithAdapters adapters;
   disabled = eval {};
   generated = eval {
     themeBroker.enable = true;
     themeBroker.selection.provider = "gruvbox";
     themeBroker.selection.variant = "dark-hard";
     themeBroker.targets.alacritty.backend = "generated";
+    themeBroker.targets.ghostty.backend = "generated";
   };
   native = eval {
     themeBroker.enable = true;
@@ -175,17 +183,56 @@
     };
     themeBroker.targets = {
       alacritty.backend = "native";
-      firefox.backend = "native";
+      bat.backend = "native";
       vscode.backend = "native";
       gtk.backend = "native";
       cursors.backend = "native";
     };
+  };
+  catppuccinTerminals = eval {
+    themeBroker.enable = true;
+    themeBroker.selection = {
+      provider = "catppuccin";
+      variant = "mocha";
+      accent = "mauve";
+    };
+    themeBroker.targets.ghostty.backend = "native";
+    themeBroker.targets.zed.backend = "native";
+  };
+  customAdapter = themeLib.mkAdapter {
+    schema = "theme-broker.adapter/v1";
+    id = "custom-simple";
+    provider = "gruvbox";
+    target = "custom";
+    platforms = ["homeManager"];
+    priority = 100;
+    autoSafe = true;
+    provenance = {
+      tier = "local";
+      repository = "https://example.invalid/custom-simple";
+      revision = "fixture";
+      license = "MIT";
+    };
+    capabilities = {
+      variants = "all";
+      accent = "none";
+      namedOverrides = false;
+      roleOverrides = false;
+      transparency = false;
+    };
+    class = "simple";
+    optionPath = ["programs" "custom-theme"];
+  };
+  customNative = evalWithAdapters (adapters ++ [customAdapter]) {
+    themeBroker.enable = true;
+    themeBroker.targets.custom.backend = "native";
   };
   assertions = result: builtins.all (item: item.assertion) result.config.assertions;
 in
   assert disabled.config.themeBroker.selected == null;
   assert generated.config.themeBroker.selected.provider == "gruvbox";
   assert generated.config.stylix.targets.alacritty.enable;
+  assert generated.config.programs.ghostty.settings.window-theme == "ghostty";
   assert generated.config.themeBroker.generatedTargets != [];
   assert native.config.themeBroker.resolved.targets.neovim.backend == "native";
   assert native.config.themeBroker.resolved.targets.neovim.adapter == "gruvbox-neovim";
@@ -217,6 +264,8 @@ in
   assert catppuccinNative.config.catppuccin.flavor == "mocha";
   assert catppuccinNative.config.catppuccin.accent == "mauve";
   assert catppuccinNative.config.catppuccin.alacritty.enable;
+  assert catppuccinNative.config.catppuccin.bat.enable;
+  assert !(forcedValue catppuccinNative.config.stylix.targets.bat.enable);
   assert !(forcedValue catppuccinNative.config.catppuccin.vscode.profiles.default.enable);
   assert !(forcedValue catppuccinNative.config.catppuccin.vscode.profiles.default.icons.enable);
   assert catppuccinNative.config.themeBroker.resolved.targets.vscode.adapter == "catppuccin-vscode";
@@ -226,6 +275,12 @@ in
   assert builtins.elem "catppuccin.catppuccin-vsc" (extensionIds catppuccinNative.config.programs.vscode.profiles.default.extensions);
   assert builtins.elem "catppuccin.catppuccin-vsc-icons" (extensionIds catppuccinNative.config.programs.vscode.profiles.default.extensions);
   assert catppuccinNative.config.stylix.targets.vscode.enable == false;
+  assert catppuccinTerminals.config.catppuccin.ghostty.enable;
+  assert catppuccinTerminals.config.catppuccin.zed.enable;
+  assert catppuccinTerminals.config.catppuccin.zed.icons.enable;
+  assert !(catppuccinTerminals.config.programs.ghostty.settings ? "window-theme");
+  assert customNative.config.themeBroker.resolved.targets.custom.adapter == "custom-simple";
+  assert customNative.config.programs.custom-theme.enable;
   assert assertions generated;
   assert assertions native;
   assert !(

@@ -53,7 +53,7 @@
           id = "gruvbox-vim";
           provider = "gruvbox";
           target = "vim";
-          platforms = ["homeManager" "nixos" "darwin"];
+          platforms = ["homeManager"];
           priority = 100;
           autoSafe = true;
           provenance = {
@@ -75,7 +75,7 @@
           id = "gruvbox-neovim";
           provider = "gruvbox";
           target = "neovim";
-          platforms = ["homeManager" "nixos" "darwin"];
+          platforms = ["homeManager"];
           priority = 100;
           autoSafe = true;
           provenance = {
@@ -130,6 +130,7 @@
       target = "alacritty";
       platforms = ["homeManager"];
       priority = 1;
+      autoSafe = true;
       provenance = {
         tier = "local";
         repository = "https://example.invalid/theme-broker-fixture";
@@ -150,12 +151,12 @@
       darwin = ./modules/darwin.nix;
     };
     brokerModule = platform: {
-      imports = [platformModules.${platform}];
-      _module.args = {
-        themeBrokerProviders = providers;
-        themeBrokerAdapters = adapters;
-        themeBrokerPlatform = platform;
-      };
+      imports = [
+        (import platformModules.${platform} {
+          themeBrokerProviders = providers;
+          themeBrokerAdapters = adapters;
+        })
+      ];
     };
   in
     flake-parts.lib.mkFlake {inherit inputs;} {
@@ -198,6 +199,14 @@
           selection = {
             provider = "gruvbox";
             variant = "dark-hard";
+            accent = null;
+          };
+        };
+        lightHard = themeBrokerLib.resolveSelection {
+          inherit providers;
+          selection = {
+            provider = "gruvbox";
+            variant = "light-hard";
             accent = null;
           };
         };
@@ -353,6 +362,68 @@
             } = true
             touch "$out"
           '';
+          cosmic-target-shape = let
+            cosmicLib = {
+              cosmic.mkRON = kind: value:
+                if kind == "enum" && builtins.isAttrs value
+                then {
+                  __type = kind;
+                  inherit (value) value variant;
+                }
+                else {
+                  __type = kind;
+                  inherit value;
+                };
+            };
+            forcedValue = value:
+              if value ? content
+              then forcedValue value.content
+              else value;
+            cosmic = import ./targets/cosmic-manager.nix {
+              inherit cosmicLib lib;
+              selected = darkHard;
+            };
+            light = import ./targets/cosmic-manager.nix {
+              inherit cosmicLib lib;
+              selected = lightHard;
+            };
+          in
+            pkgs.runCommand "theme-broker-cosmic-target-shape" {} ''
+              test ${
+                if cosmic.wayland.desktopManager.cosmic.content.appearance.theme.mode == "dark"
+                then "true"
+                else "false"
+              } = true
+              test ${
+                if
+                  builtins.length cosmic.wayland.desktopManager.cosmic.content.appearance.theme.dark.palette.value
+                  == 1
+                  && builtins.isAttrs (builtins.head cosmic.wayland.desktopManager.cosmic.content.appearance.theme.dark.palette.value)
+                  && !(builtins.head cosmic.wayland.desktopManager.cosmic.content.appearance.theme.dark.palette.value) ? __type
+                then "true"
+                else "false"
+              } = true
+              test ${
+                if cosmic.wayland.desktopManager.cosmic.content.appearance.toolkit.apply_theme_global
+                then "true"
+                else "false"
+              } = true
+              test ${
+                if forcedValue cosmic.stylix.targets.gtk.enable == false
+                then "true"
+                else "false"
+              } = true
+              test ${
+                if
+                  !(cosmic ? home)
+                  && !(cosmic.wayland.desktopManager.cosmic.content ? wallpapers)
+                  && !(cosmic.wayland.desktopManager.cosmic.content.appearance.toolkit ? icon_theme)
+                  && !(builtins.all (assertion: assertion.assertion) light.assertions.content)
+                then "true"
+                else "false"
+              } = true
+              touch "$out"
+            '';
           support-matrix = pkgs.runCommand "theme-broker-support-matrix" {} ''
             test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.providers))} = 2
             test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.adapters))} -ge 3

@@ -50,7 +50,12 @@
   eval = path: let
     example = import path {inherit inputs lib;};
     result = lib.evalModules {
-      specialArgs = {inherit pkgs;};
+      specialArgs = {
+        inherit pkgs;
+        themeBrokerPlatform = "homeManager";
+        themeBrokerProviders = providers;
+        themeBrokerAdapters = adapters;
+      };
       modules = [
         base
         {
@@ -58,7 +63,6 @@
           _module.args = {
             themeBrokerProviders = providers;
             themeBrokerAdapters = adapters;
-            themeBrokerPlatform = "homeManager";
           };
         }
         example

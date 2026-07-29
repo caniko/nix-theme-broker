@@ -6,7 +6,7 @@ All options live below `themeBroker` and are disabled by default.
 | --- | --- |
 | `enable` | Enable selection, Stylix bridge, and broker-managed targets. |
 | `selection.provider` | Registered provider ID (`catppuccin` or `gruvbox`). |
-| `selection.variant` | Opaque provider variant ID. |
+| `selection.variant` | Optional provider variant ID; `null` uses the provider default. |
 | `selection.accent` | Optional accent; `null` uses the provider default. |
 | `selection.overrides` | Named, semantic-role, ANSI, Base16, or Base24 overrides. |
 | `manageStylixScheme` | Keep the selected Base16 scheme in Stylix (default `true`). |

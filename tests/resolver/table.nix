@@ -9,12 +9,14 @@
     variants ? "all",
     accent ? "none",
     namedOverrides ? false,
+    roleOverrides ? false,
+    autoSafe ? true,
   }:
     themeLib.mkAdapter {
       schema = "theme-broker.adapter/v1";
       inherit id target platforms priority;
       provider = "synthetic";
-      autoSafe = true;
+      inherit autoSafe;
       provenance = {
         inherit tier;
         repository = "https://example.invalid/${id}";
@@ -22,8 +24,7 @@
         license = "MIT";
       };
       capabilities = {
-        inherit variants accent namedOverrides;
-        roleOverrides = false;
+        inherit variants accent namedOverrides roleOverrides;
         transparency = false;
       };
     };
@@ -31,6 +32,10 @@
   partial = mk {
     id = "partial";
     accent = "none";
+  };
+  namedExact = mk {
+    id = "named-exact";
+    namedOverrides = true;
   };
   generatedSelection = {
     backend = "generated";
@@ -88,7 +93,12 @@
     selection = autoSelection // {overrides = {named.background = "#000000";};};
   };
   r007 = resolve {
-    adapters = [partial];
+    adapters = [
+      (mk {
+        id = "accent-exact";
+        accent = "exact";
+      })
+    ];
     selection = autoSelection // {accent = "blue";};
   };
   r008 = resolve {
@@ -97,7 +107,7 @@
     requireAccentFidelity = true;
   };
   r009 = resolve {
-    adapters = [exact];
+    adapters = [namedExact];
     selection = autoSelection // {overrides = {named.background = "#000000";};};
   };
   r010 = resolve {
@@ -148,6 +158,18 @@
   };
   # R-015: a successful resolution has exactly one selected backend.
   r015 = resolve {adapters = [exact];};
+  r016 = resolve {
+    adapters = [
+      (mk {
+        id = "unsafe";
+        autoSafe = false;
+      })
+    ];
+  };
+  r017 = resolve {
+    adapters = [namedExact];
+    selection = autoSelection // {overrides.ansi.normal.black = "#000000";};
+  };
 in
   assert r001.success && r001.value.backend == "generated";
   assert !r002.success;
@@ -155,10 +177,12 @@ in
   assert !r004.success;
   assert r005.success && r005.value.adapter == "exact";
   assert r006.success && r006.value.backend == "generated";
-  assert r007.success && r007.value.backend == "native" && r007.value.fidelity == "partial";
+  assert r007.success && r007.value.backend == "native" && r007.value.fidelity == "exact";
   assert r008.success && r008.value.backend == "generated";
-  assert r009.success && r009.value.backend == "generated";
+  assert r009.success && r009.value.backend == "native";
   assert !r010.success && !r011.success && !r012.success;
   assert r013.success && r013.value.adapter == "alpha";
   assert !r014.success;
-  assert r015.success && (builtins.length (lib.filter (value: value == "native") [r015.value.backend])) == 1; true
+  assert r015.success && (builtins.length (lib.filter (value: value == "native") [r015.value.backend])) == 1;
+  assert r016.success && r016.value.backend == "generated";
+  assert r017.success && r017.value.backend == "generated"; true

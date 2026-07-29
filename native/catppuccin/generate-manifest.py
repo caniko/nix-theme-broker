@@ -24,6 +24,7 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
 
     if name == "neovim":
         option_name = "nvim"
+        option_path = ["catppuccin", option_name]
     elif name == "zed-editor":
         option_name = "zed"
     elif name == "gtk":

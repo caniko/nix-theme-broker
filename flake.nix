@@ -7,6 +7,7 @@
     stylix = {
       url = "github:nix-community/stylix";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.tinted-schemes.follows = "tinted-schemes";
     };
     catppuccin = {
       url = "github:catppuccin/nix";
@@ -14,6 +15,10 @@
     };
     catppuccin-palette = {
       url = "github:catppuccin/palette";
+      flake = false;
+    };
+    tinted-schemes = {
+      url = "github:tinted-theming/schemes";
       flake = false;
     };
   };
@@ -24,6 +29,7 @@
     stylix,
     catppuccin,
     catppuccin-palette,
+    tinted-schemes,
     ...
   }: let
     lib = nixpkgs.lib;
@@ -283,6 +289,19 @@
           )
           providers;
         supportMatrix = themeBrokerLib.supportMatrix {inherit providers adapters;};
+        resolveBase16 = provider: variant: accent: let
+          selected = themeBrokerLib.resolveSelection {
+            inherit providers;
+            selection = {
+              inherit provider variant accent;
+            };
+          };
+        in
+          lib.mapAttrs (_: color: color.withHashtag) selected.base16;
+        tintedBase16 = pkgs.writeText "theme-broker-tinted-base16.json" (builtins.toJSON {
+          catppuccin = lib.mapAttrs (variant: _: resolveBase16 "catppuccin" variant "mauve") catppuccinProvider.variants;
+          gruvbox = lib.mapAttrs (variant: _: resolveBase16 "gruvbox" variant null) gruvbox.variants;
+        });
       in {
         formatter = pkgs.alejandra;
         devShells.default = pkgs.mkShell {packages = [pkgs.alejandra pkgs.python3];};
@@ -365,6 +384,13 @@
               nativeBuildInputs = [pkgs.python3];
             } ''
               python3 ${./providers/catppuccin/update.py} ${catppuccin-palette}
+              touch "$out"
+            '';
+          tinted-base16 =
+            pkgs.runCommand "theme-broker-tinted-base16" {
+              nativeBuildInputs = [pkgs.python3];
+            } ''
+              python3 ${./scripts/check-tinted.py} --source ${tinted-schemes} --actual ${tintedBase16}
               touch "$out"
             '';
           support-matrix-stale = pkgs.runCommand "theme-broker-support-matrix-stale" {} ''

@@ -128,18 +128,18 @@
   generatedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
-        targetSelections ? ${target}
+        builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
+        && targetSelections ? ${target}
         && targetSelections.${target}.backend == "generated"
-        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce true);
     })
     targets;
   disabledGeneratedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (
-        targetSelections ? ${target}
+        builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
+        && targetSelections ? ${target}
         && targetSelections.${target}.backend == "native"
-        && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
       ) (lib.mkForce false);
     })
     targets;

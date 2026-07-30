@@ -9,6 +9,7 @@
     "variant": {"type": "string"},
     "accent": {"type": ["string", "null"]},
     "metadata": {"type": "object"},
+    "wallpapers": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/wallpapers"}]},
     "named": {"type": "object", "additionalProperties": {"$ref": "#/$defs/color"}},
     "roles": {"type": "object"},
     "ansi": {"type": "object"},
@@ -21,6 +22,15 @@
     "formatted": {"type": "object"}
   },
   "$defs": {
+    "wallpapers": {
+      "type": "object",
+      "required": ["default", "paths"],
+      "properties": {
+        "default": {"type": "string"},
+        "paths": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": false
+    },
     "color": {
       "type": "object",
       "required": ["hex", "withHashtag", "with0x", "rgb"],

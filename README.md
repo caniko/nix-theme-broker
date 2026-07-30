@@ -43,7 +43,12 @@ Use `backend = "generated"` to force Stylix, `backend = "native"` to require
 an allowed adapter, or `backend = "auto"` (the default) to prefer an exact
 native adapter. Inspect `themeBroker.resolved.targets` with `nix eval --json`.
 
+Consumers may register relative wallpaper collections under
+`themeBroker.registry.wallpapers`. The selected collection is exposed as
+`themeBroker.selected.wallpapers`; the consumer still owns the source root and
+desktop wallpaper configuration.
+
 The flake exports `packages.<system>.support-matrix-json` and
-`support-matrix-markdown`, plus the provider, normalized-theme, and adapter
-schemas. Nix evaluation reads only locked inputs and reviewed files; updater
-scripts never run during a build.
+`support-matrix-markdown`, plus the provider, normalized-theme, wallpaper
+catalog, and adapter schemas. Nix evaluation reads only locked inputs and
+reviewed files; updater scripts never run during a build.

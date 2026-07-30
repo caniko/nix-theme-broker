@@ -320,6 +320,7 @@
           provider-schema = pkgs.writeText "theme-broker-provider.schema.json" (builtins.readFile ./schema/provider.schema.json);
           normalized-theme-schema = pkgs.writeText "theme-broker-normalized-theme.schema.json" (builtins.readFile ./schema/normalized-theme.schema.json);
           adapter-schema = pkgs.writeText "theme-broker-adapter.schema.json" (builtins.readFile ./schema/adapter.schema.json);
+          wallpaper-catalog-schema = pkgs.writeText "theme-broker-wallpaper-catalog.schema.json" (builtins.readFile ./schema/wallpaper-catalog.schema.json);
         };
         checks = {
           gruvbox-dark-hard = pkgs.runCommand "theme-broker-gruvbox-dark-hard" {} ''

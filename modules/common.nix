@@ -17,6 +17,7 @@
   registryCfg = {
     providers = config.themeBroker.registry.providers;
     adapters = map themeLib.mkAdapter config.themeBroker.registry.adapters;
+    wallpapers = themeLib.validateRegistry config.themeBroker.registry.wallpapers;
   };
   selectionCfg = {
     provider = config.themeBroker.selection.provider;
@@ -70,6 +71,7 @@
   selected = themeLib.resolveSelection {
     providers = registryCfg.providers;
     selection = selectionCfg;
+    wallpapers = registryCfg.wallpapers;
   };
   targetSelections =
     lib.mapAttrs (
@@ -241,6 +243,11 @@ in {
         type = lib.types.listOf lib.types.raw;
         default = map themeLib.mkAdapter themeBrokerAdapters;
         description = "Native target adapters registered with the broker.";
+      };
+      wallpapers = lib.mkOption {
+        type = lib.types.attrsOf lib.types.raw;
+        default = {};
+        description = "Relative wallpaper collections keyed by provider ID.";
       };
     };
 

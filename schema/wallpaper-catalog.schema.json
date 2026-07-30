@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/theme-broker/wallpapers/v1",
+  "title": "Theme Broker wallpaper catalog",
+  "type": "object",
+  "required": ["schema", "providers"],
+  "properties": {
+    "schema": {"const": "theme-broker.wallpapers/v1"},
+    "providers": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/collection"}
+    }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    },
+    "collection": {
+      "type": "object",
+      "required": ["variants", "default", "paths"],
+      "properties": {
+        "variants": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "default": {"$ref": "#/$defs/relativePath"},
+        "paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/relativePath"}}
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

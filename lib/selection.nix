@@ -1,9 +1,11 @@
 {
   lib,
   provider,
+  wallpaper,
 }: {
   providers,
   selection,
+  wallpapers ? {},
 }: let
   providerId = selection.provider;
   selectedProvider =
@@ -73,11 +75,17 @@
     base16Scheme = lib.mapAttrs (_: value: value.withHashtag) base16;
     ansi = lib.mapAttrs (_: group: lib.mapAttrs (_: value: value.withHashtag) group) ansi;
   };
+  selectedWallpapers = wallpaper.resolve {
+    inherit (selection) provider;
+    variant = variantId;
+    registry = wallpapers;
+  };
 in
   builtins.seq _accentCheck {
     provider = providerId;
     variant = variantId;
     inherit accent roles ansi base16 base24 formatted;
     metadata = variant.metadata;
+    wallpapers = selectedWallpapers;
     inherit named;
   }

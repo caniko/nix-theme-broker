@@ -12,12 +12,13 @@
   base = selected.base16;
   ansi = selected.ansi;
 
+  toRawFloat = value: mkRON "raw" (builtins.toJSON value);
   toSrgb = color: {
-    red = color.rgb.r / 255.0;
-    green = color.rgb.g / 255.0;
-    blue = color.rgb.b / 255.0;
+    red = toRawFloat (color.rgb.r / 255.0);
+    green = toRawFloat (color.rgb.g / 255.0);
+    blue = toRawFloat (color.rgb.b / 255.0);
   };
-  toSrgba = color: (toSrgb color) // {alpha = 1.0;};
+  toSrgba = color: (toSrgb color) // {alpha = toRawFloat 1.0;};
   optional = color: mkRON "optional" (toSrgb color);
   optionalSrgba = color: mkRON "optional" (toSrgba color);
   darkPalette = {

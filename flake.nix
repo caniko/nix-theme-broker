@@ -405,6 +405,14 @@
                 else "false"
               } = true
               test ${
+                let
+                  palette = builtins.head cosmic.wayland.desktopManager.cosmic.content.appearance.theme.dark.palette.value;
+                in
+                  if palette.blue.red.__type == "raw" && builtins.isString palette.blue.red.value
+                  then "true"
+                  else "false"
+              } = true
+              test ${
                 if cosmic.wayland.desktopManager.cosmic.content.appearance.toolkit.apply_theme_global
                 then "true"
                 else "false"

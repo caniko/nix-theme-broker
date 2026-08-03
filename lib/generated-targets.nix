@@ -71,6 +71,10 @@
     platforms = ["homeManager"];
     autoSafe = true;
   };
+  zellij = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+  };
   cosmic = {
     platforms = ["homeManager"];
     autoSafe = true;

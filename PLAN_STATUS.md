@@ -1,6 +1,6 @@
 # Theme Broker implementation status
 
-Updated 2026-07-29.  “Complete” means the task has an implementation and a
+Updated 2026-08-03.  “Complete” means the task has an implementation and a
 passing narrow check in this checkout.  “Partial” means the public shape is in
 place but the task's full acceptance matrix is still pending.
 
@@ -21,7 +21,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-023 | complete | six variants, reviewed JSON source, and source-backed Base16 conformance check for every Gruvbox variant |
 | TB-024 | complete | built-in registry and full variant/accent conformance run in the evaluation check |
 | TB-030 | complete | Stylix Base16 bridge leaves non-color settings alone |
-| TB-031 | partial | explicit pinned Stylix compatibility registry covers the installed Canix targets supported by the pinned modules; dynamic option introspection remains intentionally disabled |
+| TB-031 | partial | explicit pinned Stylix compatibility registry covers the installed Canix targets, including Zellij, supported by the pinned modules; dynamic option introspection remains intentionally disabled |
 | TB-032 | complete | Home Manager, NixOS, and Darwin fixtures cover the registered platform-correct generated targets across both providers and light/dark selections |
 | TB-040 | complete | adapter descriptors, JSON schema, strict trust/platform/capability validator, and merge/evaluation tests |
 | TB-041 | complete | deterministic generated/native/auto resolver with R-001 through R-015 table coverage |

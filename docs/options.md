@@ -19,9 +19,23 @@ All options live below `themeBroker` and are disabled by default.
 | `policy.preferNative` | Prefer an accepted native adapter over Stylix. |
 | `targets.<id>.backend` | Per-target backend request. |
 | `targets.<id>.managed` | Leave a target outside broker ownership when `false`. |
-| `targets.<id>.nativeOptions` | Adapter-specific passthrough values. |
+| `targets.<id>.nativeOptions` | Adapter-specific passthrough values; `name` overrides the Gruvbox cursor name. |
 
 `selected`, `resolved`, and `generatedTargets` are read-only debug outputs.
 `selected.wallpapers` is the matching `{ default, paths }` collection or `null`.
 The broker exposes wallpaper metadata but does not configure Stylix or desktop
-wallpaper options.
+wallpaper options. The managed `cursors` target selects a provider-native
+cursor and uses size 24.
+
+For Gruvbox, the broker selects `Bibata-Original-Amber` for dark variants and
+`Bibata-Original-Classic` for light variants. Override the name when needed:
+
+```nix
+themeBroker.targets.cursors = {
+  backend = "native";
+  nativeOptions.name = "Bibata-Modern-Ice";
+};
+```
+
+Set `themeBroker.targets.cursors.managed = false` to keep a direct
+`stylix.cursor` configuration instead.

@@ -114,6 +114,29 @@
             transparency = false;
           };
         }
+        {
+          schema = "theme-broker.adapter/v1";
+          id = "gruvbox-cursors";
+          provider = "gruvbox";
+          target = "cursors";
+          platforms = ["homeManager" "nixos"];
+          priority = 100;
+          autoSafe = true;
+          provenance = {
+            tier = "maintained";
+            repository = "https://github.com/ful1e5/Bibata_Cursor";
+            revision = "v2.0.7";
+            license = "GPL-3.0-only";
+          };
+          capabilities = {
+            variants = "all";
+            accent = "none";
+            namedOverrides = false;
+            roleOverrides = false;
+            transparency = false;
+          };
+          class = "complex";
+        }
       ];
     adapters = map themeBrokerLib.mkAdapter rawAdapters;
     syntheticProvider = lib.recursiveUpdate gruvbox {

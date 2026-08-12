@@ -17,6 +17,10 @@
           type = lib.types.attrs;
           default = {};
         };
+        cursor = lib.mkOption {
+          type = lib.types.nullOr lib.types.attrs;
+          default = null;
+        };
         targets = lib.mkOption {
           type = lib.types.attrsOf (lib.types.submodule ({...}: {
             options.enable = lib.mkOption {

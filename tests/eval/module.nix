@@ -17,6 +17,10 @@
           type = lib.types.attrs;
           default = {};
         };
+        cursor = lib.mkOption {
+          type = lib.types.nullOr lib.types.attrs;
+          default = null;
+        };
         targets = lib.mkOption {
           type = lib.types.attrsOf (lib.types.submodule ({...}: {
             options.enable = lib.mkOption {
@@ -63,8 +67,19 @@
               type = lib.types.attrs;
               default = {};
             };
-            cursors = lib.mkOption {
+            sources = lib.mkOption {
               type = lib.types.attrs;
+              default = {
+                cursors.MochaMauve = pkgs.runCommand "catppuccin-cursors-fixture" {} "mkdir -p $out";
+              };
+            };
+            cursors = lib.mkOption {
+              type = lib.types.submodule {
+                options.enable = lib.mkOption {
+                  type = lib.types.bool;
+                  default = true;
+                };
+              };
               default = {};
             };
           };
@@ -114,6 +129,27 @@
     themeBroker.selection.variant = "dark-medium";
     themeBroker.targets.neovim.backend = "native";
     themeBroker.targets.vim.backend = "native";
+  };
+  gruvboxCursor = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-hard";
+    themeBroker.targets.cursors.backend = "auto";
+  };
+  gruvboxCursorLight = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "light-hard";
+    themeBroker.targets.cursors.backend = "native";
+  };
+  gruvboxCursorOverride = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-hard";
+    themeBroker.targets.cursors = {
+      backend = "native";
+      nativeOptions.name = "Bibata-Modern-Ice";
+    };
   };
   vscodeThemeNames = {
     "dark-hard" = "Gruvbox Dark Hard";
@@ -236,6 +272,13 @@ in
   assert generated.config.themeBroker.generatedTargets != [];
   assert native.config.themeBroker.resolved.targets.neovim.backend == "native";
   assert native.config.themeBroker.resolved.targets.neovim.adapter == "gruvbox-neovim";
+  assert gruvboxCursor.config.themeBroker.resolved.targets.cursors.backend == "native";
+  assert gruvboxCursor.config.themeBroker.resolved.targets.cursors.adapter == "gruvbox-cursors";
+  assert gruvboxCursor.config.stylix.cursor.name == "Bibata-Original-Amber";
+  assert gruvboxCursor.config.stylix.cursor.size == 24;
+  assert gruvboxCursor.config.stylix.cursor.package.pname == "bibata-cursors";
+  assert gruvboxCursorLight.config.stylix.cursor.name == "Bibata-Original-Classic";
+  assert gruvboxCursorOverride.config.stylix.cursor.name == "Bibata-Modern-Ice";
   assert lib.hasInfix "colorscheme(\"gruvbox\")" native.config.programs.neovim.extraLuaConfig;
   assert lib.hasInfix "colorscheme gruvbox" native.config.programs.vim.extraConfig;
   assert vscodeNative.config.themeBroker.resolved.targets.vscode.backend == "native";
@@ -263,6 +306,9 @@ in
   assert catppuccinNative.config.catppuccin.enable;
   assert catppuccinNative.config.catppuccin.flavor == "mocha";
   assert catppuccinNative.config.catppuccin.accent == "mauve";
+  assert !catppuccinNative.config.catppuccin.cursors.enable;
+  assert catppuccinNative.config.stylix.cursor.name == "catppuccin-mocha-mauve-cursors";
+  assert catppuccinNative.config.stylix.cursor.size == 24;
   assert catppuccinNative.config.catppuccin.alacritty.enable;
   assert catppuccinNative.config.catppuccin.bat.enable;
   assert !(forcedValue catppuccinNative.config.stylix.targets.bat.enable);

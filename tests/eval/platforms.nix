@@ -43,6 +43,10 @@
           type = lib.types.attrs;
           default = {};
         };
+        cursor = lib.mkOption {
+          type = lib.types.nullOr lib.types.attrs;
+          default = null;
+        };
         targets = lib.mkOption {
           type = lib.types.attrsOf (lib.types.submodule ({...}: {
             options.enable = lib.mkOption {
@@ -52,6 +56,10 @@
           }));
           default = lib.genAttrs targetNames (_: {});
         };
+      };
+      environment.systemPackages = lib.mkOption {
+        type = lib.types.listOf lib.types.package;
+        default = [];
       };
       catppuccin = lib.mkOption {
         type = lib.types.attrsOf lib.types.anything;

@@ -3,8 +3,8 @@
 This flake exposes a palette-neutral `themeBroker` module and provider library.
 Gruvbox's six variants and Catppuccin's four appearances normalize into
 semantic roles, ANSI, Base16, and optional Base24 projections. The broker also
-ships curated Gruvbox Vim/Neovim adapters, a Catppuccin Alacritty bridge, and a
-deterministic generated/native backend resolver.
+ships curated Gruvbox Vim/Neovim/cursor adapters, Catppuccin cursor and
+Alacritty bridges, and a deterministic generated/native backend resolver.
 
 For example, the Atlas Home Manager profile selects `gruvbox/dark-hard` and
 lets Stylix consume the broker's Base16 projection:
@@ -17,6 +17,15 @@ themeBroker = {
     variant = "dark-hard";
   };
 };
+```
+
+Enroll the cursor target to select a provider-native cursor. Dark Gruvbox
+variants use `Bibata-Original-Amber`; light variants use
+`Bibata-Original-Classic`. Catppuccin uses its official flavor/accent cursor
+package.
+
+```nix
+themeBroker.targets.cursors.backend = "auto";
 ```
 
 Stylix remains the generic target engine. Native integrations are opt-in per

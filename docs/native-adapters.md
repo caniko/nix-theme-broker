@@ -9,6 +9,8 @@ Built-ins currently include:
 | Adapter | Tier | Targets |
 | --- | --- | --- |
 | `catppuccin-alacritty` | official | Catppuccin Alacritty module |
+| `catppuccin-cursors` | official | Catppuccin pointer cursors |
+| `gruvbox-cursors` | maintained | Bibata cursor variants selected for Gruvbox |
 | `gruvbox-vim` | canonical | Vim |
 | `gruvbox-neovim` | maintained | Neovim |
 | `gruvbox-vscode` | maintained | VS Code color and Material icon extensions |

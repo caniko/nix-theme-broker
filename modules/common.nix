@@ -41,7 +41,7 @@
   cosmicAvailable =
     lib.hasAttrByPath ["wayland" "desktopManager" "cosmic" "appearance"] options
     && cosmicLib != null;
-  complexRendererIds = ["catppuccin-vscode" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
+  complexRendererIds = ["catppuccin-vscode" "gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
   declaredAdapters = map themeLib.mkAdapter themeBrokerAdapters;
   declaredAdaptersById = lib.listToAttrs (map (adapter: {
       name = adapter.id;
@@ -188,7 +188,23 @@
         && targetSelections.vscode.backend == "native"
         && targetSelections.vscode.adapter == "catppuccin-vscode"
       ) (import ../native/catppuccin/home-manager/vscode.nix {inherit lib pkgs selected;}))
-    ]);
+    ])
+    ++ [
+      (lib.mkIf (
+        targetSelections ? cursors
+        && targetSelections.cursors.backend == "native"
+        && targetSelections.cursors.adapter == "catppuccin-cursors"
+      ) (import ../native/catppuccin/cursors.nix {inherit config lib selected;}))
+      (lib.mkIf (
+          targetSelections ? cursors
+          && targetSelections.cursors.backend == "native"
+          && targetSelections.cursors.adapter == "gruvbox-cursors"
+        ) (import ../native/gruvbox/cursors.nix {
+          inherit lib pkgs selected;
+          name = ((config.themeBroker.targets.cursors or {}).nativeOptions or {}).name or null;
+          platform = themeBrokerPlatform;
+        }))
+    ];
   generatedConfig = targets:
     lib.map (target: {
       stylix.targets.${target}.enable = lib.mkIf (

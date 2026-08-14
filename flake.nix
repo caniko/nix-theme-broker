@@ -17,6 +17,18 @@
       url = "github:catppuccin/palette";
       flake = false;
     };
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    rose-pine-palette = {
+      url = "github:rose-pine/rose-pine-palette";
+      flake = false;
+    };
     tinted-schemes = {
       url = "github:tinted-theming/schemes";
       flake = false;
@@ -29,17 +41,30 @@
     stylix,
     catppuccin,
     catppuccin-palette,
+    home-manager,
+    nix-darwin,
+    rose-pine-palette,
     tinted-schemes,
     ...
   }: let
     lib = nixpkgs.lib;
+    flakeLock = builtins.fromJSON (builtins.readFile ./flake.lock);
+    lockedRevision = name: flakeLock.nodes.${name}.locked.rev;
+    catppuccinPaletteRevision = lockedRevision "catppuccin-palette";
+    catppuccinNativeRevision = lockedRevision "catppuccin";
+    rosePinePaletteRevision = lockedRevision "rose-pine-palette";
+    tintedSchemesRevision = lockedRevision "tinted-schemes";
     themeBrokerLib = import ./lib {inherit (nixpkgs) lib;};
     catppuccinProvider = import ./providers/catppuccin {
       inherit (nixpkgs) lib;
       palette = catppuccin-palette;
+      revision = catppuccinPaletteRevision;
     };
     gruvbox = import ./providers/gruvbox {inherit (nixpkgs) lib;};
-    rosePine = import ./providers/rose-pine {inherit (nixpkgs) lib;};
+    rosePine = import ./providers/rose-pine {
+      inherit (nixpkgs) lib;
+      revision = rosePinePaletteRevision;
+    };
     providers = {
       catppuccin = catppuccinProvider;
       inherit gruvbox;
@@ -316,8 +341,16 @@
             inherit lib pkgs providers adapters;
             themeLib = themeBrokerLib;
           })
+          (import ./tests/eval/real-platforms.nix {
+            inherit nixpkgs stylix catppuccin providers adapters;
+            homeManager = home-manager;
+            nixDarwin = nix-darwin;
+          })
           (import ./tests/eval/catppuccin-manifest.nix {inherit lib;})
-          (import ./tests/golden/check.nix {inherit lib providers;})
+          (import ./tests/golden/check.nix {
+            inherit lib providers;
+            tintedRevision = tintedSchemesRevision;
+          })
         ];
         invalidProvider = builtins.tryEval (themeBrokerLib.mkProvider (import ./tests/fixtures/provider-invalid.nix {inherit lib;}));
         providerConformance =
@@ -341,6 +374,10 @@
           gruvbox = lib.mapAttrs (variant: _: resolveBase16 "gruvbox" variant null) gruvbox.variants;
           rose-pine = lib.mapAttrs (variant: _: resolveBase16 "rose-pine" variant "rose") rosePine.variants;
         });
+        providerSchemaInputs = lib.mapAttrsToList (id: provider: pkgs.writeText "theme-broker-provider-${id}.json" (builtins.toJSON provider)) providers;
+        adapterSchemaInputs = lib.imap0 (index: adapter: pkgs.writeText "theme-broker-adapter-${toString index}.json" (builtins.toJSON adapter)) adapters;
+        wallpaperSchemaInput = pkgs.writeText "theme-broker-wallpapers.json" (builtins.toJSON {});
+        normalizedThemeSchemaInput = pkgs.writeText "theme-broker-normalized-theme.json" (builtins.toJSON darkHard);
       in {
         formatter = pkgs.alejandra;
         devShells.default = pkgs.mkShell {packages = [pkgs.alejandra pkgs.python3];};
@@ -483,6 +520,21 @@
             } = true
             touch "$out"
           '';
+          schema-validation =
+            pkgs.runCommand "theme-broker-schema-validation" {
+              nativeBuildInputs = [pkgs.check-jsonschema];
+            } ''
+              check-jsonschema --check-metaschema ${./schema}/*.schema.json
+              check-jsonschema --schemafile ${./schema/provider.schema.json} ${lib.concatStringsSep " " providerSchemaInputs}
+              check-jsonschema --schemafile ${./schema/adapter.schema.json} ${lib.concatStringsSep " " adapterSchemaInputs}
+              check-jsonschema --schemafile ${./schema/wallpaper-catalog.schema.json} ${wallpaperSchemaInput}
+              check-jsonschema --schemafile ${./schema/normalized-theme.schema.json} ${normalizedThemeSchemaInput}
+              test ${pkgs.lib.escapeShellArg catppuccinNativeRevision} = ${pkgs.lib.escapeShellArg catppuccinManifest.source.revision}
+              test ${pkgs.lib.escapeShellArg catppuccinPaletteRevision} = ${pkgs.lib.escapeShellArg catppuccinProvider.provenance.revision}
+              test ${pkgs.lib.escapeShellArg rosePinePaletteRevision} = ${pkgs.lib.escapeShellArg rosePine.provenance.revision}
+              test ${pkgs.lib.escapeShellArg rosePinePaletteRevision} = ${pkgs.lib.escapeShellArg (builtins.fromJSON (builtins.readFile ./providers/rose-pine/palette.json)).source.revision}
+              touch "$out"
+            '';
           catppuccin-target-inventory = pkgs.runCommand "theme-broker-catppuccin-target-inventory" {} ''
             test ${toString (builtins.length (builtins.attrNames catppuccinManifest.targets))} -ge 80
             touch "$out"
@@ -511,6 +563,13 @@
               python3 ${./providers/catppuccin/update.py} ${catppuccin-palette}
               touch "$out"
             '';
+          rose-pine-palette =
+            pkgs.runCommand "theme-broker-rose-pine-palette" {
+              nativeBuildInputs = [pkgs.python3];
+            } ''
+              python3 ${./providers/rose-pine/update.py} ${rose-pine-palette} --snapshot ${./providers/rose-pine/palette.json}
+              touch "$out"
+            '';
           tinted-base16 =
             pkgs.runCommand "theme-broker-tinted-base16" {
               nativeBuildInputs = [pkgs.python3];
@@ -535,6 +594,22 @@
               echo "theme-broker: import-from-derivation pattern found" >&2
               exit 1
             fi
+            mkdir -p "$TMPDIR/home" "$TMPDIR/state" "$TMPDIR/cache"
+            cat > "$TMPDIR/no-ifd.nix" <<'EOF'
+            let
+              lib = (import ${pkgs.path} {}).lib;
+              themeLib = import ${./lib} {inherit lib;};
+              catppuccinProvider = import ${./providers/catppuccin} {
+                inherit lib;
+                palette = ${catppuccin-palette};
+              };
+              rosePineProvider = import ${./providers/rose-pine} {inherit lib;};
+            in
+              builtins.deepSeq [themeLib.generatedTargets catppuccinProvider rosePineProvider] "ok"
+            EOF
+            mkdir -p "$TMPDIR/home" "$TMPDIR/state" "$TMPDIR/cache"
+            HOME="$TMPDIR/home" XDG_STATE_HOME="$TMPDIR/state" XDG_CACHE_HOME="$TMPDIR/cache" \
+              ${pkgs.nix}/bin/nix --extra-experimental-features nix-command eval --option allow-import-from-derivation false --raw --file "$TMPDIR/no-ifd.nix"
             touch "$out"
           '';
         };

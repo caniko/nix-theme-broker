@@ -17,5 +17,13 @@ is needed:
 themeBroker.selection.overrides.roles.ui.accent = "@bright_blue";
 ```
 
+## Rosé Pine
+
+The pinned `rose-pine/rose-pine-palette` snapshot supplies `main`, `moon`, and
+`dawn`. The provider exposes the six semantic accents `love`, `gold`, `rose`,
+`pine`, `foam`, and `iris`. Its Base16 projections are checked against the
+pinned Tinted schemes; Dawn keeps the canonical palette colors for semantic
+roles while recording Tinted's compatible Base16 values where they differ.
+
 Provider IDs and variant IDs are data, not core assumptions. Third-party
 providers can be added through the mergeable registry option.

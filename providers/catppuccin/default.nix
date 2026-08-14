@@ -1,6 +1,7 @@
 {
   lib,
   palette ? null,
+  revision ? null,
 }: let
   paletteData =
     if palette == null
@@ -143,7 +144,10 @@ in {
   description = "The four upstream Catppuccin palette variants";
   provenance = {
     repository = "https://github.com/catppuccin/palette";
-    revision = "07d02aa110ef9eb7e7427afca5c73ba9cf7f8ebd";
+    revision =
+      if revision == null
+      then "07d02aa110ef9eb7e7427afca5c73ba9cf7f8ebd"
+      else revision;
     license = "MIT";
   };
   defaults = {

@@ -1,6 +1,7 @@
 {
   lib,
   providers,
+  tintedRevision ? "9bd28ed313560db3c5b605c63bc4e309e78e3fc8",
 }: let
   themeLib = import ../../lib {inherit lib;};
   check = file: selection: let
@@ -10,7 +11,7 @@
   in
     expected.source.repository
     == "https://github.com/tinted-theming/schemes"
-    && expected.source.revision == "9bd28ed313560db3c5b605c63bc4e309e78e3fc8"
+    && expected.source.revision == tintedRevision
     && actual.provider == expected.provider
     && actual.variant == expected.variant
     && actual.accent == expected.accent

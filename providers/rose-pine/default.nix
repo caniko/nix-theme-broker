@@ -1,4 +1,7 @@
-{lib}: let
+{
+  lib,
+  revision ? null,
+}: let
   palette = builtins.fromJSON (builtins.readFile ./palette.json);
   accentNames = ["love" "gold" "rose" "pine" "foam" "iris"];
   accents = lib.genAttrs accentNames (name: "@${name}");
@@ -12,6 +15,7 @@
       // {
         accent = "@rose";
         base16Overlay = source.base16Overlay or source.colors.overlay;
+        base16Text = source.base16Text or source.colors.text;
       };
     roles = {
       ui = {
@@ -80,8 +84,8 @@
       base02 = "@base16Overlay";
       base03 = "@muted";
       base04 = "@subtle";
-      base05 = "@text";
-      base06 = "@text";
+      base05 = "@base16Text";
+      base06 = "@base16Text";
       base07 = "@highlightHigh";
       base08 = "@love";
       base09 = "@gold";
@@ -102,7 +106,11 @@ in {
   name = "Rosé Pine";
   description = "The three canonical Rosé Pine palette variants";
   provenance = {
-    inherit (palette.source) repository revision;
+    repository = palette.source.repository;
+    revision =
+      if revision == null
+      then palette.source.revision
+      else revision;
     license = "MIT";
   };
   defaults = {

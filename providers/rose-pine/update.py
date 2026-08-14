@@ -15,9 +15,15 @@ ACCENTS = ("love", "gold", "rose", "pine", "foam", "iris")
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("source", type=Path, help="rose-pine/rose-pine-palette checkout")
+    parser.add_argument(
+        "--snapshot",
+        type=Path,
+        default=Path(__file__).with_name("palette.json"),
+        help="reviewed snapshot to compare",
+    )
     args = parser.parse_args()
     source_path = args.source / "palette.json"
-    snapshot_path = Path(__file__).with_name("palette.json")
+    snapshot_path = args.snapshot
     if not source_path.is_file():
         parser.error(f"missing palette.json: {source_path}")
     source = json.loads(source_path.read_text(encoding="utf-8"))

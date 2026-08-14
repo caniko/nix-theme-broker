@@ -176,7 +176,7 @@
     in
       (adapter.module or null) == "catppuccin"
   ) (builtins.attrValues targetSelections);
-  catppuccinProfileConfig = map (
+  profileRendererModules = map (
     adapter: let
       inherit (adapter) target rendererKind;
       profile = targetSelections.${target}.nativeOptions.profile or "default";
@@ -184,12 +184,10 @@
         targetSelections ? ${target}
         && targetSelections.${target}.backend == "native"
         && targetSelections.${target}.adapter == adapter.id;
-      rendered =
-        if rendererKind == "vscode-profile"
-        then import ../native/catppuccin/home-manager/vscode.nix {inherit enabled lib profile target;}
-        else import ../native/catppuccin/home-manager/firefox.nix {inherit enabled lib profile;};
     in
-      rendered
+      if rendererKind == "vscode-profile"
+      then import ../native/catppuccin/home-manager/vscode.nix {inherit enabled lib profile target;}
+      else import ../native/catppuccin/home-manager/firefox.nix {inherit enabled lib profile;}
   ) (builtins.filter (adapter: builtins.elem (adapter.rendererKind or null) profileRendererKinds) declaredAdapters);
   nativeConfig =
     [
@@ -203,7 +201,6 @@
       })
     ]
     ++ simpleNativeConfig
-    ++ lib.optionals (themeBrokerPlatform == "homeManager") catppuccinProfileConfig
     ++ lib.optional (themeBrokerPlatform == "homeManager") (lib.mkMerge [
       (lib.mkIf (
           targetSelections ? neovim
@@ -226,7 +223,7 @@
         && targetSelections.vscode.adapter == "gruvbox-vscode"
       ) (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
     ])
-    ++ [
+    ++ lib.optionals (themeBrokerPlatform != "darwin") [
       (lib.mkIf (
         targetSelections ? cursors
         && targetSelections.cursors.backend == "native"
@@ -277,6 +274,7 @@
     }
     else {};
 in {
+  imports = lib.optionals (themeBrokerPlatform == "homeManager") profileRendererModules;
   options.themeBroker = {
     enable = lib.mkEnableOption "theme broker";
 

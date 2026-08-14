@@ -72,6 +72,11 @@ in {
   stylix.targets.gtk.enable = lib.mkIf enabled (lib.mkForce false);
 
   wayland.desktopManager.cosmic = lib.mkIf enabled {
+    configFile."com.system76.CosmicTheme.Dark" = {
+      version = 2;
+      entries.frosted_maximized_apps = false;
+    };
+
     appearance = {
       theme = {
         dark = {

@@ -419,6 +419,14 @@
                 else "false"
               } = true
               test ${
+                let
+                  theme = cosmic.wayland.desktopManager.cosmic.content.configFile."com.system76.CosmicTheme.Dark";
+                in
+                  if theme.version == 2 && theme.entries.frosted_maximized_apps == false
+                  then "true"
+                  else "false"
+              } = true
+              test ${
                 if
                   builtins.length cosmic.wayland.desktopManager.cosmic.content.appearance.theme.dark.palette.value
                   == 1

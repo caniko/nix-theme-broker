@@ -25,6 +25,11 @@
       autoSafe = adapter.autoSafe or false;
       provenance = adapter.provenance or {};
       capabilities = adapter.capabilities or {};
+      renderer = adapter.rendererKind or null;
+      status =
+        if adapter ? rendererKind
+        then "supported"
+        else "inventory-only";
     })
     adapters;
   matrix = {
@@ -54,6 +59,7 @@
     } |\n")
     variantRows
     + "\n## Native adapters\n\n"
+    + "Every listed adapter has an implemented renderer; machine-readable renderer and status fields are included in the JSON package.\n\n"
     + "| Adapter | Provider | Target | Platforms | Trust | Revision |\n| --- | --- | --- | --- | --- | --- |\n"
     + lib.concatMapStrings (row: "| ${row.id} | ${row.provider} | ${row.target} | ${lib.concatStringsSep ", " row.platforms} | ${(row.provenance.tier or "unknown")} | ${(row.provenance.revision or "unknown")} |\n") adapterRows;
 in {

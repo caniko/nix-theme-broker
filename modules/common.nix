@@ -53,7 +53,7 @@
     lib.hasAttrByPath ["wayland" "desktopManager" "cosmic" "appearance"] options
     && cosmicLib != null;
   profileRendererKinds = ["vscode-profile" "firefox-profile"];
-  complexRendererIds = ["gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
+  complexRendererKinds = ["gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
   declaredAdapters = map themeLib.mkAdapter themeBrokerAdapters;
   profileTargets = lib.unique (map (adapter: adapter.target) (builtins.filter (adapter: (adapter.capabilities.profiles or false)) declaredAdapters));
   validNativeOptions = target: value: let
@@ -81,7 +81,7 @@
     && (
       ((adapter.class or "simple") == "simple" && builtins.isList (adapter.optionPath or null))
       || builtins.elem rendererKind profileRendererKinds
-      || builtins.elem adapter.id complexRendererIds
+      || builtins.elem rendererKind complexRendererKinds
     );
   renderableAdapters = builtins.filter hasRenderer registryCfg.adapters;
   generatedConfigTargets =

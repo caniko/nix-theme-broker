@@ -20,7 +20,7 @@
     },
     "optionValues": {"type": "object"},
     "module": {"type": "string", "minLength": 1},
-    "rendererKind": {"enum": ["simple", "vscode-profile", "firefox-profile"]},
+    "rendererKind": {"enum": ["simple", "vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors"]},
     "provenance": {
       "type": "object",
       "required": ["tier", "repository", "revision", "license"],

@@ -48,9 +48,9 @@ in {
       (require id ["optionPath"] (!hasOptionPath || (hasClass && validOptionPath)) "requires a renderer class and a non-empty string path")
       (require id ["optionValues"] (!hasOptionValues || (hasOptionPath && builtins.isAttrs optionValues)) "requires optionPath and an attribute set")
       (require id ["module"] (!hasModule || (builtins.isString module && module != "")) "must be a non-empty string")
-      (require id ["rendererKind"] (!hasRendererKind || builtins.elem rendererKind ["simple" "vscode-profile" "firefox-profile"]) "unknown renderer kind")
-      (require id ["rendererKind"] (!hasRendererKind || rendererKind == "simple" || class == "complex") "profile renderers require class `complex`")
-      (require id ["rendererKind"] (!hasRendererKind || rendererKind == "simple" || (capabilities.profiles or false)) "profile renderers require profile capability")
+      (require id ["rendererKind"] (!hasRendererKind || builtins.elem rendererKind ["simple" "vscode-profile" "firefox-profile" "gruvbox-vim" "gruvbox-neovim" "gruvbox-vscode" "gruvbox-cursors"]) "unknown renderer kind")
+      (require id ["rendererKind"] (!builtins.elem rendererKind ["vscode-profile" "firefox-profile"] || class == "complex") "profile renderers require class `complex`")
+      (require id ["rendererKind"] (!builtins.elem rendererKind ["vscode-profile" "firefox-profile"] || (capabilities.profiles or false)) "profile renderers require profile capability")
       (require id ["priority"] (builtins.isInt (adapter.priority or 0)) "must be an integer")
       (require id ["autoSafe"] (builtins.isBool (adapter.autoSafe or false)) "must be boolean")
     ];

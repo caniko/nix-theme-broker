@@ -71,6 +71,7 @@
             roleOverrides = false;
             transparency = false;
           };
+          rendererKind = "gruvbox-vim";
         }
         {
           schema = "theme-broker.adapter/v1";
@@ -93,6 +94,7 @@
             roleOverrides = false;
             transparency = true;
           };
+          rendererKind = "gruvbox-neovim";
         }
         {
           schema = "theme-broker.adapter/v1";
@@ -115,6 +117,7 @@
             roleOverrides = false;
             transparency = false;
           };
+          rendererKind = "gruvbox-vscode";
         }
         {
           schema = "theme-broker.adapter/v1";
@@ -138,6 +141,7 @@
             transparency = false;
           };
           class = "complex";
+          rendererKind = "gruvbox-cursors";
         }
       ];
     adapters = map themeBrokerLib.mkAdapter rawAdapters;
@@ -472,6 +476,11 @@
           support-matrix = pkgs.runCommand "theme-broker-support-matrix" {} ''
             test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.providers))} = 3
             test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.adapters))} -ge 3
+            test ${
+              if builtins.all (adapter: adapter.status == "supported") supportMatrix.matrix.adapters
+              then "true"
+              else "false"
+            } = true
             touch "$out"
           '';
           catppuccin-target-inventory = pkgs.runCommand "theme-broker-catppuccin-target-inventory" {} ''

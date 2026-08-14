@@ -5,7 +5,7 @@ All options live below `themeBroker` and are disabled by default.
 | Option | Meaning |
 | --- | --- |
 | `enable` | Enable selection, Stylix bridge, and broker-managed targets. |
-| `selection.provider` | Registered provider ID (`catppuccin` or `gruvbox`). |
+| `selection.provider` | Registered provider ID (`catppuccin`, `gruvbox`, or `rose-pine`). |
 | `selection.variant` | Optional provider variant ID; `null` uses the provider default. |
 | `selection.accent` | Optional accent; `null` uses the provider default. |
 | `selection.overrides` | Named, semantic-role, ANSI, Base16, or Base24 overrides. |
@@ -19,7 +19,7 @@ All options live below `themeBroker` and are disabled by default.
 | `policy.preferNative` | Prefer an accepted native adapter over Stylix. |
 | `targets.<id>.backend` | Per-target backend request. |
 | `targets.<id>.managed` | Leave a target outside broker ownership when `false`. |
-| `targets.<id>.nativeOptions` | Adapter-specific passthrough values; `name` overrides the Gruvbox cursor name. |
+| `targets.<id>.nativeOptions` | Validated adapter values: `name` for cursors, `transparent` for Gruvbox Neovim, and `profile` for Catppuccin profile targets. |
 
 `selected`, `resolved`, and `generatedTargets` are read-only debug outputs.
 `selected.wallpapers` is the matching `{ default, paths }` collection or `null`.

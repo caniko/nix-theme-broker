@@ -25,10 +25,11 @@ workaround. Selecting a native VS Code adapter disables the Stylix VS Code
 target so only the explicitly enrolled broker backend writes these settings.
 
 The Catppuccin registry is generated from the pinned upstream module inventory.
-It registers the simple and profile-based target families (including Firefox,
-VS Code, GTK icons, cursors, and NixOS assets) with official provenance. The
-support matrix is the authoritative per-target list; a target is only applied
-when it is explicitly enrolled under `themeBroker.targets.<id>`.
+All 95 entries have an implemented renderer: simple targets use the recorded
+upstream option path, while Firefox and the six VS Code-family targets use
+profile renderers. The support matrix is the authoritative per-target list; a
+target is only applied when it is explicitly enrolled under
+`themeBroker.targets.<id>`.
 
 `community` artifacts are not trusted by default. A local simple adapter is
 declared through the platform module's `themeBrokerAdapters` argument with an

@@ -11,7 +11,10 @@
       inherit lib target;
       profile = "work";
     };
-  firefoxRenderer = import ../../native/catppuccin/home-manager/firefox.nix {inherit lib; profile = "work";};
+  firefoxRenderer = import ../../native/catppuccin/home-manager/firefox.nix {
+    inherit lib;
+    profile = "work";
+  };
   representative = {
     simple = "alacritty";
     complex = "firefox";

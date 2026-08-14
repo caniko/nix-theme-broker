@@ -1,10 +1,11 @@
 # Theme Broker for Nix
 
 This flake exposes a palette-neutral `themeBroker` module and provider library.
-Gruvbox's six variants and Catppuccin's four appearances normalize into
-semantic roles, ANSI, Base16, and optional Base24 projections. The broker also
-ships curated Gruvbox Vim/Neovim/cursor adapters, Catppuccin cursor and
-Alacritty bridges, and a deterministic generated/native backend resolver.
+Gruvbox's six variants, Catppuccin's four appearances, and Rosé Pine's three
+variants normalize into semantic roles, ANSI, Base16, and optional Base24
+projections. The broker also ships curated Gruvbox Vim/Neovim/VS Code/cursor
+adapters, complete pinned Catppuccin target renderers, and a deterministic
+generated/native backend resolver.
 
 For example, the Atlas Home Manager profile selects `gruvbox/dark-hard` and
 lets Stylix consume the broker's Base16 projection:

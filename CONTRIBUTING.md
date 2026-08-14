@@ -11,7 +11,8 @@ nix flake check --no-update-lock-file --all-systems
 nix develop -c python3 providers/gruvbox/update.py
 ```
 
-When a task from `docs/src/planning/theme/theme-broker-nix-task-graph.yaml`
-changes, update `PLAN_STATUS.md` with the task, files, checks, and known
-limitations.  Generated palette and support-matrix changes must be committed
-with their source metadata.
+Update `PLAN_STATUS.md` when a tracked feature or release criterion changes.
+Generated palette, manifest, golden, and support-matrix changes must be
+committed with their source metadata. Upstream coordination belongs in
+`docs/upstream.md`; do not copy upstream target implementations into this
+repository.

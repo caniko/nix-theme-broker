@@ -1,6 +1,6 @@
 # Theme Broker implementation status
 
-Updated 2026-08-03.  “Complete” means the task has an implementation and a
+Updated 2026-08-15.  “Complete” means the task has an implementation and a
 passing narrow check in this checkout.  “Partial” means the public shape is in
 place but the task's full acceptance matrix is still pending.
 
@@ -21,35 +21,37 @@ place but the task's full acceptance matrix is still pending.
 | TB-023 | complete | six variants, reviewed JSON source, and source-backed Base16 conformance check for every Gruvbox variant |
 | TB-024 | complete | built-in registry and full variant/accent conformance run in the evaluation check |
 | TB-030 | complete | Stylix Base16 bridge leaves non-color settings alone |
-| TB-031 | partial | explicit pinned Stylix compatibility registry covers the installed Canix targets, including Zellij, supported by the pinned modules; dynamic option introspection remains intentionally disabled |
+| TB-031 | complete | explicit pinned Stylix compatibility registry, canonical aliases, and generated-target safety metadata; dynamic option introspection remains intentionally disabled |
 | TB-032 | complete | Home Manager, NixOS, and Darwin fixtures cover the registered platform-correct generated targets across both providers and light/dark selections |
 | TB-040 | complete | adapter descriptors, JSON schema, strict trust/platform/capability validator, and merge/evaluation tests |
 | TB-041 | complete | deterministic generated/native/auto resolver with R-001 through R-015 table coverage |
 | TB-042 | complete | managed target coordination, direct-scheme conflict assertion, and managed=false escape hatch |
 | TB-043 | complete | policy, target, nativeOptions, and read-only resolution options are documented and evaluated |
 | TB-044 | complete | synthetic generated/native resolver slice |
-| TB-050 | partial | explicit Catppuccin Alacritty bridge disables auto-enrollment and applies selected flavor/accent; a generic upstream target map remains deferred because option ownership varies by platform |
+| TB-050 | complete | pinned Catppuccin platform bridge disables auto-enrollment and applies the effective flavor/accent only for enrolled native targets |
 | TB-051 | complete | deterministic 95-target manifest generator, pinned-source stale check, and official adapter registry |
-| TB-052 | partial | profile and icon option paths are represented and tested through the bridge; dedicated complex adapter modules and class goldens remain |
-| TB-053 | partial | NixOS target inventory is present; dedicated graphical/service adapter modules and tests remain |
-| TB-054 | partial | Firefox, VS Code, GTK, cursor, Alacritty, and native bridge cases are covered; every upstream integration class is not yet exercised |
-| TB-055 | partial | full pinned inventory is represented in the support matrix; unexplained parity gaps and class-specific tests remain a v1 gate |
+| TB-052 | complete | profile-aware Firefox and all six VS Code-family renderers use the pinned upstream modules and profile option |
+| TB-053 | complete | NixOS Plymouth, Home Assistant, graphical asset, and cursor option-path integrations are evaluated |
+| TB-054 | complete | option-path, profile, plugin/extension, package, cursor, graphical, and service integration classes have focused evaluation coverage |
+| TB-055 | complete | all 95 pinned Catppuccin inventory entries have a supported renderer kind and no unexplained support-matrix gaps |
 | TB-060 | complete | pinned, hashed Gruvbox Vim and Neovim provenance with canonical/maintained trust tiers |
 | TB-061–TB-063 | complete | reusable Vim/Neovim native modules, all six variant evaluations, and mixed native/generated end-to-end checks |
 | TB-070 | complete | generated JSON/Markdown packages plus checked-in stale-file comparison |
 | TB-071–TB-074 | complete | user, migration, authoring, troubleshooting, release docs, four evaluated examples, and CI gates |
-| TB-080 | partial | all ten variants, fourteen Catppuccin accents, resolver cases, and Linux/Darwin module evaluations run; x86_64-darwin is omitted because pinned nixpkgs 26.11 dropped that system |
+| TB-080 | complete | thirteen variants, twenty accents, resolver policy cases, real Home Manager/NixOS/darwin evaluations, and all remaining pinned systems run; x86_64-darwin is omitted because pinned nixpkgs 26.11 dropped that system |
 | TB-081 | complete | explicit Catppuccin, Gruvbox, native-manifest, and golden update wrappers with AST/no-IFD/stale checks |
 | TB-082 | complete | independent schema/version policy, changelog, compatibility window, and release checklist |
-| TB-083 | complete | v1 implementation published at `11b27d3a11ad1d609ce9d609c9d181d54b2e8118` on `origin/trunk`; canix consumes the immutable GitHub revision |
-| TB-090–TB-093 | pending | post-MVP / v1 work |
+| TB-083 | complete | v0.1 implementation was published and superseded by the v1.0.0 release |
+| TB-090 | complete | ADR 0006 keeps provider selection global and documents the existing Stylix override escape hatch |
+| TB-091 | complete | temporary COSMIC target is tracked by Stylix issue #265 with explicit removal conditions |
+| TB-092 | complete | Rosé Pine is the third provider and passes the shared conformance, golden, and Tinted checks |
+| TB-093 | complete | v1.0.0 release tag and GitHub release published after all gates passed |
 
 The Atlas deployment slice selects Gruvbox `dark-hard` through the parent
 canix Home Manager profile. Stylix owns generic targets, while the broker has
-curated Gruvbox Vim/Neovim adapters, an explicit Catppuccin Alacritty bridge,
-and a pinned Catppuccin native inventory.
-The v1 Catppuccin complex-target parity work above remains deliberately
-visible rather than being claimed from manifest metadata alone.
+curated Gruvbox native adapters, a pinned Catppuccin renderer inventory, and a
+Rosé Pine provider. Native profile targets delegate to the pinned upstream
+Catppuccin modules rather than copying port implementations.
 
 Atlas live verification on 2026-07-29 found the candidate persisted and
 `home-manager-can.service` active. Ghostty, Helix, btop, and the Stylix palette

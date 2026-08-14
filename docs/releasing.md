@@ -2,16 +2,19 @@
 
 Before tagging a release:
 
-1. run `nix fmt -- --check .`;
+1. run `nix develop -c alejandra --check .`;
 2. run `nix flake check --no-update-lock-file --all-systems`;
-3. run the explicit provider and native update validators when inputs changed;
-4. run `python3 scripts/update-golden.py` and inspect any diff;
-5. verify the support-matrix stale-file check and example evaluations;
-6. review schema, option, provenance, and compatibility changes in the
+3. build the `schema-validation`, `no-ifd`, `evaluation`, and
+   `support-matrix-stale` checks;
+4. run the explicit provider and native update validators when inputs changed;
+5. run `python3 scripts/update-golden.py` and inspect any diff;
+6. verify the support matrix, real Home Manager/NixOS/darwin evaluations, and
+   all example evaluations;
+7. review schema, option, provenance, and compatibility changes in the
    changelog;
-7. tag only after the upstream remote has a writable branch and the release
-   artifacts are available.
+8. tag only after `trunk` is pushed and all remote checks pass; publish the
+   matching GitHub release.
 
-The release gate is intentionally separate from deployment. A local checkout
-with no remote refs can pass all reproducible checks but cannot claim a
-published `v0.1.0` or `v1.0.0` release.
+The release gate is intentionally separate from deployment. The project uses
+MIT licensing and publishes immutable version tags; downstream consumers should
+pin a release tag or commit rather than a moving branch.

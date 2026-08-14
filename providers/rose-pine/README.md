@@ -4,7 +4,7 @@
 [`rose-pine/rose-pine-palette`](https://github.com/rose-pine/rose-pine-palette)
 at revision `92af52b465ab6e47437aca223c9b8d3009a2023b`. Base16 follows
 [`tinted-theming/schemes`](https://github.com/tinted-theming/schemes) revision
-`9bd28ed313560db3c5e605c63bc4e309e78e3fc8`.
+`9bd28ed313560db3c5b605c63bc4e309e78e3fc8`.
 
 At the pinned palette revision, Dawn's canonical `overlay.hex` is `#f2e9e1`
 while its RGB value and Tinted `base02` resolve to `#f2e9de`. The snapshot keeps

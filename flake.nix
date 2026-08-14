@@ -39,9 +39,11 @@
       palette = catppuccin-palette;
     };
     gruvbox = import ./providers/gruvbox {inherit (nixpkgs) lib;};
+    rosePine = import ./providers/rose-pine {inherit (nixpkgs) lib;};
     providers = {
       catppuccin = catppuccinProvider;
       inherit gruvbox;
+      rose-pine = rosePine;
     };
     catppuccinManifest = import ./native/catppuccin/manifest.nix;
     catppuccinAdapters = import ./native/catppuccin/default.nix {manifest = catppuccinManifest;};
@@ -333,6 +335,7 @@
         tintedBase16 = pkgs.writeText "theme-broker-tinted-base16.json" (builtins.toJSON {
           catppuccin = lib.mapAttrs (variant: _: resolveBase16 "catppuccin" variant "mauve") catppuccinProvider.variants;
           gruvbox = lib.mapAttrs (variant: _: resolveBase16 "gruvbox" variant null) gruvbox.variants;
+          rose-pine = lib.mapAttrs (variant: _: resolveBase16 "rose-pine" variant "rose") rosePine.variants;
         });
       in {
         formatter = pkgs.alejandra;
@@ -355,6 +358,8 @@
             test ${toString (builtins.length (builtins.attrNames gruvbox.variants))} = 6
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants))} = 4
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants.mocha.accents))} = 14
+            test ${toString (builtins.length (builtins.attrNames rosePine.variants))} = 3
+            test ${toString (builtins.length (builtins.attrNames rosePine.variants.main.accents))} = 6
             touch "$out"
           '';
           named-override-propagation = pkgs.runCommand "theme-broker-named-override-propagation" {} ''
@@ -465,7 +470,7 @@
               touch "$out"
             '';
           support-matrix = pkgs.runCommand "theme-broker-support-matrix" {} ''
-            test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.providers))} = 2
+            test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.providers))} = 3
             test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.adapters))} -ge 3
             touch "$out"
           '';

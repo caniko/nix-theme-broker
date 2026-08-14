@@ -7,6 +7,7 @@ Nix evaluation or a build sandbox.
 python3 scripts/update-catppuccin.py /path/to/catppuccin-palette --write-golden
 python3 scripts/update-native.py /path/to/catppuccin-nix
 python3 scripts/update-gruvbox.py /path/to/morhetz-gruvbox
+python3 scripts/update-rose-pine.py /path/to/rose-pine-palette
 python3 scripts/update-golden.py             # verify reviewed fixtures
 python3 scripts/update-golden.py --write     # rewrite after reviewing a diff
 ```

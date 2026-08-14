@@ -24,6 +24,11 @@ SCHEMES = {
         "light-medium": "gruvbox-light-medium",
         "light-soft": "gruvbox-light-soft",
     },
+    "rose-pine": {
+        "main": "rose-pine",
+        "moon": "rose-pine-moon",
+        "dawn": "rose-pine-dawn",
+    },
 }
 BASE16_LINE = re.compile(r'^\s+(base(?:0[0-9A-Fa-f])):\s*["\']?(#[0-9A-Fa-f]{6})')
 

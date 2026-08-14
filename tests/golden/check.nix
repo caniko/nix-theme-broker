@@ -43,4 +43,19 @@ in
       variant = "light-hard";
       accent = null;
     })
+    (check ./rose-pine-main-rose.json {
+      provider = "rose-pine";
+      variant = "main";
+      accent = "rose";
+    })
+    (check ./rose-pine-moon-iris.json {
+      provider = "rose-pine";
+      variant = "moon";
+      accent = "iris";
+    })
+    (check ./rose-pine-dawn-pine.json {
+      provider = "rose-pine";
+      variant = "dawn";
+      accent = "pine";
+    })
   ]

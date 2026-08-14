@@ -8,10 +8,10 @@
   vscodeTargets = ["vscode" "cursor" "vscodium" "windsurf" "kiro" "antigravity"];
   vscodeRenderer = target:
     import ../../native/catppuccin/home-manager/vscode.nix {
-      inherit target;
+      inherit lib target;
       profile = "work";
     };
-  firefoxRenderer = import ../../native/catppuccin/home-manager/firefox.nix {profile = "work";};
+  firefoxRenderer = import ../../native/catppuccin/home-manager/firefox.nix {inherit lib; profile = "work";};
   representative = {
     simple = "alacritty";
     complex = "firefox";
@@ -25,8 +25,8 @@ in
   assert builtins.all (name: manifest.targets.${name}.rendererKind == "vscode-profile") vscodeTargets;
   assert manifest.targets.firefox.rendererKind == "firefox-profile";
   assert builtins.all (target: target.profiles == builtins.elem target.rendererKind profileRendererKinds) targets;
-  assert builtins.all (name: lib.hasAttrByPath ["catppuccin" name "profiles" "work" "enable"] (vscodeRenderer name)) vscodeTargets;
+  assert builtins.all (name: (vscodeRenderer name).catppuccin.${name}.profiles.content.work.enable) vscodeTargets;
   assert builtins.all (name: !((vscodeRenderer name) ? programs)) vscodeTargets;
-  assert firefoxRenderer.catppuccin.firefox.profiles.work.enable;
-  assert firefoxRenderer.programs.firefox.profiles ? work;
+  assert firefoxRenderer.catppuccin.firefox.profiles.content.work.enable;
+  assert firefoxRenderer.programs.firefox.profiles.content ? work;
   assert builtins.elem "simple" classes && builtins.elem "complex" classes; true

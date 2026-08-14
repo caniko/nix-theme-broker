@@ -6,6 +6,23 @@
 }: let
   themeLib = import ../../lib {inherit lib;};
   targetNames = ["alacritty" "bat" "btop" "console" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "starship" "tmux" "waybar" "zed" "neovim" "vim" "vscode"];
+  profileTargetType = lib.types.submodule {
+    options.profiles = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+          };
+          icons.enable = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+          };
+        };
+      });
+      default = {};
+    };
+  };
   base = {
     options = {
       stylix = {
@@ -56,11 +73,11 @@
               default = {};
             };
             firefox = lib.mkOption {
-              type = lib.types.attrs;
+              type = profileTargetType;
               default = {};
             };
             vscode = lib.mkOption {
-              type = lib.types.attrs;
+              type = profileTargetType;
               default = {};
             };
             gtk = lib.mkOption {

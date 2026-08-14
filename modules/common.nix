@@ -176,25 +176,21 @@
     in
       (adapter.module or null) == "catppuccin"
   ) (builtins.attrValues targetSelections);
-  catppuccinProfileConfig =
-    lib.mapAttrsToList (
-      target: selection: let
-        adapter =
-          if selection.adapter == null
-          then {}
-          else adaptersById.${selection.adapter} or {};
-        rendererKind = adapter.rendererKind or null;
-        profile = selection.nativeOptions.profile or "default";
-      in
-        if selection.backend != "native"
-        then {}
-        else if rendererKind == "vscode-profile"
-        then import ../native/catppuccin/home-manager/vscode.nix {inherit profile target;}
-        else if rendererKind == "firefox-profile"
-        then import ../native/catppuccin/home-manager/firefox.nix {inherit profile;}
-        else {}
-    )
-    targetSelections;
+  catppuccinProfileConfig = map (
+    adapter: let
+      inherit (adapter) target rendererKind;
+      profile = targetSelections.${target}.nativeOptions.profile or "default";
+      enabled =
+        targetSelections ? ${target}
+        && targetSelections.${target}.backend == "native"
+        && targetSelections.${target}.adapter == adapter.id;
+      rendered =
+        if rendererKind == "vscode-profile"
+        then import ../native/catppuccin/home-manager/vscode.nix {inherit enabled lib profile target;}
+        else import ../native/catppuccin/home-manager/firefox.nix {inherit enabled lib profile;};
+    in
+      rendered
+  ) (builtins.filter (adapter: builtins.elem (adapter.rendererKind or null) profileRendererKinds) declaredAdapters);
   nativeConfig =
     [
       (lib.mkIf catppuccinNative {

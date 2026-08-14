@@ -51,7 +51,7 @@
       lib = themeLib;
     };
   };
-  eval = path: let
+  eval = path: extra: let
     example = import path {inherit inputs lib;};
     result = lib.evalModules {
       specialArgs = {
@@ -70,16 +70,29 @@
           };
         }
         example
+        extra
       ];
     };
   in {
     inherit path;
+    inherit (result) config;
     enabled = result.config.themeBroker.enable;
   };
+  rosePineGenerated = eval ../../examples/catppuccin-home-manager/default.nix {
+    themeBroker.selection = {
+      provider = lib.mkForce "rose-pine";
+      variant = lib.mkForce "moon";
+      accent = lib.mkForce "iris";
+    };
+    themeBroker.targets.alacritty.backend = lib.mkForce "generated";
+  };
 in
-  assert builtins.all (row: row.enabled) (map eval [
+  assert builtins.all (row: row.enabled) (map (path: eval path {}) [
     ../../examples/catppuccin-home-manager/default.nix
     ../../examples/gruvbox-home-manager/default.nix
     ../../examples/mixed-native-generated/default.nix
     ../../examples/custom-provider/default.nix
-  ]); true
+  ]);
+  assert rosePineGenerated.config.themeBroker.selected.provider == "rose-pine";
+  assert rosePineGenerated.config.themeBroker.resolved.targets.alacritty.backend == "generated";
+  assert rosePineGenerated.config.stylix.targets.alacritty.enable; true

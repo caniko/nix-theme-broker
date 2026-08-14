@@ -31,6 +31,12 @@
       accent = null;
       base00 = "#f9f5d7";
     }
+    {
+      provider = "rose-pine";
+      variant = "moon";
+      accent = "iris";
+      base00 = "#232136";
+    }
   ];
   base = {
     options = {

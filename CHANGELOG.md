@@ -2,6 +2,9 @@
 
 ## Unreleased (0.1.0 candidate)
 
+- Added a pinned Rosé Pine provider snapshot with Base16 golden coverage.
+- Added renderer-aware native target metadata, profile-based Home Manager
+  bridges, stricter option validation, and safer generated fallback handling.
 - Added palette-neutral provider normalization for Catppuccin and Gruvbox.
 - Added deterministic generated/native resolution with provenance-aware
   adapters.

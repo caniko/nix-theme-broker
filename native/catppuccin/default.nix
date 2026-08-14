@@ -34,6 +34,7 @@ map (
         else {}
       );
     class = item.class or "simple";
+    rendererKind = item.rendererKind;
     module = "catppuccin";
   }
 )

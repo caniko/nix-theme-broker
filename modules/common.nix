@@ -33,7 +33,18 @@
     onUnsupported = config.themeBroker.policy.onUnsupported;
     preferNative = config.themeBroker.policy.preferNative;
   };
-  targetsCfg = lib.filterAttrs (_: targetCfg: targetCfg.managed) config.themeBroker.targets;
+  canonicalTarget = target: themeLib.targetAliases.${target} or target;
+  configuredCanonicalTargets = map canonicalTarget (builtins.attrNames config.themeBroker.targets);
+  rawTargetsCfg = lib.filterAttrs (_: targetCfg: targetCfg.managed) config.themeBroker.targets;
+  targetsCfg =
+    if builtins.length configuredCanonicalTargets == builtins.length (lib.unique configuredCanonicalTargets)
+    then
+      lib.listToAttrs (lib.mapAttrsToList (target: value: {
+          name = canonicalTarget target;
+          inherit value;
+        })
+        rawTargetsCfg)
+    else throw "themeBroker: target aliases and canonical target IDs cannot both be configured";
   # Stylix owns target implementations; this registry only records the
   # stable IDs the broker may coordinate without copying those implementations.
   generatedRegistry = themeLib.generatedTargets;
@@ -41,8 +52,20 @@
   cosmicAvailable =
     lib.hasAttrByPath ["wayland" "desktopManager" "cosmic" "appearance"] options
     && cosmicLib != null;
-  complexRendererIds = ["catppuccin-vscode" "gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
+  profileRendererKinds = ["vscode-profile" "firefox-profile"];
+  complexRendererIds = ["gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
   declaredAdapters = map themeLib.mkAdapter themeBrokerAdapters;
+  profileTargets = lib.unique (map (adapter: adapter.target) (builtins.filter (adapter: (adapter.capabilities.profiles or false)) declaredAdapters));
+  validNativeOptions = target: value: let
+    keys =
+      lib.optional (target == "neovim") "transparent"
+      ++ lib.optional (target == "cursors") "name"
+      ++ lib.optional (builtins.elem target profileTargets) "profile";
+  in
+    builtins.all (key: builtins.elem key keys) (builtins.attrNames value)
+    && (!(value ? transparent) || builtins.isBool value.transparent)
+    && (!(value ? name) || (builtins.isString value.name && value.name != ""))
+    && (!(value ? profile) || (builtins.isString value.profile && value.profile != ""));
   declaredAdaptersById = lib.listToAttrs (map (adapter: {
       name = adapter.id;
       value = adapter;
@@ -50,12 +73,14 @@
     declaredAdapters);
   hasRenderer = adapter: let
     declared = declaredAdaptersById.${adapter.id} or null;
+    rendererKind = adapter.rendererKind or null;
   in
     declared
     != null
     && adapter == declared
     && (
       ((adapter.class or "simple") == "simple" && builtins.isList (adapter.optionPath or null))
+      || builtins.elem rendererKind profileRendererKinds
       || builtins.elem adapter.id complexRendererIds
     );
   renderableAdapters = builtins.filter hasRenderer registryCfg.adapters;
@@ -107,6 +132,7 @@
                 else true
               )
             );
+          generatedAutoSafe = (generatedRegistry.${target} or {}).autoSafe or false;
           adapters = renderableAdapters;
           policy = policyCfg;
         }
@@ -150,6 +176,25 @@
     in
       (adapter.module or null) == "catppuccin"
   ) (builtins.attrValues targetSelections);
+  catppuccinProfileConfig =
+    lib.mapAttrsToList (
+      target: selection: let
+        adapter =
+          if selection.adapter == null
+          then {}
+          else adaptersById.${selection.adapter} or {};
+        rendererKind = adapter.rendererKind or null;
+        profile = selection.nativeOptions.profile or "default";
+      in
+        if selection.backend != "native"
+        then {}
+        else if rendererKind == "vscode-profile"
+        then import ../native/catppuccin/home-manager/vscode.nix {inherit profile target;}
+        else if rendererKind == "firefox-profile"
+        then import ../native/catppuccin/home-manager/firefox.nix {inherit profile;}
+        else {}
+    )
+    targetSelections;
   nativeConfig =
     [
       (lib.mkIf catppuccinNative {
@@ -162,6 +207,7 @@
       })
     ]
     ++ simpleNativeConfig
+    ++ lib.optionals (themeBrokerPlatform == "homeManager") catppuccinProfileConfig
     ++ lib.optional (themeBrokerPlatform == "homeManager") (lib.mkMerge [
       (lib.mkIf (
           targetSelections ? neovim
@@ -169,7 +215,7 @@
           && targetSelections.neovim.adapter == "gruvbox-neovim"
         ) (import ../native/gruvbox/neovim.nix {
           inherit lib pkgs selected;
-          transparent = config.themeBroker.targets.neovim.nativeOptions.transparent or false;
+          transparent = targetSelections.neovim.nativeOptions.transparent or false;
         }))
       (lib.mkIf (
         targetSelections ? vim
@@ -183,11 +229,6 @@
         && targetSelections.vscode.backend == "native"
         && targetSelections.vscode.adapter == "gruvbox-vscode"
       ) (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
-      (lib.mkIf (
-        targetSelections ? vscode
-        && targetSelections.vscode.backend == "native"
-        && targetSelections.vscode.adapter == "catppuccin-vscode"
-      ) (import ../native/catppuccin/home-manager/vscode.nix {inherit lib pkgs selected;}))
     ])
     ++ [
       (lib.mkIf (
@@ -201,7 +242,7 @@
           && targetSelections.cursors.adapter == "gruvbox-cursors"
         ) (import ../native/gruvbox/cursors.nix {
           inherit lib pkgs selected;
-          name = ((config.themeBroker.targets.cursors or {}).nativeOptions or {}).name or null;
+          name = targetSelections.cursors.nativeOptions.name or null;
           platform = themeBrokerPlatform;
         }))
     ];
@@ -330,7 +371,9 @@ in {
     };
 
     targets = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule ({...}: {
+      type = lib.types.attrsOf (lib.types.submodule ({name, ...}: let
+        target = canonicalTarget name;
+      in {
         options = {
           backend = lib.mkOption {
             type = lib.types.enum ["auto" "generated" "native"];
@@ -343,7 +386,7 @@ in {
             description = "Whether the broker owns this target's backend switches.";
           };
           nativeOptions = lib.mkOption {
-            type = lib.types.attrs;
+            type = lib.types.addCheck lib.types.attrs (validNativeOptions target);
             default = {};
             description = "Validated adapter-specific options for this target.";
           };

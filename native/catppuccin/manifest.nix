@@ -16,6 +16,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     alacritty = {
       id = "alacritty";
@@ -27,6 +28,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     anki = {
       id = "anki";
@@ -38,6 +40,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     antigravity = {
       id = "antigravity";
@@ -49,6 +52,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "vscode-profile";
     };
     atuin = {
       id = "atuin";
@@ -60,6 +64,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     bat = {
       id = "bat";
@@ -71,6 +76,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     bottom = {
       id = "bottom";
@@ -82,6 +88,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     brave = {
       id = "brave";
@@ -93,6 +100,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     broot = {
       id = "broot";
@@ -104,6 +112,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     btop = {
       id = "btop";
@@ -115,6 +124,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     cava = {
       id = "cava";
@@ -126,6 +136,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     chromium = {
       id = "chromium";
@@ -137,6 +148,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     clipse = {
       id = "clipse";
@@ -148,6 +160,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     cursor = {
       id = "cursor";
@@ -159,6 +172,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "vscode-profile";
     };
     cursors = {
       id = "cursors";
@@ -170,6 +184,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     delta = {
       id = "delta";
@@ -181,6 +196,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     dunst = {
       id = "dunst";
@@ -192,6 +208,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     element-desktop = {
       id = "element-desktop";
@@ -203,6 +220,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     eza = {
       id = "eza";
@@ -214,6 +232,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     fcitx5 = {
       id = "fcitx5";
@@ -225,6 +244,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     firefox = {
       id = "firefox";
@@ -236,6 +256,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "firefox-profile";
     };
     fish = {
       id = "fish";
@@ -247,6 +268,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     foot = {
       id = "foot";
@@ -258,6 +280,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     forgejo = {
       id = "forgejo";
@@ -269,6 +292,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     freetube = {
       id = "freetube";
@@ -280,6 +304,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     fuzzel = {
       id = "fuzzel";
@@ -291,6 +316,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     fzf = {
       id = "fzf";
@@ -302,6 +328,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     gemini-cli = {
       id = "gemini-cli";
@@ -313,6 +340,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     gh-dash = {
       id = "gh-dash";
@@ -324,6 +352,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     ghostty = {
       id = "ghostty";
@@ -335,6 +364,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     gitea = {
       id = "gitea";
@@ -346,6 +376,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     gitui = {
       id = "gitui";
@@ -357,6 +388,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     glamour = {
       id = "glamour";
@@ -368,6 +400,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     grub = {
       id = "grub";
@@ -379,6 +412,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     gtk = {
       id = "gtk";
@@ -390,6 +424,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     halloy = {
       id = "halloy";
@@ -401,6 +436,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     helix = {
       id = "helix";
@@ -412,6 +448,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     home-assistant = {
       id = "home-assistant";
@@ -423,6 +460,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     hyprland = {
       id = "hyprland";
@@ -434,6 +472,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     hyprlock = {
       id = "hyprlock";
@@ -445,6 +484,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     hyprtoolkit = {
       id = "hyprtoolkit";
@@ -456,6 +496,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     imv = {
       id = "imv";
@@ -467,6 +508,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     k9s = {
       id = "k9s";
@@ -478,6 +520,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     kiro = {
       id = "kiro";
@@ -489,6 +532,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "vscode-profile";
     };
     kitty = {
       id = "kitty";
@@ -500,6 +544,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     kvantum = {
       id = "kvantum";
@@ -511,6 +556,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     lazygit = {
       id = "lazygit";
@@ -522,6 +568,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     limine = {
       id = "limine";
@@ -533,6 +580,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     lsd = {
       id = "lsd";
@@ -544,6 +592,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     mako = {
       id = "mako";
@@ -555,6 +604,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     mangohud = {
       id = "mangohud";
@@ -566,6 +616,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     micro = {
       id = "micro";
@@ -577,6 +628,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     mpv = {
       id = "mpv";
@@ -588,6 +640,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     neovim = {
       id = "neovim";
@@ -599,6 +652,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     newsboat = {
       id = "newsboat";
@@ -610,6 +664,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     nushell = {
       id = "nushell";
@@ -621,6 +676,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     obs = {
       id = "obs";
@@ -632,6 +688,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     obsidian = {
       id = "obsidian";
@@ -643,6 +700,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     opencode = {
       id = "opencode";
@@ -654,6 +712,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     plymouth = {
       id = "plymouth";
@@ -665,6 +724,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     polybar = {
       id = "polybar";
@@ -676,6 +736,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     qt5ct = {
       id = "qt5ct";
@@ -687,6 +748,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     qutebrowser = {
       id = "qutebrowser";
@@ -698,6 +760,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     rio = {
       id = "rio";
@@ -709,6 +772,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     rofi = {
       id = "rofi";
@@ -720,6 +784,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     sddm = {
       id = "sddm";
@@ -731,6 +796,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     sioyek = {
       id = "sioyek";
@@ -742,6 +808,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     skim = {
       id = "skim";
@@ -753,6 +820,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     spotify-player = {
       id = "spotify-player";
@@ -764,6 +832,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     starship = {
       id = "starship";
@@ -775,6 +844,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     sway = {
       id = "sway";
@@ -786,6 +856,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     swaylock = {
       id = "swaylock";
@@ -797,6 +868,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     swaync = {
       id = "swaync";
@@ -808,6 +880,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     television = {
       id = "television";
@@ -819,6 +892,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     thunderbird = {
       id = "thunderbird";
@@ -830,6 +904,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     tmux = {
       id = "tmux";
@@ -841,6 +916,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     tofi = {
       id = "tofi";
@@ -852,6 +928,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     tty = {
       id = "tty";
@@ -863,6 +940,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     vesktop = {
       id = "vesktop";
@@ -874,6 +952,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     vicinae = {
       id = "vicinae";
@@ -885,6 +964,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     vivaldi = {
       id = "vivaldi";
@@ -896,6 +976,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     vivid = {
       id = "vivid";
@@ -907,6 +988,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     vscode = {
       id = "vscode";
@@ -918,6 +1000,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "vscode-profile";
     };
     vscodium = {
       id = "vscodium";
@@ -929,6 +1012,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "vscode-profile";
     };
     waybar = {
       id = "waybar";
@@ -940,6 +1024,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     wezterm = {
       id = "wezterm";
@@ -951,6 +1036,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     windsurf = {
       id = "windsurf";
@@ -962,6 +1048,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      rendererKind = "vscode-profile";
     };
     wleave = {
       id = "wleave";
@@ -973,6 +1060,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     wlogout = {
       id = "wlogout";
@@ -984,6 +1072,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     xfce4-terminal = {
       id = "xfce4-terminal";
@@ -995,6 +1084,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     yazi = {
       id = "yazi";
@@ -1006,6 +1096,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     zathura = {
       id = "zathura";
@@ -1017,6 +1108,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     zed-editor = {
       id = "zed-editor";
@@ -1028,6 +1120,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     zellij = {
       id = "zellij";
@@ -1039,6 +1132,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
     zsh-syntax-highlighting = {
       id = "zsh-syntax-highlighting";
@@ -1050,6 +1144,7 @@
       trustTier = "official";
       class = "simple";
       profiles = false;
+      rendererKind = "simple";
     };
   };
 }

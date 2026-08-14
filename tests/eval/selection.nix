@@ -38,6 +38,49 @@
       accent = "blue";
     };
   };
+  mappedProviders =
+    providers
+    // {
+      mapped =
+        providers.catppuccin
+        // {
+          id = "mapped";
+          defaults = {
+            variant = "mocha";
+            accent = "special";
+          };
+          variants.mocha =
+            providers.catppuccin.variants.mocha
+            // {
+              accents = providers.catppuccin.variants.mocha.accents // {special = "@red";};
+              base24.extension = "@blue";
+            };
+        };
+    };
+  mapped = themeLib.resolveSelection {
+    providers = mappedProviders;
+    selection = {
+      provider = "mapped";
+      variant = "mocha";
+      accent = "special";
+      overrides.named.red = "#112233";
+      overrides.base24.extension = "#000000";
+    };
+  };
+  invalidOverride = overrides:
+    builtins.tryEval (builtins.deepSeq (themeLib.resolveSelection {
+        providers = mappedProviders;
+        selection = {
+          provider = "mapped";
+          variant = "mocha";
+          accent = "special";
+          inherit overrides;
+        };
+      })
+      true);
+  invalidAnsi = invalidOverride {ansi.normal.orange = "#000000";};
+  invalidBase16 = invalidOverride {base16.base10 = "#000000";};
+  invalidBase24 = invalidOverride {base24.extra = "#000000";};
   invalid = builtins.tryEval (builtins.deepSeq (themeLib.validateRegistry {
       catppuccin = wallpapers.catppuccin // {default = "../outside.png";};
     })
@@ -53,4 +96,8 @@ in
   assert providerDefault.variant == providers.catppuccin.defaults.variant;
   assert providerDefault.accent == providers.catppuccin.defaults.accent;
   assert unsupported.wallpapers == null;
+  assert mapped.roles.ui.accent.withHashtag == mapped.named.red.withHashtag;
+  assert mapped.roles.ui.accent.withHashtag == "#112233";
+  assert mapped.base24.extension.withHashtag == "#000000";
+  assert !invalidAnsi.success && !invalidBase16.success && !invalidBase24.success;
   assert !invalid.success; true

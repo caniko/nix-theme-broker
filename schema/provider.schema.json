@@ -7,8 +7,8 @@
   "properties": {
     "schema": {"const": "theme-broker.provider/v1"},
     "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
-    "name": {"type": "string"},
-    "description": {"type": "string"},
+    "name": {"type": "string", "minLength": 1},
+    "description": {"type": "string", "minLength": 1},
     "provenance": {
       "type": "object",
       "required": ["repository", "revision", "license"],
@@ -42,8 +42,20 @@
     "colorValue": {
       "oneOf": [
         {"$ref": "#/$defs/color"},
-        {"type": "string", "pattern": "^@[A-Za-z0-9_-]+$"}
+        {"type": "string", "pattern": "^@[A-Za-z0-9_-]+$"},
+        {"$ref": "#/$defs/richColor"}
       ]
+    },
+    "richColor": {
+      "type": "object",
+      "required": ["hex"],
+      "properties": {
+        "hex": {"$ref": "#/$defs/color"},
+        "hsl": {},
+        "oklch": {},
+        "sourceName": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
     },
     "colorMap": {
       "type": "object",

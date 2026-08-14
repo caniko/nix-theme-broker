@@ -263,6 +263,45 @@
     themeBroker.enable = true;
     themeBroker.targets.custom.backend = "native";
   };
+  aliasGenerated = eval {
+    themeBroker.enable = true;
+    themeBroker.targets.code.backend = "generated";
+  };
+  aliasNative = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-hard";
+    themeBroker.targets.nvim = {
+      backend = "native";
+      nativeOptions.transparent = true;
+    };
+  };
+  profileOption = eval {
+    themeBroker.enable = true;
+    themeBroker.selection = {
+      provider = "catppuccin";
+      variant = "mocha";
+      accent = "mauve";
+    };
+    themeBroker.targets.vscode = {
+      backend = "native";
+      nativeOptions.profile = "work";
+    };
+  };
+  invalidTargetConfig = extra:
+    builtins.tryEval (builtins.deepSeq (eval extra).config.themeBroker.targets true);
+  aliasCollision = builtins.tryEval (builtins.deepSeq
+    (eval {
+      themeBroker.enable = true;
+      themeBroker.targets.code.backend = "generated";
+      themeBroker.targets.vscode.backend = "generated";
+    }).config.themeBroker.resolved
+    true);
+  unknownNativeOption = invalidTargetConfig {themeBroker.targets.neovim.nativeOptions.unknown = true;};
+  invalidTransparent = invalidTargetConfig {themeBroker.targets.neovim.nativeOptions.transparent = "yes";};
+  invalidCursorName = invalidTargetConfig {themeBroker.targets.cursors.nativeOptions.name = true;};
+  invalidProfileTarget = invalidTargetConfig {themeBroker.targets.neovim.nativeOptions.profile = "work";};
+  invalidProfileType = invalidTargetConfig {themeBroker.targets.vscode.nativeOptions.profile = true;};
   assertions = result: builtins.all (item: item.assertion) result.config.assertions;
 in
   assert disabled.config.themeBroker.selected == null;
@@ -312,14 +351,9 @@ in
   assert catppuccinNative.config.catppuccin.alacritty.enable;
   assert catppuccinNative.config.catppuccin.bat.enable;
   assert !(forcedValue catppuccinNative.config.stylix.targets.bat.enable);
-  assert !(forcedValue catppuccinNative.config.catppuccin.vscode.profiles.default.enable);
-  assert !(forcedValue catppuccinNative.config.catppuccin.vscode.profiles.default.icons.enable);
+  assert catppuccinNative.config.catppuccin.vscode.profiles.default.enable;
+  assert catppuccinNative.config.catppuccin.vscode.profiles.default.icons.enable;
   assert catppuccinNative.config.themeBroker.resolved.targets.vscode.adapter == "catppuccin-vscode";
-  assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."workbench.colorTheme" == "Catppuccin Mocha";
-  assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."workbench.iconTheme" == "catppuccin-mocha";
-  assert catppuccinNative.config.programs.vscode.profiles.default.userSettings."catppuccin.accentColor" == "mauve";
-  assert builtins.elem "catppuccin.catppuccin-vsc" (extensionIds catppuccinNative.config.programs.vscode.profiles.default.extensions);
-  assert builtins.elem "catppuccin.catppuccin-vsc-icons" (extensionIds catppuccinNative.config.programs.vscode.profiles.default.extensions);
   assert catppuccinNative.config.stylix.targets.vscode.enable == false;
   assert catppuccinTerminals.config.catppuccin.ghostty.enable;
   assert catppuccinTerminals.config.catppuccin.zed.enable;
@@ -327,6 +361,14 @@ in
   assert !(catppuccinTerminals.config.programs.ghostty.settings ? "window-theme");
   assert customNative.config.themeBroker.resolved.targets.custom.adapter == "custom-simple";
   assert customNative.config.programs.custom-theme.enable;
+  assert aliasGenerated.config.themeBroker.resolved.targets.vscode.backend == "generated";
+  assert aliasGenerated.config.stylix.targets.vscode.enable;
+  assert aliasNative.config.themeBroker.resolved.targets.neovim.adapter == "gruvbox-neovim";
+  assert lib.hasInfix "transparent_mode = true" aliasNative.config.programs.neovim.extraLuaConfig;
+  assert profileOption.config.themeBroker.resolved.targets.vscode.nativeOptions.profile == "work";
+  assert profileOption.config.catppuccin.vscode.profiles.work.enable;
+  assert !aliasCollision.success;
+  assert !unknownNativeOption.success && !invalidTransparent.success && !invalidCursorName.success && !invalidProfileTarget.success && !invalidProfileType.success;
   assert assertions generated;
   assert assertions native;
   assert !(

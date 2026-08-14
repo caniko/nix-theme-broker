@@ -22,8 +22,38 @@
       transparency = true;
     };
   };
-  valid = themeLib.mkAdapter base;
-  invalid = builtins.tryEval (themeLib.mkAdapter (base // {capabilities = base.capabilities // {accent = "partial";};}));
+  valid = themeLib.mkAdapter (base
+    // {
+      class = "simple";
+      optionPath = ["programs" "fixture"];
+      optionValues = {enable = true;};
+      module = "fixture";
+    });
+  descriptor = themeLib.mkAdapter base;
+  complex = themeLib.mkAdapter (base // {class = "complex";});
+  rejects = adapter: !(builtins.tryEval (builtins.deepSeq (themeLib.mkAdapter adapter) true)).success;
 in
   assert valid.target == "neovim";
-  assert !invalid.success; true
+  assert descriptor.id == "fixture";
+  assert complex.class == "complex";
+  assert rejects (base // {capabilities = base.capabilities // {accent = "partial";};});
+  assert rejects (base // {capabilities = base.capabilities // {variants = [""];};});
+  assert rejects (base // {capabilities = base.capabilities // {exact = "yes";};});
+  assert rejects (base // {class = "other";});
+  assert rejects (base // {class = null;});
+  assert rejects (base // {class = "simple";});
+  assert rejects (base // {optionPath = ["programs" "fixture"];});
+  assert rejects (base
+    // {
+      class = "simple";
+      optionPath = ["programs" ""];
+    });
+  assert rejects (base // {optionValues = {};});
+  assert rejects (base // {module = null;});
+  assert rejects (base
+    // {
+      class = "simple";
+      optionPath = ["programs" "fixture"];
+      optionValues = [];
+    });
+  assert rejects (base // {module = {};}); true

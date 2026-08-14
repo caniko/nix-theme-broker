@@ -7,6 +7,7 @@
   selection,
   wallpapers ? {},
 }: let
+  types = import ./types.nix {inherit lib;};
   providerId = selection.provider;
   selectedProvider =
     if builtins.hasAttr providerId providers
@@ -47,12 +48,24 @@
   setBindings = current: paths: value:
     lib.foldl' (acc: path: lib.recursiveUpdate acc (setPath (asPath path) value)) current paths;
 
+  validateKeys = path: expected: value: let
+    actual =
+      if builtins.isAttrs value
+      then builtins.attrNames value
+      else [];
+    missing = lib.subtractLists actual expected;
+    extra = lib.subtractLists expected actual;
+  in
+    if builtins.isAttrs value && missing == [] && extra == []
+    then true
+    else throw "themeBroker: selection override at `${path}` changed projection keys; missing: ${lib.concatStringsSep ", " missing}; unexpected: ${lib.concatStringsSep ", " extra}";
+
   rawNamed = lib.recursiveUpdate (raw.named or {}) (overrides.named or {});
   named = provider.resolveTree rawNamed rawNamed;
   accentValue =
     if accent == null
     then null
-    else named.${accent};
+    else provider.resolveTree named (raw.accents.${accent});
   rolesWithAccent =
     if accentValue == null
     then raw.roles or {}
@@ -71,6 +84,20 @@
         then {}
         else rawBase24
       ) (overrides.base24 or {}));
+  _projectionCheck = builtins.all (value: value) (
+    [
+      (validateKeys "ansi" ["bright" "normal"] ansi)
+      (validateKeys "ansi.normal" types.ansiKeys (ansi.normal or null))
+      (validateKeys "ansi.bright" types.ansiKeys (ansi.bright or null))
+      (validateKeys "base16" types.base16Keys base16)
+    ]
+    ++ lib.optional (base24 != null) (validateKeys "base24" (builtins.attrNames (
+        if rawBase24 == null
+        then {}
+        else rawBase24
+      ))
+      base24)
+  );
   formatted = {
     base16Scheme = lib.mapAttrs (_: value: value.withHashtag) base16;
     ansi = lib.mapAttrs (_: group: lib.mapAttrs (_: value: value.withHashtag) group) ansi;
@@ -81,11 +108,11 @@
     registry = wallpapers;
   };
 in
-  builtins.seq _accentCheck {
+  builtins.seq _accentCheck (builtins.seq _projectionCheck {
     provider = providerId;
     variant = variantId;
     inherit accent roles ansi base16 base24 formatted;
     metadata = variant.metadata;
     wallpapers = selectedWallpapers;
     inherit named;
-  }
+  })

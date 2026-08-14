@@ -163,6 +163,8 @@
           else throw "themeBroker: provider `${providerId}`: unsupported schema"
         )
         (require providerId "<provider>" ["id"] (builtins.match "[a-z0-9][a-z0-9-]*" providerId != null) "invalid provider ID")
+        (require providerId "<provider>" ["name"] (builtins.isString (provider.name or null) && provider.name != "") "name is required")
+        (require providerId "<provider>" ["description"] (builtins.isString (provider.description or null) && provider.description != "") "description is required")
         (require providerId "<provider>" ["variants"] (variantIds != []) "must define at least one variant")
         (require providerId "<provider>" ["defaults" "variant"] defaultVariantValid "default variant is not registered")
         (require providerId "<provider>" ["provenance"] (builtins.isAttrs (provider.provenance or null)) "provenance is required")

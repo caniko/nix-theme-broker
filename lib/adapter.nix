@@ -57,15 +57,20 @@
     && variantsMatch ((adapter.capabilities or {}).variants or "all") variantId
     && builtins.elem (adapter.provenance.tier or "community") allowedTiers;
 
-  rank = adapter: [
+  rank = candidate: [
     (
-      if (adapter.capabilities or {}).exact or false
+      if candidate.accepted
       then 0
       else 1
     )
-    (tierRank.${adapter.provenance.tier or "community"} or 99)
-    (-(adapter.priority or 0))
-    adapter.id
+    (
+      if candidate.fidelity == "exact"
+      then 0
+      else 1
+    )
+    (tierRank.${candidate.provenance.tier or "community"} or 99)
+    (-(candidate.priority or 0))
+    candidate.id
   ];
 
   candidateReason = adapter: grade: "candidate `${adapter.id}`: ${
@@ -89,6 +94,7 @@ in {
     targetId,
     platform,
     generatedAvailable ? true,
+    generatedAutoSafe ? true,
     adapters ? [],
     policy,
   }: let
@@ -103,8 +109,9 @@ in {
           }
       )
       adapters;
-    graded = lib.sortOn (adapter: rank adapter) (map (adapter: let grade = capabilityMatch {inherit selection adapter policy;}; in adapter // grade // {reason = candidateReason adapter grade;}) matching);
-    native = builtins.head (graded ++ [null]);
+    graded = lib.sortOn rank (map (adapter: let grade = capabilityMatch {inherit selection adapter policy;}; in adapter // grade // {reason = candidateReason adapter grade;}) matching);
+    candidate = builtins.head (graded ++ [null]);
+    native = lib.findFirst (candidate: candidate.accepted or false) null graded;
     automaticNative =
       lib.findFirst (
         candidate:
@@ -123,23 +130,23 @@ in {
         else throw "themeBroker: target `${canonicalId}` requested generated backend for provider `${providerId}`, variant `${variantId}`, but Stylix has no generated target. Native candidates: ${lib.concatStringsSep "; " (map (candidate: candidate.reason) graded)}"
       else if requested == "native"
       then
-        if native == null
+        if candidate == null
         then throw "themeBroker: target `${canonicalId}` requested native backend for provider `${providerId}`, variant `${variantId}`, but no allowed adapter matches. Use backend = \"generated\" or register an allowed adapter."
-        else if !(native.accepted or false)
-        then throw "themeBroker: target `${canonicalId}` requested native backend for provider `${providerId}`, variant `${variantId}`, but adapter `${native.id}` is ${native.fidelity} fidelity and cannot preserve the requested accent or overrides. Use backend = \"generated\" or relax fidelity policy."
+        else if native == null
+        then throw "themeBroker: target `${canonicalId}` requested native backend for provider `${providerId}`, variant `${variantId}`, but adapter `${candidate.id}` is ${candidate.fidelity} fidelity and cannot preserve the requested accent or overrides. Use backend = \"generated\" or relax fidelity policy."
         else "native"
       else if automaticNative != null && policy.preferNative
       then "native"
-      else if generatedAvailable
+      else if generatedAvailable && generatedAutoSafe
       then
-        if native != null && !(native.accepted or false) && (policy.onUnsupported or "fallback") == "error"
+        if native == null && candidate != null && (policy.onUnsupported or "fallback") == "error"
         then throw "themeBroker: target `${canonicalId}` has an unsupported native candidate; set backend = \"generated\" or allow partial fidelity"
-        else if native != null && !(native.accepted or false) && (policy.onUnsupported or "fallback") == "warn"
+        else if native == null && candidate != null && (policy.onUnsupported or "fallback") == "warn"
         then lib.warn "themeBroker: target `${canonicalId}` is falling back to Stylix because native fidelity is unsupported" "generated"
         else "generated"
       else if automaticNative != null
       then "native"
-      else throw "themeBroker: target `${canonicalId}` has neither a generated Stylix target nor an allowed native adapter for provider `${providerId}` variant `${variantId}`. Candidates: ${lib.concatStringsSep "; " (map (candidate: candidate.reason) graded)}";
+      else throw "themeBroker: target `${canonicalId}` has neither an automatically safe generated Stylix target nor an allowed native adapter for provider `${providerId}` variant `${variantId}`. Candidates: ${lib.concatStringsSep "; " (map (candidate: candidate.reason) graded)}";
     rejectionReasons = map (candidate: candidate.reason) graded;
   in {
     target = canonicalId;

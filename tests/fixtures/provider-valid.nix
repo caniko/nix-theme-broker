@@ -33,7 +33,20 @@ in
         contrast = "medium";
       };
       named = {
-        background = color;
+        background = {
+          hex = color;
+          sourceName = "background";
+          hsl = {
+            h = 210;
+            s = 50;
+            l = 13;
+          };
+          oklch = {
+            l = 0.246;
+            c = 0.03;
+            h = 250;
+          };
+        };
         foreground = color;
       };
       roles = {
@@ -61,7 +74,11 @@ in
         };
         syntax = lib.genAttrs ["comment" "string" "number" "boolean" "keyword" "function" "type" "variable" "constant" "operator" "punctuation" "tag" "attribute"] (_: "@foreground");
       };
-      inherit ansi base16;
+      ansi = {
+        normal = ansi;
+        bright = ansi;
+      };
+      inherit base16;
       accents = {};
       accentBindings = [];
     };

@@ -12,6 +12,15 @@
     "platforms": {"type": "array", "items": {"enum": ["homeManager", "nixos", "darwin"]}, "minItems": 1},
     "priority": {"type": "integer"},
     "autoSafe": {"type": "boolean"},
+    "class": {"enum": ["simple", "complex"]},
+    "optionPath": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "optionValues": {"type": "object"},
+    "module": {"type": "string", "minLength": 1},
+    "rendererKind": {"enum": ["simple", "vscode-profile", "firefox-profile"]},
     "provenance": {
       "type": "object",
       "required": ["tier", "repository", "revision", "license"],
@@ -22,8 +31,50 @@
         "license": {"type": "string"}
       }
     },
-    "capabilities": {"type": "object"},
-    "module": {}
+    "capabilities": {
+      "type": "object",
+      "properties": {
+        "variants": {
+          "oneOf": [
+            {"const": "all"},
+            {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+          ]
+        },
+        "accent": {"enum": ["none", "exact", "all"]},
+        "namedOverrides": {"type": "boolean"},
+        "roleOverrides": {"type": "boolean"},
+        "transparency": {"type": "boolean"},
+        "exact": {"type": "boolean"},
+        "profiles": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    }
   },
+  "allOf": [
+    {
+      "if": {"required": ["class"]},
+      "then": {
+        "oneOf": [
+          {"properties": {"class": {"const": "simple"}}, "required": ["optionPath"]},
+          {"properties": {"class": {"const": "complex"}}}
+        ]
+      }
+    },
+    {"if": {"required": ["optionPath"]}, "then": {"required": ["class"]}},
+    {"if": {"required": ["optionValues"]}, "then": {"required": ["optionPath"]}},
+    {
+      "if": {
+        "properties": {"rendererKind": {"enum": ["vscode-profile", "firefox-profile"]}},
+        "required": ["rendererKind"]
+      },
+      "then": {
+        "properties": {
+          "class": {"const": "complex"},
+          "capabilities": {"properties": {"profiles": {"const": true}}, "required": ["profiles"]}
+        },
+        "required": ["class"]
+      }
+    }
+  ],
   "additionalProperties": true
 }

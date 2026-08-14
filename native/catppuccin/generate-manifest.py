@@ -20,6 +20,7 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
     option_name = name
     option_path = ["catppuccin", option_name]
     complex_target = False
+    renderer_kind = "simple"
     capabilities = {"accent": "none", "profiles": False}
 
     if name == "neovim":
@@ -34,10 +35,12 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
         option_path = ["catppuccin", "vscode", "profiles", "default"]
         capabilities = {"accent": "exact", "profiles": True}
         complex_target = True
+        renderer_kind = "vscode-profile"
     elif name == "firefox":
         option_path = ["catppuccin", "firefox", "profiles", "default"]
         capabilities = {"accent": "exact", "profiles": True}
         complex_target = True
+        renderer_kind = "firefox-profile"
     elif name == "cursors":
         capabilities["accent"] = "exact"
 
@@ -57,6 +60,7 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
         "trustTier": "official",
         "class": "complex" if complex_target else "simple",
         "profiles": capabilities["profiles"],
+        "rendererKind": renderer_kind,
     }
 
 
@@ -125,6 +129,7 @@ def render(data: dict) -> str:
         lines.append(f'      trustTier = "{item["trustTier"]}";')
         lines.append(f'      class = "{item["class"]}";')
         lines.append(f'      profiles = {str(item["profiles"]).lower()};')
+        lines.append(f'      rendererKind = "{item["rendererKind"]}";')
         lines.append("    };")
     lines += ["  };", "}", ""]
     return "\n".join(lines)

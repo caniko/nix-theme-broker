@@ -5,6 +5,7 @@
   expected = ["alacritty" "bat" "btop" "chromium" "console" "cosmic" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "starship" "tmux" "vscode" "waybar" "zed" "zellij"];
 in
   assert builtins.all (name: builtins.hasAttr name registry) expected;
+  assert !registry.vscode.autoSafe;
   assert builtins.all (
     target:
       target.platforms

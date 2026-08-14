@@ -58,18 +58,21 @@
     adapters ? [],
     requireAccentFidelity ? false,
     allowedNativeTiers ? ["local" "maintained"],
+    generatedAutoSafe ? true,
+    preferNative ? true,
+    onUnsupported ? "fallback",
   }: let
     value = themeLib.resolveBackend {
       providerId = "synthetic";
       variantId = "dark";
       targetId = "editor";
       platform = "homeManager";
-      inherit generatedAvailable adapters selection;
+      inherit generatedAvailable generatedAutoSafe adapters selection;
       policy = {
         inherit allowedNativeTiers;
         inherit requireAccentFidelity;
         requireOverrideFidelity = true;
-        preferNative = true;
+        inherit preferNative onUnsupported;
       };
     };
   in
@@ -170,6 +173,35 @@
     adapters = [namedExact];
     selection = autoSelection // {overrides.ansi.normal.black = "#000000";};
   };
+  r018 = resolve {
+    adapters = [
+      (mk {
+        id = "rejected";
+        tier = "maintained";
+      })
+      namedExact
+    ];
+    selection = nativeSelection // {overrides.named.background = "#000000";};
+  };
+  r019 = resolve {
+    adapters = [exact];
+    preferNative = false;
+  };
+  r020 = resolve {
+    adapters = [partial];
+    selection = autoSelection // {overrides.named.background = "#000000";};
+    onUnsupported = "warn";
+  };
+  r021 = resolve {
+    adapters = [partial];
+    selection = autoSelection // {overrides.named.background = "#000000";};
+    onUnsupported = "error";
+  };
+  r022 = resolve {generatedAutoSafe = false;};
+  r023 = resolve {
+    selection = generatedSelection;
+    generatedAutoSafe = false;
+  };
 in
   assert r001.success && r001.value.backend == "generated";
   assert !r002.success;
@@ -185,4 +217,10 @@ in
   assert !r014.success;
   assert r015.success && (builtins.length (lib.filter (value: value == "native") [r015.value.backend])) == 1;
   assert r016.success && r016.value.backend == "generated";
-  assert r017.success && r017.value.backend == "generated"; true
+  assert r017.success && r017.value.backend == "generated";
+  assert r018.success && r018.value.adapter == "named-exact";
+  assert r019.success && r019.value.backend == "generated";
+  assert r020.success && r020.value.backend == "generated";
+  assert !r021.success;
+  assert !r022.success;
+  assert r023.success && r023.value.backend == "generated"; true

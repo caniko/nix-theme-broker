@@ -339,6 +339,19 @@
     themeBroker.enable = true;
     themeBroker.targets.custom.backend = "native";
   };
+  optionAdapter =
+    customAdapter
+    // {
+      id = "custom-options";
+      capabilities = customAdapter.capabilities // {nativeOptions = ["theme"];};
+    };
+  customNativeOptions = evalWithCustomAdapters [optionAdapter] {
+    themeBroker.enable = true;
+    themeBroker.targets.custom = {
+      backend = "native";
+      nativeOptions.theme = "dark";
+    };
+  };
   aliasGenerated = eval {
     themeBroker.enable = true;
     themeBroker.targets.code.backend = "generated";
@@ -477,6 +490,8 @@ in
   assert !(catppuccinTerminals.config.programs.ghostty.settings ? "window-theme");
   assert customNative.config.themeBroker.resolved.targets.custom.adapter == "custom-simple";
   assert customNative.config.programs.custom-theme.enable;
+  assert customNativeOptions.config.programs.custom-theme.theme == "dark";
+  assert customNativeOptions.config.themeBroker.resolved.targets.custom.adapter == "custom-options";
   assert !invalidRawRenderer.success;
   assert !duplicateModuleAdapter.success && !duplicateRegistryAdapters.success;
   assert aliasGenerated.config.themeBroker.resolved.targets.vscode.backend == "generated";

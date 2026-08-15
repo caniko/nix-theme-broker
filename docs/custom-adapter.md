@@ -29,11 +29,12 @@ fixed shape; they then become the default active registry. Registry-only
 adapters without a declared renderer are never selected. Do not add
 activation-time network fetches.
 
-Declare every key consumed by a complex adapter in
-`capabilities.nativeOptions`; the resolver rejects a native candidate that
-cannot consume a requested key. Simple adapters must leave `nativeOptions`
-empty. Adapter IDs must be unique across built-in, module, and registry inputs.
-Built-in `rendererKind` values are reserved for the corresponding built-in
-adapters. The exported registry can be passed through the public resolver as
+Declare every key consumed by an adapter in `capabilities.nativeOptions`; the
+resolver rejects a native candidate that cannot consume a requested key, and
+simple renderers forward the requested values into their option path. Adapter
+IDs must be unique across built-in, module, and registry inputs, and the
+exported built-in IDs are reserved. Built-in `rendererKind` values are
+reserved for the corresponding built-in adapters. The exported registry can be
+passed through the public resolver as
 `flake.lib.resolveBackend { adapters = flake.lib.adapters; ... }`; only exact
 exported built-in descriptors enter the trusted channel.

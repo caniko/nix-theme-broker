@@ -200,20 +200,28 @@
         resolveBackend = args: let
           suppliedAdapters = args.adapters or [];
           suppliedTrusted = args.trustedAdapters or [];
+          # Only descriptors structurally identical to an exported built-in enter
+          # the trusted channel; anything else, from either argument, is a custom
+          # adapter and goes through custom validation.
           isBuiltin = adapter: lib.any (builtin: adapter == builtin) adapters;
-          builtinAdapters = lib.filter isBuiltin suppliedAdapters;
-          customAdapters = lib.filter (adapter: !isBuiltin adapter) suppliedAdapters;
-          allAdapters = suppliedTrusted ++ builtinAdapters ++ customAdapters;
-          adapterIds = map (adapter: adapter.id or "<missing>") allAdapters;
-          uniqueIds = lib.unique adapterIds;
+          supplied = suppliedTrusted ++ suppliedAdapters;
+          builtinAdapters = lib.filter isBuiltin supplied;
+          customAdapters = lib.filter (adapter: !isBuiltin adapter) supplied;
+          reservedIds = map (adapter: adapter.id) adapters;
+          customIds = map (adapter: adapter.id or "<missing>") customAdapters;
+          uniqueCustomIds = lib.unique customIds;
+          collision =
+            lib.findFirst (id: builtins.elem id reservedIds) null customIds;
         in
-          if builtins.length uniqueIds != builtins.length adapterIds
+          if builtins.length uniqueCustomIds != builtins.length customIds
           then throw "themeBroker: duplicate adapter ID; built-in and custom adapter IDs must be unique"
+          else if collision != null
+          then throw "themeBroker: adapter ID `${collision}` is reserved for a built-in adapter; choose a different ID"
           else
             themeBrokerLib.resolveBackend (args
               // {
                 adapters = customAdapters;
-                trustedAdapters = suppliedTrusted ++ builtinAdapters;
+                trustedAdapters = builtinAdapters;
               });
       };
     syntheticProvider = lib.recursiveUpdate gruvbox {
@@ -596,10 +604,6 @@
               check-jsonschema --check-metaschema ${./schema}/*.schema.json
               check-jsonschema --schemafile ${./schema/provider.schema.json} ${lib.concatStringsSep " " providerSchemaInputs}
               check-jsonschema --schemafile ${./schema/adapter.schema.json} ${lib.concatStringsSep " " adapterSchemaInputs}
-              if check-jsonschema --schemafile ${./schema/adapter.schema.json} ${./tests/fixtures/adapter-invalid-simple-native-options.json}; then
-                echo "expected simple nativeOptions fixture to fail schema validation" >&2
-                exit 1
-              fi
               if check-jsonschema --schemafile ${./schema/adapter.schema.json} ${./tests/fixtures/adapter-invalid-renderer-owner.json}; then
                 echo "expected renderer ownership fixture to fail schema validation" >&2
                 exit 1

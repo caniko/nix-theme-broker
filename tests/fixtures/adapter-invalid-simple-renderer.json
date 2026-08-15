@@ -1,0 +1,22 @@
+{
+  "schema": "theme-broker.adapter/v1",
+  "id": "invalid-simple-renderer",
+  "provider": "synthetic",
+  "target": "editor",
+  "platforms": ["homeManager"],
+  "provenance": {
+    "tier": "local",
+    "repository": "https://example.invalid/invalid-simple-renderer",
+    "revision": "fixture",
+    "license": "MIT"
+  },
+  "capabilities": {
+    "variants": "all",
+    "accent": "none",
+    "namedOverrides": false,
+    "roleOverrides": false,
+    "transparency": false,
+    "nativeOptions": []
+  },
+  "rendererKind": "simple"
+}

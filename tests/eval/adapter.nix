@@ -66,6 +66,12 @@ in
   assert rejects (base // {capabilities = base.capabilities // {accent = "partial";};});
   assert rejects (base // {capabilities = base.capabilities // {variants = [""];};});
   assert rejects (base // {capabilities = base.capabilities // {exact = "yes";};});
+  assert rejects (base
+    // {
+      class = "simple";
+      optionPath = ["programs" "fixture"];
+      capabilities = base.capabilities // {nativeOptions = ["profile"];};
+    });
   assert rejects (base // {class = "other";});
   assert rejects (base // {class = null;});
   assert rejects (base // {class = "simple";});
@@ -83,6 +89,17 @@ in
       rendererKind = "gruvbox-neovim";
     });
   assert rejects (base // {capabilities = base.capabilities // {nativeOptions = [""];};});
+  assert rejects (base
+    // {
+      class = "complex";
+      capabilities = base.capabilities // {nativeOptions = ["profile" "profile"];};
+    });
+  assert rejects (base // {rendererKind = "simple";});
+  assert rejects (base
+    // {
+      class = "complex";
+      rendererKind = "simple";
+    });
   assert rejects (base
     // {
       class = "simple";

@@ -16,7 +16,17 @@
   brokerEnabled = config.themeBroker.enable;
   themeLib = import ../lib {inherit lib;};
   customAdapters = map themeLib.mkAdapter (themeBrokerAdapters ++ config.themeBroker.registry.adapters);
-  declaredAdapters = themeBrokerBuiltinAdapters ++ map themeLib.mkAdapter themeBrokerAdapters;
+  declaredAdapters = let
+    declared = themeBrokerBuiltinAdapters ++ map themeLib.mkAdapter themeBrokerAdapters;
+    uniqueIds = lib.unique (map (adapter: adapter.id) declared);
+  in
+    if builtins.length uniqueIds != builtins.length declared
+    then throw "themeBroker: duplicate adapter ID; built-in and module adapter IDs must be unique"
+    else declared;
+  adapterIdsUnique = adapters: let
+    ids = map (adapter: adapter.id) adapters;
+  in
+    builtins.length (lib.unique ids) == builtins.length ids;
   registryCfg = {
     providers = config.themeBroker.registry.providers;
     adapters = themeBrokerBuiltinAdapters ++ customAdapters;
@@ -415,12 +425,17 @@ in {
         stylix.enable = lib.mkDefault true;
         stylix.base16Scheme = lib.mkIf manageStylixScheme (lib.mkDefault selected.formatted.base16Scheme);
         catppuccin.autoEnable = lib.mkForce false;
-        assertions = lib.mkIf manageStylixScheme [
-          {
+        assertions =
+          [
+            {
+              assertion = adapterIdsUnique (themeBrokerBuiltinAdapters ++ customAdapters);
+              message = "themeBroker: adapter IDs must be unique across the built-in registry, module adapters, and registry adapters";
+            }
+          ]
+          ++ lib.optional manageStylixScheme {
             assertion = config.stylix.base16Scheme == selected.formatted.base16Scheme;
             message = "themeBroker: stylix.base16Scheme conflicts with the broker selection; remove the direct scheme or set themeBroker.manageStylixScheme = false.";
-          }
-        ];
+          };
       }
     ]
     ++ generatedConfig generatedConfigTargets

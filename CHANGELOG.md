@@ -2,14 +2,23 @@
 
 ## [Unreleased]
 
-- Keep built-in renderer adapters in a trusted channel and validate custom
-  adapters through the normal resolver path.
+- Reject duplicate adapter IDs across built-in, module, registry, and public
+  resolver inputs; the public resolver keeps accepting the released
+  `trustedAdapters` argument.
+- Allow the exported built-in adapter registry to compose with the public
+  resolver while keeping forged renderer descriptors on the custom path.
+- Require adapters declaring native options to be complex and align the JSON
+  Schema with runtime renderer ownership, native-option, and provenance
+  validation.
+- Prefer content hashes over dirty revisions for input provenance.
 
 ## 1.0.1 - 2026-08-15
 
 - Reject native options that the selected adapter does not declare or consume.
 - Reserve built-in renderer kinds for their built-in adapters and improve
   fallback diagnostics.
+- Keep built-in renderer adapters in a trusted channel and validate custom
+  adapters through the normal resolver path.
 - Correct the Rosé Pine snapshot and validator to use canonical
   `source/index.ts`; regenerate and verify the goldens.
 - Allow Base24 overrides to create an optional projection when a provider does

@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## 1.0.3 - 2026-08-15
 
 - Reserve exported built-in adapter IDs in the public resolver and validate
   every `trustedAdapters` entry by exact built-in identity; custom adapters

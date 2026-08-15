@@ -1,5 +1,6 @@
 {lib}: let
   themeLib = import ../../lib {inherit lib;};
+  adapterLib = import ../../lib/adapter.nix {inherit lib;};
   base = {
     schema = "theme-broker.adapter/v1";
     id = "fixture";
@@ -31,7 +32,7 @@
     });
   descriptor = themeLib.mkAdapter base;
   complex = themeLib.mkAdapter (base // {class = "complex";});
-  builtinRenderer = themeLib.mkBuiltinAdapter (base
+  builtinRenderer = adapterLib.mkBuiltinAdapter (base
     // {
       id = "gruvbox-neovim";
       provider = "gruvbox";

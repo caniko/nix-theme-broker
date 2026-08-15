@@ -65,6 +65,7 @@
     rosePinePaletteRevision = inputRevision rose-pine-palette;
     tintedSchemesRevision = inputRevision tinted-schemes;
     themeBrokerLib = import ./lib {inherit (nixpkgs) lib;};
+    adapterLib = import ./lib/adapter.nix {inherit (nixpkgs) lib;};
     catppuccinProvider = import ./providers/catppuccin {
       inherit (nixpkgs) lib;
       palette = catppuccin-palette;
@@ -192,7 +193,7 @@
           rendererKind = "gruvbox-cursors";
         }
       ];
-    adapters = map themeBrokerLib.mkBuiltinAdapter rawAdapters;
+    adapters = map adapterLib.mkBuiltinAdapter rawAdapters;
     syntheticProvider = lib.recursiveUpdate gruvbox {
       id = "synthetic";
       name = "Synthetic";

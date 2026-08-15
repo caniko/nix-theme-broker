@@ -20,7 +20,7 @@ in {
   inherit (wallpaper) validateRegistry;
   resolveWallpapers = wallpaper.resolve;
   inherit (provider) mkProvider normalizeProvider;
-  inherit (adapter) mkAdapter mkBuiltinAdapter;
+  inherit (adapter) mkAdapter;
   targetAliases = adapter.aliases or {};
   resolveBackend = adapter.resolve;
   resolveSelection = args:

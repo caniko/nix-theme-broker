@@ -6,7 +6,6 @@
   Base16 conformance.
 - Added renderer-aware native target metadata, profile-based Home Manager
   bridges, stricter option validation, and safer generated fallback handling.
-- Added a pinned Rosé Pine provider snapshot with Base16 golden coverage.
 - Added palette-neutral provider normalization for Catppuccin, Gruvbox, and
   Rosé Pine.
 - Added deterministic generated/native resolution with provenance-aware

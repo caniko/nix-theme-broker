@@ -45,7 +45,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-090 | complete | ADR 0006 keeps provider selection global and documents the existing Stylix override escape hatch |
 | TB-091 | complete | temporary COSMIC target is tracked by Stylix issue #265 with explicit removal conditions |
 | TB-092 | complete | Rosé Pine is the third provider and passes the shared conformance, golden, and Tinted checks |
-| TB-093 | complete | v1.0.0 release tag and GitHub release published after all gates passed |
+| TB-093 | partial | v1.0.0 release artifacts are prepared; the tag and GitHub release are still pending |
 
 The Atlas deployment slice selects Gruvbox `dark-hard` through the parent
 canix Home Manager profile. Stylix owns generic targets, while the broker has

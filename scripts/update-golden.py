@@ -14,6 +14,9 @@ FIXTURES = {
     "catppuccin-mocha-mauve": ("catppuccin", "mocha", "mauve"),
     "gruvbox-dark-medium": ("gruvbox", "dark-medium", None),
     "gruvbox-light-hard": ("gruvbox", "light-hard", None),
+    "rose-pine-main-rose": ("rose-pine", "main", "rose"),
+    "rose-pine-moon-iris": ("rose-pine", "moon", "iris"),
+    "rose-pine-dawn-pine": ("rose-pine", "dawn", "pine"),
 }
 TINTED_SOURCE = {
     "repository": "https://github.com/tinted-theming/schemes",

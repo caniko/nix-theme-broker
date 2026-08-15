@@ -12,6 +12,9 @@ reviewable input diff instead of silently changing evaluation behavior.
 | `morhetz/gruvbox` | `5d15b2765f59754d7ac263c88a0f6e3e58124951` | 2025-02-11 | canonical Gruvbox palette source |
 | `tinted-theming/schemes` | `9bd28ed313560db3c5b605c63bc4e309e78e3fc8` | 2026-07-27 | Base16 comparison source and conformance input |
 | `ellisonleao/gruvbox.nvim` | `154eb5ff5b96d0641307113fa385eaf0d36d9796` | 2024-03-17 | maintained Neovim native adapter source |
+| `rose-pine/rose-pine-palette` | `92af52b465ab6e47437aca223c9b8d3009a2023b` | 2025-11-05 | third-provider palette source |
+| `nix-community/home-manager` | `83b7606dcf44abe3a94b86e8bb2b3355d22e8797` | 2026-08-14 | real Home Manager integration evaluation |
+| `nix-darwin/nix-darwin` | `15abb8c98f336cd8bd840d71059adebabe60bf04` | 2026-07-30 | real nix-darwin integration evaluation |
 
 The Catppuccin palette is read from the locked non-flake input's
 `palette.json`; no derivation is imported.  Native adapter provenance is kept

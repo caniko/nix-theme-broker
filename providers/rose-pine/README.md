@@ -7,10 +7,9 @@ at revision `92af52b465ab6e47437aca223c9b8d3009a2023b`. Base16 follows
 `9bd28ed313560db3c5b605c63bc4e309e78e3fc8`.
 
 At the pinned palette revision, Dawn's canonical `overlay.hex` is `#f2e9e1`
-while Tinted `base02` resolves to `#f2e9de`. Dawn's canonical text is `#464261`
-while Tinted `base05`/`base06` resolve to `#575279`. The snapshot keeps the
-canonical values for semantic output and records the Tinted values separately
-for Base16.
+while Tinted `base02` resolves to `#f2e9de`; both canonical and Tinted text
+resolve to `#575279`. The snapshot keeps the canonical values for semantic
+output and records the Tinted values separately for Base16.
 
 Wire the provider into `flake.nix` beside the existing imports:
 

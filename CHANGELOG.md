@@ -1,5 +1,10 @@
 # Changelog
 
+## [Unreleased]
+
+- Keep built-in renderer adapters in a trusted channel and validate custom
+  adapters through the normal resolver path.
+
 ## 1.0.1 - 2026-08-15
 
 - Reject native options that the selected adapter does not declare or consume.

@@ -21,7 +21,7 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
     option_path = ["catppuccin", option_name]
     complex_target = False
     renderer_kind = "simple"
-    capabilities = {"accent": "none", "profiles": False}
+    capabilities = {"accent": "none", "profiles": False, "nativeOptions": []}
 
     if name == "neovim":
         option_name = "nvim"
@@ -33,12 +33,12 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
         capabilities["accent"] = "exact"
     elif name == "vscode":
         option_path = ["catppuccin", "vscode", "profiles", "default"]
-        capabilities = {"accent": "exact", "profiles": True}
+        capabilities = {"accent": "exact", "profiles": True, "nativeOptions": ["profile"]}
         complex_target = True
         renderer_kind = "vscode-profile"
     elif name == "firefox":
         option_path = ["catppuccin", "firefox", "profiles", "default"]
-        capabilities = {"accent": "exact", "profiles": True}
+        capabilities = {"accent": "exact", "profiles": True, "nativeOptions": ["profile"]}
         complex_target = True
         renderer_kind = "firefox-profile"
     elif name == "cursors":
@@ -60,6 +60,7 @@ def entry(name: str, platform: str, source_text: str = "") -> dict:
         "trustTier": "official",
         "class": "complex" if complex_target else "simple",
         "profiles": capabilities["profiles"],
+        "nativeOptions": capabilities["nativeOptions"],
         "rendererKind": renderer_kind,
     }
 
@@ -129,6 +130,8 @@ def render(data: dict) -> str:
         lines.append(f'      trustTier = "{item["trustTier"]}";')
         lines.append(f'      class = "{item["class"]}";')
         lines.append(f'      profiles = {str(item["profiles"]).lower()};')
+        if item["nativeOptions"]:
+            lines.append(f'      nativeOptions = {nix_list(item["nativeOptions"])};')
         lines.append(f'      rendererKind = "{item["rendererKind"]}";')
         lines.append("    };")
     lines += ["  };", "}", ""]

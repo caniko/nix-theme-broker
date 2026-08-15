@@ -15,11 +15,12 @@ in {
   inherit types validation projection;
   inherit supportMatrix;
   inherit target;
+  inherit (target) rendererOwners rendererSupported;
   inherit generatedTargets;
   inherit (wallpaper) validateRegistry;
   resolveWallpapers = wallpaper.resolve;
   inherit (provider) mkProvider normalizeProvider;
-  inherit (adapter) mkAdapter;
+  inherit (adapter) mkAdapter mkBuiltinAdapter;
   targetAliases = adapter.aliases or {};
   resolveBackend = adapter.resolve;
   resolveSelection = args:

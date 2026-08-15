@@ -31,11 +31,37 @@
     });
   descriptor = themeLib.mkAdapter base;
   complex = themeLib.mkAdapter (base // {class = "complex";});
+  builtinRenderer = themeLib.mkBuiltinAdapter (base
+    // {
+      id = "gruvbox-neovim";
+      provider = "gruvbox";
+      target = "neovim";
+      class = "complex";
+      rendererKind = "gruvbox-neovim";
+    });
   rejects = adapter: !(builtins.tryEval (builtins.deepSeq (themeLib.mkAdapter adapter) true)).success;
 in
   assert valid.target == "neovim";
   assert descriptor.id == "fixture";
   assert complex.class == "complex";
+  assert builtinRenderer.rendererKind == "gruvbox-neovim";
+  assert rejects (base
+    // {
+      id = "gruvbox-neovim";
+      provider = "gruvbox";
+      target = "neovim";
+      class = "complex";
+      rendererKind = "gruvbox-neovim";
+    });
+  assert rejects (base
+    // {
+      id = "gruvbox-neovim";
+      provider = "gruvbox";
+      target = "neovim";
+      class = "complex";
+      rendererKind = "gruvbox-neovim";
+      _themeBrokerBuiltin = true;
+    });
   assert rejects (base // {capabilities = base.capabilities // {accent = "partial";};});
   assert rejects (base // {capabilities = base.capabilities // {variants = [""];};});
   assert rejects (base // {capabilities = base.capabilities // {exact = "yes";};});
@@ -50,6 +76,12 @@ in
     });
   assert rejects (base // {optionValues = {};});
   assert rejects (base // {module = null;});
+  assert rejects (base
+    // {
+      class = "complex";
+      rendererKind = "gruvbox-neovim";
+    });
+  assert rejects (base // {capabilities = base.capabilities // {nativeOptions = [""];};});
   assert rejects (base
     // {
       class = "simple";

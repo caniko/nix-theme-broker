@@ -10,6 +10,7 @@
     accent ? "none",
     namedOverrides ? false,
     roleOverrides ? false,
+    nativeOptions ? [],
     autoSafe ? true,
   }:
     themeLib.mkAdapter {
@@ -26,6 +27,7 @@
       capabilities = {
         inherit variants accent namedOverrides roleOverrides;
         transparency = false;
+        inherit nativeOptions;
       };
     };
   exact = mk {id = "exact";};
@@ -36,6 +38,10 @@
   namedExact = mk {
     id = "named-exact";
     namedOverrides = true;
+  };
+  nativeExact = mk {
+    id = "native-exact";
+    nativeOptions = ["profile"];
   };
   generatedSelection = {
     backend = "generated";
@@ -202,6 +208,18 @@
     selection = generatedSelection;
     generatedAutoSafe = false;
   };
+  r024 = resolve {
+    adapters = [exact];
+    selection = autoSelection // {nativeOptions.profile = "work";};
+  };
+  r025 = resolve {
+    adapters = [nativeExact];
+    selection = autoSelection // {nativeOptions.profile = "work";};
+  };
+  r026 = resolve {
+    adapters = [exact];
+    selection = nativeSelection // {nativeOptions.profile = "work";};
+  };
 in
   assert r001.success && r001.value.backend == "generated";
   assert !r002.success;
@@ -210,7 +228,7 @@ in
   assert r005.success && r005.value.adapter == "exact";
   assert r006.success && r006.value.backend == "generated";
   assert r007.success && r007.value.backend == "native" && r007.value.fidelity == "exact";
-  assert r008.success && r008.value.backend == "generated";
+  assert r008.success && r008.value.backend == "generated" && lib.hasInfix "rejected" (builtins.head (lib.filter (reason: lib.hasPrefix "candidate `partial`" reason) r008.value.reasons));
   assert r009.success && r009.value.backend == "native";
   assert !r010.success && !r011.success && !r012.success;
   assert r013.success && r013.value.adapter == "alpha";
@@ -223,4 +241,5 @@ in
   assert r020.success && r020.value.backend == "generated";
   assert !r021.success;
   assert !r022.success;
-  assert r023.success && r023.value.backend == "generated"; true
+  assert r023.success && r023.value.backend == "generated";
+  assert !r024.success && r025.success && r025.value.adapter == "native-exact" && !r026.success; true

@@ -32,10 +32,15 @@
           if builtins.isAttrs value && value ? oklch
           then value.oklch
           else null;
-        sourceName =
-          if builtins.isAttrs value && value ? sourceName
-          then value.sourceName
-          else null;
+        sourceName = let
+          value' =
+            if builtins.isAttrs value && value ? sourceName
+            then value.sourceName
+            else null;
+        in
+          if value' == null || builtins.isString value'
+          then value'
+          else throw "themeBroker: sourceName must be a string or null, got ${builtins.toJSON value'}";
       };
 in {
   inherit parse;

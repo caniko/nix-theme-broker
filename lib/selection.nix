@@ -75,15 +75,22 @@
   ansi = provider.resolveTree named (lib.recursiveUpdate (raw.ansi or {}) (overrides.ansi or {}));
   base16 = provider.resolveTree named (lib.recursiveUpdate (raw.base16 or {}) (overrides.base16 or {}));
   rawBase24 = raw.base24 or null;
+  base24Overrides = overrides.base24 or {};
   base24 =
-    if rawBase24 == null && (overrides.base24 or {}) == {}
+    if rawBase24 == null && base24Overrides == {}
     then null
     else
       provider.resolveTree named (lib.recursiveUpdate (
-        if rawBase24 == null
-        then {}
-        else rawBase24
-      ) (overrides.base24 or {}));
+          if rawBase24 == null
+          then {}
+          else rawBase24
+        )
+        base24Overrides);
+  base24Keys = builtins.attrNames (
+    if rawBase24 == null
+    then base24Overrides
+    else rawBase24
+  );
   _projectionCheck = builtins.all (value: value) (
     [
       (validateKeys "ansi" ["bright" "normal"] ansi)
@@ -91,12 +98,7 @@
       (validateKeys "ansi.bright" types.ansiKeys (ansi.bright or null))
       (validateKeys "base16" types.base16Keys base16)
     ]
-    ++ lib.optional (base24 != null) (validateKeys "base24" (builtins.attrNames (
-        if rawBase24 == null
-        then {}
-        else rawBase24
-      ))
-      base24)
+    ++ lib.optional (base24 != null) (validateKeys "base24" base24Keys base24)
   );
   formatted = {
     base16Scheme = lib.mapAttrs (_: value: value.withHashtag) base16;

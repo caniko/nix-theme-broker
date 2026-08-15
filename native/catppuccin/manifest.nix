@@ -52,6 +52,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "vscode-profile";
     };
     atuin = {
@@ -172,6 +173,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "vscode-profile";
     };
     cursors = {
@@ -256,6 +258,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "firefox-profile";
     };
     fish = {
@@ -532,6 +535,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "vscode-profile";
     };
     kitty = {
@@ -1000,6 +1004,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "vscode-profile";
     };
     vscodium = {
@@ -1012,6 +1017,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "vscode-profile";
     };
     waybar = {
@@ -1048,6 +1054,7 @@
       trustTier = "official";
       class = "complex";
       profiles = true;
+      nativeOptions = ["profile"];
       rendererKind = "vscode-profile";
     };
     wleave = {

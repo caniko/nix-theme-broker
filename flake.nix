@@ -48,12 +48,22 @@
     ...
   }: let
     lib = nixpkgs.lib;
-    flakeLock = builtins.fromJSON (builtins.readFile ./flake.lock);
-    lockedRevision = name: flakeLock.nodes.${name}.locked.rev;
-    catppuccinPaletteRevision = lockedRevision "catppuccin-palette";
-    catppuccinNativeRevision = lockedRevision "catppuccin";
-    rosePinePaletteRevision = lockedRevision "rose-pine-palette";
-    tintedSchemesRevision = lockedRevision "tinted-schemes";
+    inputRevision = input: let
+      sourceInfo = input.sourceInfo or null;
+    in
+      if input ? rev
+      then input.rev
+      else if input ? dirtyRev
+      then input.dirtyRev
+      else if input ? narHash
+      then input.narHash
+      else if builtins.isAttrs sourceInfo && sourceInfo ? rev
+      then sourceInfo.rev
+      else throw "themeBroker: input has no reproducible revision or narHash";
+    catppuccinPaletteRevision = inputRevision catppuccin-palette;
+    catppuccinNativeRevision = inputRevision catppuccin;
+    rosePinePaletteRevision = inputRevision rose-pine-palette;
+    tintedSchemesRevision = inputRevision tinted-schemes;
     themeBrokerLib = import ./lib {inherit (nixpkgs) lib;};
     catppuccinProvider = import ./providers/catppuccin {
       inherit (nixpkgs) lib;
@@ -70,7 +80,13 @@
       inherit gruvbox;
       rose-pine = rosePine;
     };
-    catppuccinManifest = import ./native/catppuccin/manifest.nix;
+    catppuccinManifest = let
+      manifest = import ./native/catppuccin/manifest.nix;
+    in
+      manifest
+      // {
+        source = manifest.source // {revision = catppuccinNativeRevision;};
+      };
     catppuccinAdapters = import ./native/catppuccin/default.nix {manifest = catppuccinManifest;};
     rawAdapters =
       catppuccinAdapters
@@ -95,7 +111,9 @@
             namedOverrides = false;
             roleOverrides = false;
             transparency = false;
+            nativeOptions = [];
           };
+          class = "complex";
           rendererKind = "gruvbox-vim";
         }
         {
@@ -118,7 +136,9 @@
             namedOverrides = false;
             roleOverrides = false;
             transparency = true;
+            nativeOptions = ["transparent"];
           };
+          class = "complex";
           rendererKind = "gruvbox-neovim";
         }
         {
@@ -141,7 +161,9 @@
             namedOverrides = false;
             roleOverrides = false;
             transparency = false;
+            nativeOptions = [];
           };
+          class = "complex";
           rendererKind = "gruvbox-vscode";
         }
         {
@@ -164,12 +186,13 @@
             namedOverrides = false;
             roleOverrides = false;
             transparency = false;
+            nativeOptions = ["name"];
           };
           class = "complex";
           rendererKind = "gruvbox-cursors";
         }
       ];
-    adapters = map themeBrokerLib.mkAdapter rawAdapters;
+    adapters = map themeBrokerLib.mkBuiltinAdapter rawAdapters;
     syntheticProvider = lib.recursiveUpdate gruvbox {
       id = "synthetic";
       name = "Synthetic";
@@ -197,6 +220,7 @@
         namedOverrides = false;
         roleOverrides = false;
         transparency = false;
+        nativeOptions = [];
       };
     };
     platformModules = {

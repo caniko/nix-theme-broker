@@ -67,6 +67,14 @@
       overrides.base24.extension = "#000000";
     };
   };
+  base24Override = themeLib.resolveSelection {
+    inherit providers;
+    selection = {
+      provider = "gruvbox";
+      variant = "dark-hard";
+      overrides.base24.extension = "#000000";
+    };
+  };
   invalidOverride = overrides:
     builtins.tryEval (builtins.deepSeq (themeLib.resolveSelection {
         providers = mappedProviders;
@@ -81,6 +89,29 @@
   invalidAnsi = invalidOverride {ansi.normal.orange = "#000000";};
   invalidBase16 = invalidOverride {base16.base10 = "#000000";};
   invalidBase24 = invalidOverride {base24.extra = "#000000";};
+  invalidSourceName = builtins.tryEval (builtins.deepSeq (themeLib.resolveSelection {
+      providers =
+        mappedProviders
+        // {
+          rest =
+            mappedProviders.mapped
+            // {
+              variants.mocha =
+                mappedProviders.mapped.variants.mocha
+                // {
+                  named.background = {
+                    hex = "#000000";
+                    sourceName = 5;
+                  };
+                };
+            };
+        };
+      selection = {
+        provider = "rest";
+        variant = "mocha";
+      };
+    })
+    true);
   invalid = builtins.tryEval (builtins.deepSeq (themeLib.validateRegistry {
       catppuccin = wallpapers.catppuccin // {default = "../outside.png";};
     })
@@ -99,5 +130,7 @@ in
   assert mapped.roles.ui.accent.withHashtag == mapped.named.red.withHashtag;
   assert mapped.roles.ui.accent.withHashtag == "#112233";
   assert mapped.base24.extension.withHashtag == "#000000";
+  assert base24Override.base24.extension.withHashtag == "#000000";
   assert !invalidAnsi.success && !invalidBase16.success && !invalidBase24.success;
+  assert !invalidSourceName.success;
   assert !invalid.success; true

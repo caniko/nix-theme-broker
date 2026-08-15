@@ -47,5 +47,5 @@
   });
 in {
   inherit normalized variants;
-  valid = builtins.all (theme: theme.valid) variants && (normalized.defaults.accent != null || !invalidAccent.success);
+  valid = builtins.all (theme: theme.valid) variants && !invalidAccent.success;
 }

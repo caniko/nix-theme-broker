@@ -305,8 +305,15 @@
       nativeOptions.profile = "work";
     };
   };
+  aliasUnmanaged = eval {
+    themeBroker.enable = true;
+    themeBroker.targets.code.backend = "generated";
+    themeBroker.targets.vscode.managed = false;
+  };
   invalidTargetConfig = extra:
     builtins.tryEval (builtins.deepSeq (eval extra).config.themeBroker.targets true);
+  invalidNativeResolution = extra:
+    builtins.tryEval (builtins.deepSeq (eval extra).config.themeBroker.resolved true);
   aliasCollision = builtins.tryEval (builtins.deepSeq
     (eval {
       themeBroker.enable = true;
@@ -319,6 +326,39 @@
   invalidCursorName = invalidTargetConfig {themeBroker.targets.cursors.nativeOptions.name = true;};
   invalidProfileTarget = invalidTargetConfig {themeBroker.targets.neovim.nativeOptions.profile = "work";};
   invalidProfileType = invalidTargetConfig {themeBroker.targets.vscode.nativeOptions.profile = true;};
+  invalidGruvboxVscodeProfile = invalidNativeResolution {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-hard";
+    themeBroker.targets.vscode = {
+      backend = "native";
+      nativeOptions.profile = "work";
+    };
+  };
+  invalidCatppuccinNeovimTransparent = invalidNativeResolution {
+    themeBroker.enable = true;
+    themeBroker.selection = {
+      provider = "catppuccin";
+      variant = "mocha";
+      accent = "mauve";
+    };
+    themeBroker.targets.neovim = {
+      backend = "native";
+      nativeOptions.transparent = true;
+    };
+  };
+  invalidCatppuccinCursorName = invalidNativeResolution {
+    themeBroker.enable = true;
+    themeBroker.selection = {
+      provider = "catppuccin";
+      variant = "mocha";
+      accent = "mauve";
+    };
+    themeBroker.targets.cursors = {
+      backend = "native";
+      nativeOptions.name = "Bibata-Modern-Ice";
+    };
+  };
   assertions = result: builtins.all (item: item.assertion) result.config.assertions;
 in
   assert disabled.config.themeBroker.selected == null;
@@ -384,8 +424,10 @@ in
   assert lib.hasInfix "transparent_mode = true" aliasNative.config.programs.neovim.extraLuaConfig;
   assert profileOption.config.themeBroker.resolved.targets.vscode.nativeOptions.profile == "work";
   assert profileOption.config.catppuccin.vscode.profiles.work.enable;
+  assert aliasUnmanaged.config.themeBroker.resolved.targets.vscode.backend == "generated";
   assert !aliasCollision.success;
   assert !unknownNativeOption.success && !invalidTransparent.success && !invalidCursorName.success && !invalidProfileTarget.success && !invalidProfileType.success;
+  assert !invalidGruvboxVscodeProfile.success && !invalidCatppuccinNeovimTransparent.success && !invalidCatppuccinCursorName.success;
   assert assertions generated;
   assert assertions native;
   assert !(

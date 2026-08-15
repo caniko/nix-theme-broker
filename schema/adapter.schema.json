@@ -45,6 +45,7 @@
         "roleOverrides": {"type": "boolean"},
         "transparency": {"type": "boolean"},
         "exact": {"type": "boolean"},
+        "nativeOptions": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
         "profiles": {"type": "boolean"}
       },
       "additionalProperties": true

@@ -16,7 +16,7 @@
   themeLib = import ../lib {inherit lib;};
   registryCfg = {
     providers = config.themeBroker.registry.providers;
-    adapters = map themeLib.mkAdapter config.themeBroker.registry.adapters;
+    adapters = themeBrokerAdapters ++ map themeLib.mkAdapter config.themeBroker.registry.adapters;
     wallpapers = themeLib.validateRegistry config.themeBroker.registry.wallpapers;
   };
   selectionCfg = {
@@ -34,8 +34,8 @@
     preferNative = config.themeBroker.policy.preferNative;
   };
   canonicalTarget = target: themeLib.targetAliases.${target} or target;
-  configuredCanonicalTargets = map canonicalTarget (builtins.attrNames config.themeBroker.targets);
   rawTargetsCfg = lib.filterAttrs (_: targetCfg: targetCfg.managed) config.themeBroker.targets;
+  configuredCanonicalTargets = map canonicalTarget (builtins.attrNames rawTargetsCfg);
   targetsCfg =
     if builtins.length configuredCanonicalTargets == builtins.length (lib.unique configuredCanonicalTargets)
     then
@@ -54,15 +54,14 @@
     && cosmicLib != null;
   profileRendererKinds = ["vscode-profile" "firefox-profile"];
   complexRendererKinds = ["gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
-  declaredAdapters = map themeLib.mkAdapter themeBrokerAdapters;
-  profileTargets = lib.unique (map (adapter: adapter.target) (builtins.filter (adapter: (adapter.capabilities.profiles or false)) declaredAdapters));
+  nativeOptionAdapters = themeBrokerAdapters;
+  declaredAdapters = themeBrokerAdapters;
   validNativeOptions = target: value: let
-    keys =
-      lib.optional (target == "neovim") "transparent"
-      ++ lib.optional (target == "cursors") "name"
-      ++ lib.optional (builtins.elem target profileTargets) "profile";
+    targetAdapters = builtins.filter (adapter: canonicalTarget adapter.target == target) nativeOptionAdapters;
+    keys = lib.unique (lib.concatMap (adapter: adapter.capabilities.nativeOptions or []) targetAdapters);
+    knownTarget = targetAdapters != [];
   in
-    builtins.all (key: builtins.elem key keys) (builtins.attrNames value)
+    (!knownTarget || builtins.all (key: builtins.elem key keys) (builtins.attrNames value))
     && (!(value ? transparent) || builtins.isBool value.transparent)
     && (!(value ? name) || (builtins.isString value.name && value.name != ""))
     && (!(value ? profile) || (builtins.isString value.profile && value.profile != ""));
@@ -73,16 +72,11 @@
     declaredAdapters);
   hasRenderer = adapter: let
     declared = declaredAdaptersById.${adapter.id} or null;
-    rendererKind = adapter.rendererKind or null;
   in
     declared
     != null
     && adapter == declared
-    && (
-      ((adapter.class or "simple") == "simple" && builtins.isList (adapter.optionPath or null))
-      || builtins.elem rendererKind profileRendererKinds
-      || builtins.elem rendererKind complexRendererKinds
-    );
+    && themeLib.rendererSupported adapter;
   renderableAdapters = builtins.filter hasRenderer registryCfg.adapters;
   generatedConfigTargets =
     builtins.filter (
@@ -292,7 +286,7 @@ in {
       };
       adapters = lib.mkOption {
         type = lib.types.listOf lib.types.raw;
-        default = map themeLib.mkAdapter themeBrokerAdapters;
+        default = [];
         description = "Native target adapters registered with the broker.";
       };
       wallpapers = lib.mkOption {

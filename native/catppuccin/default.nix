@@ -24,6 +24,7 @@ map (
       roleOverrides = false;
       transparency = false;
       profiles = item.profiles or false;
+      nativeOptions = item.nativeOptions or [];
     };
     optionPath = item.optionPath;
     optionValues =

@@ -289,6 +289,7 @@
     class = "simple";
     optionPath = ["programs" "custom-theme"];
   };
+  duplicateBuiltinIdAdapter = customAdapter // {id = "catppuccin-alacritty";};
   spoofedRenderer = {
     schema = "theme-broker.adapter/v1";
     id = "spoofed-renderer";
@@ -322,6 +323,18 @@
       themeBroker.targets.neovim.backend = "native";
     }).config.themeBroker.resolved
     true);
+  duplicateModuleAdapter = builtins.tryEval (builtins.deepSeq
+    (evalWithCustomAdapters [duplicateBuiltinIdAdapter] {
+      themeBroker.enable = true;
+    }).config.themeBroker.resolved
+    true);
+  duplicateRegistryAdapters = builtins.tryEval (let
+    result = evalWithCustomAdapters [] {
+      themeBroker.enable = true;
+      themeBroker.registry.adapters = [customAdapter customAdapter];
+    };
+  in
+    builtins.deepSeq result.config.assertions (assert assertions result; true));
   customNative = evalWithCustomAdapters [customAdapter] {
     themeBroker.enable = true;
     themeBroker.targets.custom.backend = "native";
@@ -465,6 +478,7 @@ in
   assert customNative.config.themeBroker.resolved.targets.custom.adapter == "custom-simple";
   assert customNative.config.programs.custom-theme.enable;
   assert !invalidRawRenderer.success;
+  assert !duplicateModuleAdapter.success && !duplicateRegistryAdapters.success;
   assert aliasGenerated.config.themeBroker.resolved.targets.vscode.backend == "generated";
   assert aliasGenerated.config.stylix.targets.vscode.enable;
   assert aliasNative.config.themeBroker.resolved.targets.neovim.adapter == "gruvbox-neovim";

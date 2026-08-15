@@ -31,5 +31,9 @@ activation-time network fetches.
 
 Declare every key consumed by a complex adapter in
 `capabilities.nativeOptions`; the resolver rejects a native candidate that
-cannot consume a requested key. Built-in `rendererKind` values are reserved for
-the corresponding built-in adapters.
+cannot consume a requested key. Simple adapters must leave `nativeOptions`
+empty. Adapter IDs must be unique across built-in, module, and registry inputs.
+Built-in `rendererKind` values are reserved for the corresponding built-in
+adapters. The exported registry can be passed through the public resolver as
+`flake.lib.resolveBackend { adapters = flake.lib.adapters; ... }`; only exact
+exported built-in descriptors enter the trusted channel.

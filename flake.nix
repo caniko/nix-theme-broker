@@ -53,10 +53,10 @@
     in
       if input ? rev
       then input.rev
-      else if input ? dirtyRev
-      then input.dirtyRev
       else if input ? narHash
       then input.narHash
+      else if input ? dirtyRev
+      then input.dirtyRev
       else if builtins.isAttrs sourceInfo && sourceInfo ? rev
       then sourceInfo.rev
       else throw "themeBroker: input has no reproducible revision or narHash";
@@ -194,6 +194,28 @@
         }
       ];
     adapters = map adapterLib.mkBuiltinAdapter rawAdapters;
+    publicThemeBrokerLib =
+      themeBrokerLib
+      // {
+        resolveBackend = args: let
+          suppliedAdapters = args.adapters or [];
+          suppliedTrusted = args.trustedAdapters or [];
+          isBuiltin = adapter: lib.any (builtin: adapter == builtin) adapters;
+          builtinAdapters = lib.filter isBuiltin suppliedAdapters;
+          customAdapters = lib.filter (adapter: !isBuiltin adapter) suppliedAdapters;
+          allAdapters = suppliedTrusted ++ builtinAdapters ++ customAdapters;
+          adapterIds = map (adapter: adapter.id or "<missing>") allAdapters;
+          uniqueIds = lib.unique adapterIds;
+        in
+          if builtins.length uniqueIds != builtins.length adapterIds
+          then throw "themeBroker: duplicate adapter ID; built-in and custom adapter IDs must be unique"
+          else
+            themeBrokerLib.resolveBackend (args
+              // {
+                adapters = customAdapters;
+                trustedAdapters = suppliedTrusted ++ builtinAdapters;
+              });
+      };
     syntheticProvider = lib.recursiveUpdate gruvbox {
       id = "synthetic";
       name = "Synthetic";
@@ -245,7 +267,7 @@
       systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
 
       flake = {
-        lib = themeBrokerLib // {inherit providers adapters;};
+        lib = publicThemeBrokerLib // {inherit providers adapters;};
         homeModules.default = {
           imports = [
             stylix.homeModules.stylix
@@ -354,10 +376,30 @@
             preferNative = true;
           };
         };
+        provenancePrecedence = let
+          withRev = {
+            rev = "rev";
+            narHash = "hash";
+            dirtyRev = "dirty";
+            sourceInfo = {rev = "info";};
+          };
+          withNarHash = {
+            narHash = "hash";
+            dirtyRev = "dirty";
+          };
+          withSourceInfo = {sourceInfo = {rev = "info";};};
+        in
+          inputRevision withRev
+          == "rev"
+          && inputRevision withNarHash == "hash"
+          && inputRevision withSourceInfo == "info";
         evaluationTests = [
           (import ./tests/eval/color.nix {inherit lib;})
           (import ./tests/eval/selection.nix {inherit lib providers;})
-          (import ./tests/eval/public-lib.nix {inherit lib providers;})
+          (import ./tests/eval/public-lib.nix {
+            inherit lib providers adapters;
+            publicLib = publicThemeBrokerLib;
+          })
           (import ./tests/eval/adapter.nix {inherit lib;})
           (import ./tests/eval/generated-targets.nix {inherit lib;})
           (import ./tests/resolver/table.nix {inherit lib;})
@@ -377,6 +419,7 @@
             inherit lib providers;
             tintedRevision = tintedSchemesRevision;
           })
+          provenancePrecedence
         ];
         invalidProvider = builtins.tryEval (themeBrokerLib.mkProvider (import ./tests/fixtures/provider-invalid.nix {inherit lib;}));
         providerConformance =
@@ -553,6 +596,18 @@
               check-jsonschema --check-metaschema ${./schema}/*.schema.json
               check-jsonschema --schemafile ${./schema/provider.schema.json} ${lib.concatStringsSep " " providerSchemaInputs}
               check-jsonschema --schemafile ${./schema/adapter.schema.json} ${lib.concatStringsSep " " adapterSchemaInputs}
+              if check-jsonschema --schemafile ${./schema/adapter.schema.json} ${./tests/fixtures/adapter-invalid-simple-native-options.json}; then
+                echo "expected simple nativeOptions fixture to fail schema validation" >&2
+                exit 1
+              fi
+              if check-jsonschema --schemafile ${./schema/adapter.schema.json} ${./tests/fixtures/adapter-invalid-renderer-owner.json}; then
+                echo "expected renderer ownership fixture to fail schema validation" >&2
+                exit 1
+              fi
+              if check-jsonschema --schemafile ${./schema/adapter.schema.json} ${./tests/fixtures/adapter-invalid-simple-renderer.json}; then
+                echo "expected simple renderer fixture to fail schema validation" >&2
+                exit 1
+              fi
               check-jsonschema --schemafile ${./schema/wallpaper-catalog.schema.json} ${wallpaperSchemaInput}
               check-jsonschema --schemafile ${./schema/normalized-theme.schema.json} ${normalizedThemeSchemaInput}
               test ${pkgs.lib.escapeShellArg catppuccinNativeRevision} = ${pkgs.lib.escapeShellArg catppuccinManifest.source.revision}

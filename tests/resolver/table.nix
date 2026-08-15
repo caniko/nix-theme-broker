@@ -11,25 +11,27 @@
     namedOverrides ? false,
     roleOverrides ? false,
     nativeOptions ? [],
+    class ? null,
     autoSafe ? true,
   }:
-    themeLib.mkAdapter {
-      schema = "theme-broker.adapter/v1";
-      inherit id target platforms priority;
-      provider = "synthetic";
-      inherit autoSafe;
-      provenance = {
-        inherit tier;
-        repository = "https://example.invalid/${id}";
-        revision = "fixture";
-        license = "MIT";
-      };
-      capabilities = {
-        inherit variants accent namedOverrides roleOverrides;
-        transparency = false;
-        inherit nativeOptions;
-      };
-    };
+    themeLib.mkAdapter ({
+        schema = "theme-broker.adapter/v1";
+        inherit id target platforms priority;
+        provider = "synthetic";
+        inherit autoSafe;
+        provenance = {
+          inherit tier;
+          repository = "https://example.invalid/${id}";
+          revision = "fixture";
+          license = "MIT";
+        };
+        capabilities = {
+          inherit variants accent namedOverrides roleOverrides;
+          transparency = false;
+          inherit nativeOptions;
+        };
+      }
+      // lib.optionalAttrs (class != null) {inherit class;});
   exact = mk {id = "exact";};
   partial = mk {
     id = "partial";
@@ -41,6 +43,7 @@
   };
   nativeExact = mk {
     id = "native-exact";
+    class = "complex";
     nativeOptions = ["profile"];
   };
   rawRenderer = {

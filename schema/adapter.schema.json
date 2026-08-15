@@ -26,7 +26,7 @@
       "required": ["tier", "repository", "revision", "license"],
       "properties": {
         "tier": {"enum": ["official", "canonical", "maintained", "community", "local"]},
-        "repository": {"type": "string", "format": "uri"},
+        "repository": {"type": "string", "minLength": 1},
         "revision": {"type": "string"},
         "license": {"type": "string"}
       }
@@ -62,15 +62,89 @@
       }
     },
     {"if": {"required": ["optionPath"]}, "then": {"required": ["class"]}},
+    {
+      "if": {
+        "properties": {"rendererKind": {"const": "simple"}},
+        "required": ["rendererKind"]
+      },
+      "then": {
+        "not": {"properties": {"class": {"const": "complex"}}},
+        "required": ["optionPath"]
+      }
+    },
     {"if": {"required": ["optionValues"]}, "then": {"required": ["optionPath"]}},
     {
       "if": {
-        "properties": {"rendererKind": {"enum": ["vscode-profile", "firefox-profile"]}},
+        "properties": {
+          "rendererKind": {
+            "enum": ["vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors"]
+          }
+        },
+        "required": ["rendererKind"]
+      },
+      "then": {
+        "properties": {"class": {"const": "complex"}},
+        "required": ["class"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "rendererKind": {
+            "enum": ["vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors"]
+          }
+        },
+        "required": ["rendererKind"]
+      },
+      "then": {
+        "oneOf": [
+          {"properties": {"rendererKind": {"const": "vscode-profile"}, "id": {"const": "catppuccin-antigravity"}, "provider": {"const": "catppuccin"}, "target": {"const": "antigravity"}}},
+          {"properties": {"rendererKind": {"const": "vscode-profile"}, "id": {"const": "catppuccin-cursor"}, "provider": {"const": "catppuccin"}, "target": {"const": "cursor"}}},
+          {"properties": {"rendererKind": {"const": "vscode-profile"}, "id": {"const": "catppuccin-kiro"}, "provider": {"const": "catppuccin"}, "target": {"const": "kiro"}}},
+          {"properties": {"rendererKind": {"const": "vscode-profile"}, "id": {"const": "catppuccin-vscode"}, "provider": {"const": "catppuccin"}, "target": {"const": "vscode"}}},
+          {"properties": {"rendererKind": {"const": "vscode-profile"}, "id": {"const": "catppuccin-vscodium"}, "provider": {"const": "catppuccin"}, "target": {"const": "vscodium"}}},
+          {"properties": {"rendererKind": {"const": "vscode-profile"}, "id": {"const": "catppuccin-windsurf"}, "provider": {"const": "catppuccin"}, "target": {"const": "windsurf"}}},
+          {"properties": {"rendererKind": {"const": "firefox-profile"}, "id": {"const": "catppuccin-firefox"}, "provider": {"const": "catppuccin"}, "target": {"const": "firefox"}}},
+          {"properties": {"rendererKind": {"const": "gruvbox-cursors"}, "id": {"const": "gruvbox-cursors"}, "provider": {"const": "gruvbox"}, "target": {"const": "cursors"}}},
+          {"properties": {"rendererKind": {"const": "gruvbox-neovim"}, "id": {"const": "gruvbox-neovim"}, "provider": {"const": "gruvbox"}, "target": {"const": "neovim"}}},
+          {"properties": {"rendererKind": {"const": "gruvbox-vim"}, "id": {"const": "gruvbox-vim"}, "provider": {"const": "gruvbox"}, "target": {"const": "vim"}}},
+          {"properties": {"rendererKind": {"const": "gruvbox-vscode"}, "id": {"const": "gruvbox-vscode"}, "provider": {"const": "gruvbox"}, "target": {"const": "vscode"}}}
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {"class": {"const": "simple"}},
+        "required": ["class"]
+      },
+      "then": {
+        "properties": {"capabilities": {"properties": {"nativeOptions": {"maxItems": 0}}}}
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "capabilities": {
+            "properties": {"nativeOptions": {"minItems": 1}},
+            "required": ["nativeOptions"]
+          }
+        },
+        "required": ["capabilities"]
+      },
+      "then": {
+        "properties": {"class": {"const": "complex"}},
+        "required": ["class"]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "rendererKind": {"enum": ["vscode-profile", "firefox-profile"]}
+        },
         "required": ["rendererKind"]
       },
       "then": {
         "properties": {
-          "class": {"const": "complex"},
           "capabilities": {"properties": {"profiles": {"const": true}}, "required": ["profiles"]}
         },
         "required": ["class"]

@@ -10,6 +10,7 @@ meaning of an existing target requires a new schema version and a migration
 note. Provider palette corrections are data changes and must update the pinned
 source revision, golden fixtures, and support matrix together.
 
-The supported compatibility window is the exact locked nixpkgs, Stylix, and
-Catppuccin revisions in `flake.lock`; upgrades are reviewable input changes,
-not floating runtime dependencies.
+The supported compatibility window is the exact resolved nixpkgs, Stylix, and
+Catppuccin revisions in `flake.lock`; provenance is read from the evaluated
+flake inputs rather than from a second copy of lockfile metadata. Upgrades are
+reviewable input changes, not floating runtime dependencies.

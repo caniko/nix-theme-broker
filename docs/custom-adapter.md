@@ -15,7 +15,7 @@ myAdapter = {
     revision = "full-revision";
     license = "MIT";
   };
-  capabilities = {variants = "all"; accent = "none";};
+  capabilities = {variants = "all"; accent = "none"; nativeOptions = [];};
   autoSafe = true;
   class = "simple";
   optionPath = ["programs" "my-editor" "theme"];
@@ -28,3 +28,8 @@ stable tie-breaking. Pass simple adapters through the platform module's
 fixed shape; they then become the default active registry. Registry-only
 adapters without a declared renderer are never selected. Do not add
 activation-time network fetches.
+
+Declare every key consumed by a complex adapter in
+`capabilities.nativeOptions`; the resolver rejects a native candidate that
+cannot consume a requested key. Built-in `rendererKind` values are reserved for
+the corresponding built-in adapters.

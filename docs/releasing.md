@@ -17,4 +17,6 @@ Before tagging a release:
 
 The release gate is intentionally separate from deployment. The project uses
 MIT licensing and publishes immutable version tags; downstream consumers should
-pin a release tag or commit rather than a moving branch.
+pin a release tag or commit rather than a moving branch. Tag immutability is
+enforced by a repository ruleset that blocks deletion and force-push on
+`refs/tags/v*`.

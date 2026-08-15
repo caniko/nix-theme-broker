@@ -43,7 +43,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-082 | complete | independent schema/version policy, changelog, compatibility window, and release checklist |
 | TB-083 | complete | v0.1 implementation was published and superseded by the v1.0.0 release |
 | TB-090 | complete | ADR 0006 keeps provider selection global and documents the existing Stylix override escape hatch |
-| TB-091 | complete | temporary COSMIC target is tracked by Stylix issue #265 with explicit removal conditions |
+| TB-091 | complete | temporary COSMIC target is tracked by open Stylix issue #265 (checked 2026-08-15); removal conditions remain unmet |
 | TB-092 | complete | Rosé Pine is the third provider and passes the shared conformance, golden, and Tinted checks |
 | TB-093 | complete | v1.0.0 tag and GitHub release published: https://github.com/caniko/nix-theme-broker/releases/tag/v1.0.0 |
 

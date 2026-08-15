@@ -1,5 +1,18 @@
 # Changelog
 
+## [Unreleased]
+
+- Reserve exported built-in adapter IDs in the public resolver and validate
+  every `trustedAdapters` entry by exact built-in identity; custom adapters
+  reuse those IDs only at their own risk and are rejected.
+- Restore simple-adapter `nativeOptions` support: declared keys are validated
+  and forwarded into the adapter's option path, restoring `adapter/v1`
+  compatibility with v1.0.1 behavior.
+- Require a non-empty `provenance.repository` at runtime, matching the JSON
+  Schema.
+- Separate push and pull-request CI concurrency groups so an older branch
+  event is not cancelled by its newer counterpart.
+
 ## 1.0.2 - 2026-08-15
 
 - Reject duplicate adapter IDs across built-in, module, registry, and public

@@ -66,12 +66,13 @@ in
   assert rejects (base // {capabilities = base.capabilities // {accent = "partial";};});
   assert rejects (base // {capabilities = base.capabilities // {variants = [""];};});
   assert rejects (base // {capabilities = base.capabilities // {exact = "yes";};});
-  assert rejects (base
+  assert (themeLib.mkAdapter (base
     // {
       class = "simple";
       optionPath = ["programs" "fixture"];
       capabilities = base.capabilities // {nativeOptions = ["profile"];};
-    });
+    })).capabilities.nativeOptions
+  == ["profile"];
   assert rejects (base // {class = "other";});
   assert rejects (base // {class = null;});
   assert rejects (base // {class = "simple";});
@@ -106,4 +107,6 @@ in
       optionPath = ["programs" "fixture"];
       optionValues = [];
     });
-  assert rejects (base // {module = {};}); true
+  assert rejects (base // {module = {};});
+  assert rejects (base // {provenance = base.provenance // {repository = "";};});
+  assert rejects (base // {provenance = base.provenance // {repository = 42;};}); true

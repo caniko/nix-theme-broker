@@ -114,30 +114,6 @@
     },
     {
       "if": {
-        "properties": {"class": {"const": "simple"}},
-        "required": ["class"]
-      },
-      "then": {
-        "properties": {"capabilities": {"properties": {"nativeOptions": {"maxItems": 0}}}}
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "capabilities": {
-            "properties": {"nativeOptions": {"minItems": 1}},
-            "required": ["nativeOptions"]
-          }
-        },
-        "required": ["capabilities"]
-      },
-      "then": {
-        "properties": {"class": {"const": "complex"}},
-        "required": ["class"]
-      }
-    },
-    {
-      "if": {
         "properties": {
           "rendererKind": {"enum": ["vscode-profile", "firefox-profile"]}
         },

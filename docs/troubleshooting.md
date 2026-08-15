@@ -17,7 +17,9 @@ An accent mismatch is reported as `partial` unless
 syntax colors.
 
 A CI run that fails within seconds during action setup with `A task was
-canceled` at `Getting action download info` is a transient GitHub-hosted
-runner failure, not a workflow problem; rerun the failed check
-(`gh run rerun <run-id>` or the Actions rerun button) and the release gate
-continues.
+canceled` at `Getting action download info` is usually a transient
+GitHub-hosted runner failure; rerun the failed check (`gh run rerun <run-id>`
+or the Actions rerun button) and the release gate continues. First check
+whether a newer push or pull-request run for the same branch superseded the
+run: push and pull-request runs share a concurrency group per branch, and
+`cancel-in-progress` intentionally stops the older run.

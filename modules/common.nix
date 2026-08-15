@@ -165,7 +165,11 @@
               targetSelections ? ${adapter.target}
               && targetSelections.${adapter.target}.backend == "native"
               && targetSelections.${adapter.target}.adapter == adapter.id
-            ) ({enable = true;} // (adapter.optionValues or {}))
+            ) (
+              {enable = true;}
+              // (adapter.optionValues or {})
+              // (targetSelections.${adapter.target}.nativeOptions or {})
+            )
           )
     )
     (builtins.filter (

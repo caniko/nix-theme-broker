@@ -117,7 +117,8 @@
     imports = [../../modules/common.nix];
     _module.args = {
       themeBrokerProviders = providers;
-      themeBrokerAdapters = moduleAdapters;
+      themeBrokerAdapters = [];
+      themeBrokerBuiltinAdapters = moduleAdapters;
     };
   };
   evalWithAdapters = moduleAdapters: extra:
@@ -127,11 +128,23 @@
         inherit pkgs;
         themeBrokerPlatform = "homeManager";
         themeBrokerProviders = providers;
-        themeBrokerAdapters = moduleAdapters;
+        themeBrokerAdapters = [];
+        themeBrokerBuiltinAdapters = moduleAdapters;
       };
       modules = [base (broker moduleAdapters) {themeBroker.platform = "homeManager";} {config = extra;}];
     };
   eval = evalWithAdapters adapters;
+  evalWithCustomAdapters = customAdapters: extra:
+    lib.evalModules {
+      specialArgs = {
+        cosmicLib = null;
+        inherit pkgs providers customAdapters;
+        themeBrokerPlatform = "homeManager";
+        themeBrokerBuiltinAdapters = adapters;
+        themeBrokerAdapters = customAdapters;
+      };
+      modules = [base (broker adapters) {themeBroker.platform = "homeManager";} {config = extra;}];
+    };
   disabled = eval {};
   generated = eval {
     themeBroker.enable = true;
@@ -276,7 +289,40 @@
     class = "simple";
     optionPath = ["programs" "custom-theme"];
   };
-  customNative = evalWithAdapters (adapters ++ [customAdapter]) {
+  spoofedRenderer = {
+    schema = "theme-broker.adapter/v1";
+    id = "spoofed-renderer";
+    provider = "gruvbox";
+    target = "neovim";
+    platforms = ["homeManager"];
+    priority = 1000;
+    autoSafe = true;
+    provenance = {
+      tier = "local";
+      repository = "https://example.invalid/spoofed-renderer";
+      revision = "fixture";
+      license = "MIT";
+    };
+    capabilities = {
+      variants = "all";
+      accent = "none";
+      namedOverrides = false;
+      roleOverrides = false;
+      transparency = true;
+      nativeOptions = ["transparent"];
+    };
+    class = "complex";
+    rendererKind = "gruvbox-neovim";
+  };
+  invalidRawRenderer = builtins.tryEval (builtins.deepSeq
+    (evalWithCustomAdapters [spoofedRenderer] {
+      themeBroker.enable = true;
+      themeBroker.selection.provider = "gruvbox";
+      themeBroker.selection.variant = "dark-hard";
+      themeBroker.targets.neovim.backend = "native";
+    }).config.themeBroker.resolved
+    true);
+  customNative = evalWithCustomAdapters [customAdapter] {
     themeBroker.enable = true;
     themeBroker.targets.custom.backend = "native";
   };
@@ -418,6 +464,7 @@ in
   assert !(catppuccinTerminals.config.programs.ghostty.settings ? "window-theme");
   assert customNative.config.themeBroker.resolved.targets.custom.adapter == "custom-simple";
   assert customNative.config.programs.custom-theme.enable;
+  assert !invalidRawRenderer.success;
   assert aliasGenerated.config.themeBroker.resolved.targets.vscode.backend == "generated";
   assert aliasGenerated.config.stylix.targets.vscode.enable;
   assert aliasNative.config.themeBroker.resolved.targets.neovim.adapter == "gruvbox-neovim";

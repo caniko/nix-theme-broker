@@ -81,15 +81,12 @@
     then "accepted (${grade.fidelity} fidelity)"
     else "rejected (${grade.fidelity} fidelity)"
   }, trust tier `${adapter.provenance.tier or "community"}`, variants `${toString ((adapter.capabilities or {}).variants or "all")}`";
-in {
-  inherit aliases canonicalTarget;
-
-  mkAdapter = adapter:
+  normalizeAdapter = adapter:
     (target.validate {inherit adapter;})
     // {
       target = canonicalTarget adapter.target;
     };
-  mkBuiltinAdapter = adapter:
+  normalizeBuiltinAdapter = adapter:
     (target.validate {
       inherit adapter;
       allowBuiltinRenderer = true;
@@ -97,6 +94,11 @@ in {
     // {
       target = canonicalTarget adapter.target;
     };
+in {
+  inherit aliases canonicalTarget;
+
+  mkAdapter = normalizeAdapter;
+  mkBuiltinAdapter = normalizeBuiltinAdapter;
 
   resolve = {
     providerId,
@@ -107,9 +109,11 @@ in {
     generatedAvailable ? true,
     generatedAutoSafe ? true,
     adapters ? [],
+    trustedAdapters ? [],
     policy,
   }: let
     canonicalId = canonicalTarget targetId;
+    validatedAdapters = trustedAdapters ++ map normalizeAdapter adapters;
     matching =
       builtins.filter (
         adapter:
@@ -119,7 +123,7 @@ in {
             allowedTiers = policy.allowedNativeTiers;
           }
       )
-      adapters;
+      validatedAdapters;
     graded = lib.sortOn rank (map (adapter: let grade = capabilityMatch {inherit selection adapter policy;}; in adapter // grade // {reason = candidateReason adapter grade;}) matching);
     candidate = builtins.head (graded ++ [null]);
     native = lib.findFirst (candidate: candidate.accepted or false) null graded;

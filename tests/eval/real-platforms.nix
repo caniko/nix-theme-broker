@@ -12,7 +12,8 @@
   brokerModule = platform:
     import ../../modules/${platform}.nix {
       themeBrokerProviders = providers;
-      themeBrokerAdapters = adapters;
+      themeBrokerBuiltinAdapters = adapters;
+      themeBrokerAdapters = [];
     };
   home = homeManager.lib.homeManagerConfiguration {
     pkgs = nixpkgs.legacyPackages.${linuxSystem};

@@ -58,7 +58,8 @@
         inherit pkgs;
         themeBrokerPlatform = "homeManager";
         themeBrokerProviders = providers;
-        themeBrokerAdapters = adapters;
+        themeBrokerAdapters = [];
+        themeBrokerBuiltinAdapters = adapters;
       };
       modules = [
         base
@@ -66,7 +67,8 @@
           imports = [../../modules/home-manager.nix];
           _module.args = {
             themeBrokerProviders = providers;
-            themeBrokerAdapters = adapters;
+            themeBrokerAdapters = [];
+            themeBrokerBuiltinAdapters = adapters;
           };
         }
         example

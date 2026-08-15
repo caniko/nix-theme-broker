@@ -43,6 +43,30 @@
     id = "native-exact";
     nativeOptions = ["profile"];
   };
+  rawRenderer = {
+    schema = "theme-broker.adapter/v1";
+    id = "raw-renderer";
+    provider = "synthetic";
+    target = "editor";
+    platforms = ["homeManager"];
+    priority = 100;
+    autoSafe = true;
+    provenance = {
+      tier = "local";
+      repository = "https://example.invalid/raw-renderer";
+      revision = "fixture";
+      license = "MIT";
+    };
+    capabilities = {
+      variants = "all";
+      accent = "none";
+      namedOverrides = false;
+      roleOverrides = false;
+      transparency = false;
+    };
+    class = "complex";
+    rendererKind = "gruvbox-neovim";
+  };
   generatedSelection = {
     backend = "generated";
     accent = null;
@@ -220,6 +244,7 @@
     adapters = [exact];
     selection = nativeSelection // {nativeOptions.profile = "work";};
   };
+  r027 = resolve {adapters = [rawRenderer];};
 in
   assert r001.success && r001.value.backend == "generated";
   assert !r002.success;
@@ -242,4 +267,4 @@ in
   assert !r021.success;
   assert !r022.success;
   assert r023.success && r023.value.backend == "generated";
-  assert !r024.success && r025.success && r025.value.adapter == "native-exact" && !r026.success; true
+  assert !r024.success && r025.success && r025.value.adapter == "native-exact" && !r026.success && !r027.success; true

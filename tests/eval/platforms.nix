@@ -98,7 +98,8 @@
         inherit pkgs;
         themeBrokerPlatform = platform;
         themeBrokerProviders = providers;
-        themeBrokerAdapters = adapters;
+        themeBrokerBuiltinAdapters = adapters;
+        themeBrokerAdapters = [];
       };
       modules = [
         base
@@ -106,7 +107,8 @@
           imports = [platformFiles.${platform}];
           _module.args = {
             themeBrokerProviders = providers;
-            themeBrokerAdapters = adapters;
+            themeBrokerBuiltinAdapters = adapters;
+            themeBrokerAdapters = [];
           };
         }
         {

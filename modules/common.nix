@@ -5,6 +5,7 @@
   pkgs,
   cosmicLib ? null,
   themeBrokerAdapters ? [],
+  themeBrokerBuiltinAdapters ? [],
   themeBrokerPlatform ? "homeManager",
   themeBrokerProviders,
   ...
@@ -14,9 +15,11 @@
   # attrset while computing those outputs creates an evaluation cycle.
   brokerEnabled = config.themeBroker.enable;
   themeLib = import ../lib {inherit lib;};
+  customAdapters = map themeLib.mkAdapter (themeBrokerAdapters ++ config.themeBroker.registry.adapters);
+  declaredAdapters = themeBrokerBuiltinAdapters ++ map themeLib.mkAdapter themeBrokerAdapters;
   registryCfg = {
     providers = config.themeBroker.registry.providers;
-    adapters = themeBrokerAdapters ++ map themeLib.mkAdapter config.themeBroker.registry.adapters;
+    adapters = themeBrokerBuiltinAdapters ++ customAdapters;
     wallpapers = themeLib.validateRegistry config.themeBroker.registry.wallpapers;
   };
   selectionCfg = {
@@ -54,8 +57,7 @@
     && cosmicLib != null;
   profileRendererKinds = ["vscode-profile" "firefox-profile"];
   complexRendererKinds = ["gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
-  nativeOptionAdapters = themeBrokerAdapters;
-  declaredAdapters = themeBrokerAdapters;
+  nativeOptionAdapters = declaredAdapters;
   validNativeOptions = target: value: let
     targetAdapters = builtins.filter (adapter: canonicalTarget adapter.target == target) nativeOptionAdapters;
     keys = lib.unique (lib.concatMap (adapter: adapter.capabilities.nativeOptions or []) targetAdapters);
@@ -77,7 +79,9 @@
     != null
     && adapter == declared
     && themeLib.rendererSupported adapter;
-  renderableAdapters = builtins.filter hasRenderer registryCfg.adapters;
+  trustedRenderers = builtins.filter themeLib.rendererSupported themeBrokerBuiltinAdapters;
+  customRenderers = builtins.filter hasRenderer customAdapters;
+  renderableAdapters = trustedRenderers ++ customRenderers;
   generatedConfigTargets =
     builtins.filter (
       target:
@@ -127,7 +131,8 @@
               )
             );
           generatedAutoSafe = (generatedRegistry.${target} or {}).autoSafe or false;
-          adapters = renderableAdapters;
+          adapters = customRenderers;
+          trustedAdapters = trustedRenderers;
           policy = policyCfg;
         }
         // {nativeOptions = targetCfg.nativeOptions;}

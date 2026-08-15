@@ -232,7 +232,8 @@
       imports = [
         (import platformModules.${platform} {
           themeBrokerProviders = providers;
-          themeBrokerAdapters = adapters;
+          themeBrokerAdapters = [];
+          themeBrokerBuiltinAdapters = adapters;
         })
       ];
     };
@@ -307,7 +308,7 @@
           };
           targetId = "neovim";
           platform = "homeManager";
-          inherit adapters;
+          trustedAdapters = adapters;
           policy = {
             allowedNativeTiers = ["official" "canonical" "maintained" "local"];
             requireAccentFidelity = false;

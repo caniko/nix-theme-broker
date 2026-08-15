@@ -1,5 +1,6 @@
 {
-  themeBrokerAdapters,
+  themeBrokerAdapters ? [],
+  themeBrokerBuiltinAdapters ? [],
   themeBrokerProviders,
   ...
 }: {
@@ -13,7 +14,7 @@
       ...
     }:
       import ./common.nix {
-        inherit config cosmicLib lib options pkgs themeBrokerAdapters themeBrokerProviders;
+        inherit config cosmicLib lib options pkgs themeBrokerAdapters themeBrokerBuiltinAdapters themeBrokerProviders;
         themeBrokerPlatform = "darwin";
       })
     ./internal/options.nix

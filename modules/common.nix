@@ -66,7 +66,7 @@
     lib.hasAttrByPath ["wayland" "desktopManager" "cosmic" "appearance"] options
     && cosmicLib != null;
   profileRendererKinds = ["vscode-profile" "firefox-profile"];
-  complexRendererKinds = ["gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
+  complexRendererKinds = ["gruvbox-browser" "gruvbox-cursors" "gruvbox-neovim" "gruvbox-vim" "gruvbox-vscode"];
   nativeOptionAdapters = declaredAdapters;
   validNativeOptions = target: value: let
     targetAdapters = builtins.filter (adapter: canonicalTarget adapter.target == target) nativeOptionAdapters;
@@ -236,6 +236,14 @@
         && targetSelections.vscode.adapter == "gruvbox-vscode"
       ) (import ../native/gruvbox/vscode.nix {inherit lib pkgs selected;}))
     ])
+    ++ lib.optional (themeBrokerPlatform == "homeManager") (lib.mkMerge (map (
+      target:
+        lib.mkIf (
+          targetSelections ? ${target}
+          && targetSelections.${target}.backend == "native"
+          && targetSelections.${target}.adapter == "gruvbox-${target}"
+        ) (import ../native/gruvbox/chromium.nix {inherit lib pkgs selected target;})
+    ) ["chromium" "brave"]))
     ++ lib.optionals (themeBrokerPlatform != "darwin") [
       (lib.mkIf (
         targetSelections ? cursors

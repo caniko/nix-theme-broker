@@ -14,6 +14,7 @@ Built-ins currently include:
 | `gruvbox-vim` | canonical | Vim |
 | `gruvbox-neovim` | maintained | Neovim |
 | `gruvbox-vscode` | maintained | VS Code color and Material icon extensions |
+| `gruvbox-chromium`, `gruvbox-brave` | canonical | Permissionless Gruvbox dark-hard browser theme |
 
 The VS Code adapters own both Marketplace extension provenance and the flat
 `workbench.colorTheme`/`workbench.iconTheme` settings. Gruvbox uses the pinned
@@ -30,6 +31,11 @@ upstream option path, while Firefox and the six VS Code-family targets use
 profile renderers. The support matrix is the authoritative per-target list; a
 target is only applied when it is explicitly enrolled under
 `themeBroker.targets.<id>`.
+
+The Gruvbox browser adapters share a locally built Manifest V3 CRX. Its
+repository-owned signing key is an identity, not a credential: the extension
+contains only explicit theme colors and has no permissions, scripts, images,
+or remote update URL.
 
 `community` artifacts are not trusted by default. A local simple adapter is
 declared through the platform module's `themeBrokerAdapters` argument with an

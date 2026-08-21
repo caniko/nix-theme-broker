@@ -20,7 +20,7 @@
     },
     "optionValues": {"type": "object"},
     "module": {"type": "string", "minLength": 1},
-    "rendererKind": {"enum": ["simple", "vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors"]},
+    "rendererKind": {"enum": ["simple", "vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors", "gruvbox-browser"]},
     "provenance": {
       "type": "object",
       "required": ["tier", "repository", "revision", "license"],
@@ -77,7 +77,7 @@
       "if": {
         "properties": {
           "rendererKind": {
-            "enum": ["vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors"]
+            "enum": ["vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors", "gruvbox-browser"]
           }
         },
         "required": ["rendererKind"]
@@ -91,7 +91,7 @@
       "if": {
         "properties": {
           "rendererKind": {
-            "enum": ["vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors"]
+            "enum": ["vscode-profile", "firefox-profile", "gruvbox-vim", "gruvbox-neovim", "gruvbox-vscode", "gruvbox-cursors", "gruvbox-browser"]
           }
         },
         "required": ["rendererKind"]
@@ -108,7 +108,9 @@
           {"properties": {"rendererKind": {"const": "gruvbox-cursors"}, "id": {"const": "gruvbox-cursors"}, "provider": {"const": "gruvbox"}, "target": {"const": "cursors"}}},
           {"properties": {"rendererKind": {"const": "gruvbox-neovim"}, "id": {"const": "gruvbox-neovim"}, "provider": {"const": "gruvbox"}, "target": {"const": "neovim"}}},
           {"properties": {"rendererKind": {"const": "gruvbox-vim"}, "id": {"const": "gruvbox-vim"}, "provider": {"const": "gruvbox"}, "target": {"const": "vim"}}},
-          {"properties": {"rendererKind": {"const": "gruvbox-vscode"}, "id": {"const": "gruvbox-vscode"}, "provider": {"const": "gruvbox"}, "target": {"const": "vscode"}}}
+          {"properties": {"rendererKind": {"const": "gruvbox-vscode"}, "id": {"const": "gruvbox-vscode"}, "provider": {"const": "gruvbox"}, "target": {"const": "vscode"}}},
+          {"properties": {"rendererKind": {"const": "gruvbox-browser"}, "id": {"const": "gruvbox-chromium"}, "provider": {"const": "gruvbox"}, "target": {"const": "chromium"}}},
+          {"properties": {"rendererKind": {"const": "gruvbox-browser"}, "id": {"const": "gruvbox-brave"}, "provider": {"const": "gruvbox"}, "target": {"const": "brave"}}}
         ]
       }
     },

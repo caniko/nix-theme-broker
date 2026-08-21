@@ -197,6 +197,13 @@
     themeBroker.selection.variant = "dark-hard";
     themeBroker.targets.vscode.backend = "native";
   };
+  browserNative = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-hard";
+    themeBroker.targets.chromium.backend = "native";
+    themeBroker.targets.brave.backend = "native";
+  };
   vscodeVariants = map (variant: let
     result = eval {
       themeBroker.enable = true;
@@ -407,6 +414,12 @@
       nativeOptions.profile = "work";
     };
   };
+  invalidGruvboxBrowserVariant = invalidNativeResolution {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "gruvbox";
+    themeBroker.selection.variant = "dark-medium";
+    themeBroker.targets.chromium.backend = "native";
+  };
   invalidCatppuccinNeovimTransparent = invalidNativeResolution {
     themeBroker.enable = true;
     themeBroker.selection = {
@@ -456,6 +469,11 @@ in
   assert builtins.elem "jdinhlife.gruvbox" (extensionIds vscodeNative.config.programs.vscode.profiles.default.extensions);
   assert builtins.elem "navernoedenis.gruvbox-material-icons" (extensionIds vscodeNative.config.programs.vscode.profiles.default.extensions);
   assert vscodeNative.config.stylix.targets.vscode.enable == false;
+  assert browserNative.config.themeBroker.resolved.targets.chromium.adapter == "gruvbox-chromium";
+  assert browserNative.config.themeBroker.resolved.targets.brave.adapter == "gruvbox-brave";
+  assert (builtins.head browserNative.config.programs.chromium.extensions).id == "lmfonlemcgahfkfdalcnjgjibaiinhna";
+  assert (builtins.head browserNative.config.programs.brave.extensions).id == "lmfonlemcgahfkfdalcnjgjibaiinhna";
+  assert (builtins.head browserNative.config.programs.chromium.extensions).crxPath == (builtins.head browserNative.config.programs.brave.extensions).crxPath;
   assert builtins.all (
     row:
       row.settings."workbench.colorTheme"
@@ -503,7 +521,7 @@ in
   assert aliasUnmanaged.config.themeBroker.resolved.targets.vscode.backend == "generated";
   assert !aliasCollision.success;
   assert !unknownNativeOption.success && !invalidTransparent.success && !invalidCursorName.success && !invalidProfileTarget.success && !invalidProfileType.success;
-  assert !invalidGruvboxVscodeProfile.success && !invalidCatppuccinNeovimTransparent.success && !invalidCatppuccinCursorName.success;
+  assert !invalidGruvboxVscodeProfile.success && !invalidGruvboxBrowserVariant.success && !invalidCatppuccinNeovimTransparent.success && !invalidCatppuccinCursorName.success;
   assert assertions generated;
   assert assertions native;
   assert !(

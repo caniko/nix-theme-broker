@@ -40,6 +40,16 @@
         target = "cursors";
       };
     };
+    "gruvbox-browser" = {
+      "gruvbox-brave" = {
+        provider = "gruvbox";
+        target = "brave";
+      };
+      "gruvbox-chromium" = {
+        provider = "gruvbox";
+        target = "chromium";
+      };
+    };
     "gruvbox-neovim" = {
       "gruvbox-neovim" = {
         provider = "gruvbox";
@@ -129,7 +139,7 @@ in {
       (require id ["optionPath"] (!hasOptionPath || (hasClass && validOptionPath optionPath)) "requires a renderer class and a non-empty string path")
       (require id ["optionValues"] (!hasOptionValues || (hasOptionPath && builtins.isAttrs optionValues)) "requires optionPath and an attribute set")
       (require id ["module"] (!hasModule || (builtins.isString module && module != "")) "must be a non-empty string")
-      (require id ["rendererKind"] (!hasRendererKind || builtins.elem rendererKind ["simple" "vscode-profile" "firefox-profile" "gruvbox-vim" "gruvbox-neovim" "gruvbox-vscode" "gruvbox-cursors"]) "unknown renderer kind")
+      (require id ["rendererKind"] (!hasRendererKind || builtins.elem rendererKind ["simple" "vscode-profile" "firefox-profile" "gruvbox-vim" "gruvbox-neovim" "gruvbox-vscode" "gruvbox-cursors" "gruvbox-browser"]) "unknown renderer kind")
       (require id ["rendererKind"] (!hasRendererKind || rendererKind == "simple" || (allowBuiltinRenderer && rendererOwner adapter)) "renderer kind is reserved for its built-in adapter")
       (require id ["rendererKind"] (!hasRendererKind || rendererSupported adapter) "renderer kind does not have a compatible renderer")
       (require id ["rendererKind"] (!builtins.elem rendererKind ["vscode-profile" "firefox-profile"] || class == "complex") "profile renderers require class `complex`")

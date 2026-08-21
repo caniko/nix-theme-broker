@@ -124,4 +124,6 @@ Every listed adapter has an implemented renderer; machine-readable renderer and 
 | gruvbox-vim | gruvbox | vim | homeManager | canonical | 5d15b2765f59754d7ac263c88a0f6e3e58124951 |
 | gruvbox-neovim | gruvbox | neovim | homeManager | maintained | 154eb5ff5b96d0641307113fa385eaf0d36d9796 |
 | gruvbox-vscode | gruvbox | vscode | homeManager | maintained | ca3b8ad203e84a884ca33fb84b5795cf43032709 |
+| gruvbox-chromium | gruvbox | chromium | homeManager | canonical | 5d15b2765f59754d7ac263c88a0f6e3e58124951 |
+| gruvbox-brave | gruvbox | brave | homeManager | canonical | 5d15b2765f59754d7ac263c88a0f6e3e58124951 |
 | gruvbox-cursors | gruvbox | cursors | homeManager, nixos | maintained | v2.0.7 |

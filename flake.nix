@@ -169,6 +169,56 @@
         }
         {
           schema = "theme-broker.adapter/v1";
+          id = "gruvbox-chromium";
+          provider = "gruvbox";
+          target = "chromium";
+          platforms = ["homeManager"];
+          priority = 100;
+          autoSafe = true;
+          provenance = {
+            tier = "canonical";
+            repository = "https://github.com/morhetz/gruvbox";
+            revision = "5d15b2765f59754d7ac263c88a0f6e3e58124951";
+            license = "MIT";
+          };
+          capabilities = {
+            variants = ["dark-hard"];
+            accent = "none";
+            namedOverrides = true;
+            roleOverrides = true;
+            transparency = false;
+            nativeOptions = [];
+          };
+          class = "complex";
+          rendererKind = "gruvbox-browser";
+        }
+        {
+          schema = "theme-broker.adapter/v1";
+          id = "gruvbox-brave";
+          provider = "gruvbox";
+          target = "brave";
+          platforms = ["homeManager"];
+          priority = 100;
+          autoSafe = true;
+          provenance = {
+            tier = "canonical";
+            repository = "https://github.com/morhetz/gruvbox";
+            revision = "5d15b2765f59754d7ac263c88a0f6e3e58124951";
+            license = "MIT";
+          };
+          capabilities = {
+            variants = ["dark-hard"];
+            accent = "none";
+            namedOverrides = true;
+            roleOverrides = true;
+            transparency = false;
+            nativeOptions = [];
+          };
+          class = "complex";
+          rendererKind = "gruvbox-browser";
+        }
+        {
+          schema = "theme-broker.adapter/v1";
           id = "gruvbox-cursors";
           provider = "gruvbox";
           target = "cursors";
@@ -455,6 +505,13 @@
         adapterSchemaInputs = lib.imap0 (index: adapter: pkgs.writeText "theme-broker-adapter-${toString index}.json" (builtins.toJSON adapter)) adapters;
         wallpaperSchemaInput = pkgs.writeText "theme-broker-wallpapers.json" (builtins.toJSON {});
         normalizedThemeSchemaInput = pkgs.writeText "theme-broker-normalized-theme.json" (builtins.toJSON darkHard);
+        browserThemeExtension =
+          builtins.head
+          (import ./native/gruvbox/chromium.nix {
+            inherit lib pkgs;
+            selected = darkHard;
+            target = "chromium";
+          }).programs.chromium.extensions.content;
       in {
         formatter = pkgs.alejandra;
         devShells.default = pkgs.mkShell {packages = [pkgs.alejandra pkgs.python3];};
@@ -470,6 +527,26 @@
           gruvbox-dark-hard = pkgs.runCommand "theme-broker-gruvbox-dark-hard" {} ''
             test ${pkgs.lib.escapeShellArg darkHard.base16.base00.withHashtag} = '#1d2021'
             test ${pkgs.lib.escapeShellArg darkHard.roles.ui.background.withHashtag} = '#1d2021'
+            touch "$out"
+          '';
+          gruvbox-browser-theme = pkgs.runCommand "theme-broker-gruvbox-browser-theme" {nativeBuildInputs = [pkgs.go-crx3 pkgs.jq];} ''
+            mkdir unpacked
+            crx3 unpack --disable-subdir --outfile unpacked ${browserThemeExtension.crxPath}
+            test "$(crx3 id ${browserThemeExtension.crxPath})" = ${browserThemeExtension.id}
+            jq -e '
+              .manifest_version == 3
+              and .version == "${browserThemeExtension.version}"
+              and (.permissions? == null)
+              and (.background? == null)
+              and (.content_scripts? == null)
+              and (.update_url? == null)
+              and (.theme.images? == null)
+              and (.theme.colors | length == 24)
+              and .theme.colors.frame == [29, 32, 33]
+              and .theme.colors.toolbar == [60, 56, 54]
+              and .theme.colors.omnibox_text == [235, 219, 178]
+              and .theme.colors.ntp_link == [131, 165, 152]
+            ' unpacked/manifest.json
             touch "$out"
           '';
           provider-shape = pkgs.runCommand "theme-broker-provider-shape" {} ''

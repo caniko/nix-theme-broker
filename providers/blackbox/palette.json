@@ -1,0 +1,50 @@
+{
+  "schema": "theme-broker.blackbox-palette/v1",
+  "source": {
+    "repository": "https://github.com/caniko/nix-theme-broker",
+    "revision": "local",
+    "kind": "local-derivative",
+    "note": "Authored and maintained in this repository; there is no upstream snapshot to pin, so `revision` is `local`. Blackbox is a local Gruvbox-inspired derivative, not an official Gruvbox release.",
+    "derivedFrom": {
+      "name": "Gruvbox",
+      "repository": "https://github.com/morhetz/gruvbox",
+      "revision": "5d15b2765f59754d7ac263c88a0f6e3e58124951",
+      "license": "MIT",
+      "scope": "normal/bright accent hexes and the cream foreground family"
+    },
+    "blackboxSpecific": ["background", "surface_0", "surface_1", "surface_2", "bright_magenta"],
+    "previewErrata": "Preview renders mislabel bright blue/aqua, carried an invalid purple hex, and called surface_0 (#1a1a1a) `bright_black`; the values and labels in this file are authoritative."
+  },
+  "named": {
+    "background": "#000000",
+    "surface_0": "#1a1a1a",
+    "surface_1": "#262626",
+    "surface_2": "#3a3a3a",
+    "foreground": "#ebdbb2",
+    "muted": "#bdae93",
+    "subtle": "#928374",
+    "foreground_bright": "#fbf1c7",
+    "red": "#cc241d",
+    "orange": "#d65d0e",
+    "yellow": "#d79921",
+    "green": "#98971a",
+    "aqua": "#689d6a",
+    "blue": "#458588",
+    "purple": "#b16286",
+    "bright_red": "#fb4934",
+    "bright_orange": "#fe8019",
+    "bright_yellow": "#fabd2f",
+    "bright_green": "#b8bb26",
+    "bright_aqua": "#8ec07c",
+    "bright_blue": "#83a598",
+    "bright_purple": "#d3869b",
+    "magenta": "#d3869b",
+    "bright_magenta": "#eb6f92"
+  },
+  "variants": {
+    "dark": {
+      "appearance": "dark",
+      "contrast": "hard"
+    }
+  }
+}

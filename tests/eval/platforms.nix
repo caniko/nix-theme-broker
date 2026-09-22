@@ -37,6 +37,12 @@
       accent = "iris";
       base00 = "#232136";
     }
+    {
+      provider = "blackbox";
+      variant = "dark";
+      accent = null;
+      base00 = "#000000";
+    }
   ];
   base = {
     options = {

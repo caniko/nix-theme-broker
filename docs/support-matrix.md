@@ -6,6 +6,7 @@ Generated from the provider and native-adapter registries.
 
 | Provider | Variant | Appearance | Contrast | Accents |
 | --- | --- | --- | --- | --- |
+| blackbox | dark | dark | hard | none |
 | catppuccin | frappe | dark | medium | blue, flamingo, green, lavender, maroon, mauve, peach, pink, red, rosewater, sapphire, sky, teal, yellow |
 | catppuccin | latte | light | medium | blue, flamingo, green, lavender, maroon, mauve, peach, pink, red, rosewater, sapphire, sky, teal, yellow |
 | catppuccin | macchiato | dark | medium | blue, flamingo, green, lavender, maroon, mauve, peach, pink, red, rosewater, sapphire, sky, teal, yellow |

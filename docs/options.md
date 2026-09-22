@@ -5,7 +5,7 @@ All options live below `themeBroker` and are disabled by default.
 | Option | Meaning |
 | --- | --- |
 | `enable` | Enable selection, Stylix bridge, and broker-managed targets. |
-| `selection.provider` | Registered provider ID (`catppuccin`, `gruvbox`, or `rose-pine`). |
+| `selection.provider` | Registered provider ID (`blackbox`, `catppuccin`, `gruvbox`, or `rose-pine`). |
 | `selection.variant` | Optional provider variant ID; `null` uses the provider default. |
 | `selection.accent` | Optional accent; `null` uses the provider default. |
 | `selection.overrides` | Named, semantic-role, ANSI, Base16, or Base24 overrides. |

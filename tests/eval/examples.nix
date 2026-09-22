@@ -92,9 +92,14 @@ in
   assert builtins.all (row: row.enabled) (map (path: eval path {}) [
     ../../examples/catppuccin-home-manager/default.nix
     ../../examples/gruvbox-home-manager/default.nix
+    ../../examples/blackbox-home-manager/default.nix
     ../../examples/mixed-native-generated/default.nix
     ../../examples/custom-provider/default.nix
   ]);
+  assert (eval ../../examples/blackbox-home-manager/default.nix {}).config.themeBroker.selection.provider == "blackbox";
+  assert (eval ../../examples/blackbox-home-manager/default.nix {}).config.themeBroker.selected.provider == "blackbox";
+  assert (eval ../../examples/blackbox-home-manager/default.nix {}).config.themeBroker.selected.variant == "dark";
+  assert (eval ../../examples/blackbox-home-manager/default.nix {}).config.stylix.base16Scheme.base00 == "#000000";
   assert rosePineGenerated.config.themeBroker.selected.provider == "rose-pine";
   assert rosePineGenerated.config.themeBroker.resolved.targets.alacritty.backend == "generated";
   assert rosePineGenerated.config.stylix.targets.alacritty.enable; true

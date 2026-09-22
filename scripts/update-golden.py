@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import subprocess
 from pathlib import Path
@@ -76,25 +77,63 @@ def expected(actual: dict, current: dict | None) -> dict:
     return output
 
 
+def refreshed_source(actual: dict, current: dict, upstream: dict, revision: str) -> dict:
+    """Advance provenance only: changed colors still require explicit review."""
+    if expected(actual, current) != current:
+        raise ValueError("provider output changed; review the golden diff before updating")
+    if current["source"]["repository"] != TINTED_SOURCE["repository"]:
+        raise ValueError("unexpected golden source repository")
+    if current["base16"] != upstream:
+        raise ValueError("pinned Tinted colors changed; provenance cannot be advanced automatically")
+    if len(revision) != 40 or any(c not in "0123456789abcdef" for c in revision):
+        raise ValueError("expected a full pinned source revision")
+    return current | {"source": current["source"] | {"revision": revision}}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--write", action="store_true", help="rewrite fixtures after explicit review")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--write", action="store_true", help="rewrite fixtures after explicit review")
+    mode.add_argument("--refresh-source", action="store_true", help="advance provenance only if provider output and pinned upstream colors still match")
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[1]
     fixture_dir = repo / "tests" / "golden"
+    source = None
+    if args.refresh_source:
+        expression = f"let f = builtins.getFlake {nix_string(str(repo))}; in {{ path = toString f.inputs.tinted-schemes; revision = f.inputs.tinted-schemes.rev; }}"
+        result = subprocess.run(
+            ["nix", "eval", "--no-allow-import-from-derivation", "--impure", "--no-update-lock-file", "--json", "--expr", expression],
+            check=True, capture_output=True, text=True,
+        )
+        source = json.loads(result.stdout)
+        spec = importlib.util.spec_from_file_location("check_tinted", repo / "scripts" / "check-tinted.py")
+        checker = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(checker)
     changed = False
+    updates = []
     for name, (provider, variant, accent) in FIXTURES.items():
         path = fixture_dir / f"{name}.json"
         current = json.loads(path.read_text())
-        actual = expected(evaluate(repo, provider, variant, accent), current)
+        observed = evaluate(repo, provider, variant, accent)
+        if source is not None:
+            scheme = current["source"]["scheme"]
+            if not scheme or any(c not in "abcdefghijklmnopqrstuvwxyz0123456789-" for c in scheme):
+                raise ValueError("invalid Tinted scheme name")
+            upstream = checker.read_scheme(Path(source["path"]) / "base16" / f"{scheme}.yaml")
+            actual = refreshed_source(observed, current, upstream, source["revision"])
+        else:
+            actual = expected(observed, current)
         if actual != current:
             changed = True
-            if args.write:
-                path.write_text(json.dumps(actual, indent=2) + "\n")
-                print(f"updated {path.relative_to(repo)}")
+            if args.write or args.refresh_source:
+                updates.append((path, actual))
             else:
                 print(f"stale {path.relative_to(repo)}")
-    if changed and not args.write:
+    # Validate every fixture before writing any of them.
+    for path, actual in updates:
+        path.write_text(json.dumps(actual, indent=2) + "\n")
+        print(f"updated {path.relative_to(repo)}")
+    if changed and not (args.write or args.refresh_source):
         print("run `python3 scripts/update-golden.py --write` after reviewing the diff")
         return 1
     return 0

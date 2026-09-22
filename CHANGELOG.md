@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Add the `blackbox` built-in provider: a local, true-black (`#000000`),
+  Gruvbox-inspired derivative with a single `dark` variant, no accent axis,
+  and no Base24 projection. Ships its authoritative `palette.json` inventory,
+  semantic/ANSI/Base16 projections, an eval assertion suite, a real Home
+  Manager generated-file check, and a `blackbox-home-manager` example.
+  Gruvbox is unchanged; Blackbox declares no native adapters, so `auto` never
+  picks a provider-mismatched adapter.
+
 ## 1.0.3 - 2026-08-15
 
 - Reserve exported built-in adapter IDs in the public resolver and validate

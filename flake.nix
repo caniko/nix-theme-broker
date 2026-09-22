@@ -76,7 +76,9 @@
       inherit (nixpkgs) lib;
       revision = rosePinePaletteRevision;
     };
+    blackbox = import ./providers/blackbox {inherit (nixpkgs) lib;};
     providers = {
+      blackbox = blackbox;
       catppuccin = catppuccinProvider;
       inherit gruvbox;
       rose-pine = rosePine;
@@ -454,6 +456,7 @@
         evaluationTests = [
           (import ./tests/eval/color.nix {inherit lib;})
           (import ./tests/eval/selection.nix {inherit lib providers;})
+          (import ./tests/eval/blackbox.nix {inherit lib providers adapters;})
           (import ./tests/eval/public-lib.nix {
             inherit lib providers adapters;
             publicLib = publicThemeBrokerLib;
@@ -505,6 +508,11 @@
         adapterSchemaInputs = lib.imap0 (index: adapter: pkgs.writeText "theme-broker-adapter-${toString index}.json" (builtins.toJSON adapter)) adapters;
         wallpaperSchemaInput = pkgs.writeText "theme-broker-wallpapers.json" (builtins.toJSON {});
         normalizedThemeSchemaInput = pkgs.writeText "theme-broker-normalized-theme.json" (builtins.toJSON darkHard);
+        blackboxHome = import ./tests/home/blackbox.nix {
+          inherit pkgs providers adapters;
+          homeManager = home-manager;
+          inherit stylix catppuccin;
+        };
         browserThemeExtension =
           builtins.head
           (import ./native/gruvbox/chromium.nix {
@@ -529,6 +537,65 @@
             test ${pkgs.lib.escapeShellArg darkHard.roles.ui.background.withHashtag} = '#1d2021'
             touch "$out"
           '';
+          blackbox-dark = let
+            blackboxSelected = themeBrokerLib.resolveSelection {
+              inherit providers;
+              selection = {
+                provider = "blackbox";
+                variant = "dark";
+                accent = null;
+              };
+            };
+            checks = [
+              (blackboxSelected.roles.ui.background.withHashtag == "#000000")
+              (blackboxSelected.base16.base00.withHashtag == "#000000")
+              (blackboxSelected.ansi.bright.black.withHashtag == "#928374")
+              (blackboxSelected.roles.syntax.comment.withHashtag == "#928374")
+              (blackboxSelected.ansi.normal.blue.withHashtag == "#458588")
+              (blackboxSelected.ansi.bright.blue.withHashtag == "#83a598")
+              (blackboxSelected.ansi.bright.cyan.withHashtag == "#8ec07c")
+              (blackboxSelected.ansi.normal.magenta.withHashtag == "#b16286")
+              (blackboxSelected.base24 == null)
+            ];
+          in
+            pkgs.runCommand "theme-broker-blackbox-dark" {} ''
+              test ${
+                if builtins.all (value: value) checks
+                then "true"
+                else "false"
+              } = true
+              touch "$out"
+            '';
+          blackbox-home-manager = let
+            cfg = blackboxHome.home.config;
+            resolved =
+              cfg.themeBroker.selected.provider
+              == "blackbox"
+              && cfg.themeBroker.selected.variant == "dark"
+              && cfg.stylix.base16Scheme.base00 == "#000000"
+              && cfg.themeBroker.resolved.targets.kitty.backend == "generated"
+              && cfg.themeBroker.resolved.targets.kitty.adapter == null
+              && cfg.themeBroker.resolved.targets.helix.backend == "generated"
+              && cfg.themeBroker.resolved.targets.helix.adapter == null
+              && cfg.stylix.targets.kitty.enable
+              && cfg.stylix.targets.helix.enable
+              && cfg.programs.helix.settings.theme == "stylix";
+          in
+            pkgs.runCommand "theme-broker-blackbox-home-manager" {} ''
+              test ${
+                if resolved
+                then "true"
+                else "false"
+              } = true
+              # Generated kitty theme: the true-black canvas reaches the file.
+              grep -F -x 'background #000000' ${blackboxHome.kittyTheme}
+              grep -F -x 'color0 #000000' ${blackboxHome.kittyTheme}
+              grep -F -x 'foreground #ebdbb2' ${blackboxHome.kittyTheme}
+              # Generated helix theme: Base16 keeps base00 at true black.
+              grep -F 'base00 = "#000000"' ${blackboxHome.helixTheme}
+              grep -F '"ui.background" = { bg = "base00" }' ${blackboxHome.helixTheme}
+              touch "$out"
+            '';
           gruvbox-browser-theme = pkgs.runCommand "theme-broker-gruvbox-browser-theme" {nativeBuildInputs = [pkgs.go-crx3 pkgs.jq];} ''
             mkdir unpacked
             crx3 unpack --disable-subdir --outfile unpacked ${browserThemeExtension.crxPath}
@@ -555,6 +622,15 @@
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants.mocha.accents))} = 14
             test ${toString (builtins.length (builtins.attrNames rosePine.variants))} = 3
             test ${toString (builtins.length (builtins.attrNames rosePine.variants.main.accents))} = 6
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 1
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants.dark.accents))} = 0
+            test ${
+              toString (
+                builtins.length (
+                  builtins.attrNames (builtins.fromJSON (builtins.readFile ./providers/blackbox/palette.json)).named
+                )
+              )
+            } = 24
             touch "$out"
           '';
           named-override-propagation = pkgs.runCommand "theme-broker-named-override-propagation" {} ''
@@ -665,7 +741,7 @@
               touch "$out"
             '';
           support-matrix = pkgs.runCommand "theme-broker-support-matrix" {} ''
-            test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.providers))} = 3
+            test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.providers))} = 4
             test ${pkgs.lib.escapeShellArg (toString (builtins.length supportMatrix.matrix.adapters))} -ge 3
             test ${
               if builtins.all (adapter: adapter.status == "supported") supportMatrix.matrix.adapters
@@ -749,6 +825,7 @@
               nativeBuildInputs = [pkgs.python3];
             } ''
               python3 -c 'import ast, pathlib; [ast.parse(path.read_text()) for path in pathlib.Path("${./scripts}").glob("*.py")]'
+              python3 ${./tests/test-golden-refresh.py} ${./.}
               touch "$out"
             '';
           no-ifd = pkgs.runCommand "theme-broker-no-ifd" {} ''
@@ -766,8 +843,9 @@
                 palette = ${catppuccin-palette};
               };
               rosePineProvider = import ${./providers/rose-pine} {inherit lib;};
+              blackboxProvider = import ${./providers/blackbox} {inherit lib;};
             in
-              builtins.deepSeq [themeLib.generatedTargets catppuccinProvider rosePineProvider] "ok"
+              builtins.deepSeq [themeLib.generatedTargets catppuccinProvider rosePineProvider blackboxProvider] "ok"
             EOF
             mkdir -p "$TMPDIR/home" "$TMPDIR/state" "$TMPDIR/cache"
             HOME="$TMPDIR/home" XDG_STATE_HOME="$TMPDIR/state" XDG_CACHE_HOME="$TMPDIR/cache" \

@@ -1,0 +1,10 @@
+after_inputs = [["python3", "scripts/update-golden.py", "--refresh-source"]]
+outputs = [
+  "tests/golden/catppuccin-latte-blue.json",
+  "tests/golden/catppuccin-mocha-mauve.json",
+  "tests/golden/gruvbox-dark-medium.json",
+  "tests/golden/gruvbox-light-hard.json",
+  "tests/golden/rose-pine-main-rose.json",
+  "tests/golden/rose-pine-moon-iris.json",
+  "tests/golden/rose-pine-dawn-pine.json",
+]

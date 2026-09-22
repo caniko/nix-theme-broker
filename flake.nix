@@ -749,6 +749,7 @@
               nativeBuildInputs = [pkgs.python3];
             } ''
               python3 -c 'import ast, pathlib; [ast.parse(path.read_text()) for path in pathlib.Path("${./scripts}").glob("*.py")]'
+              python3 ${./tests/test-golden-refresh.py} ${./.}
               touch "$out"
             '';
           no-ifd = pkgs.runCommand "theme-broker-no-ifd" {} ''

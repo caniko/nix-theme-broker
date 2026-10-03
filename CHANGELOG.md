@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add OpenCode v2 terminal theming for every provider: complete semantic tokens,
+  light/dark variants, accent and named/role override fidelity, and mergeable
+  `themeBroker.opencode.cliSettings` written to `cli.json`. The generated
+  `opencode` backend now uses the broker's v2 compatibility engine. Disable
+  the pinned v1 writers and exclude `catppuccin-opencode` from the active
+  native registry; existing native users should switch to `auto` or
+  `generated` and move v2 CLI preferences out of `programs.opencode.tui`.
+
 - Add the `blackbox` built-in provider: a local, true-black (`#000000`),
   Gruvbox-inspired derivative with a single `dark` variant, no accent axis,
   and no Base24 projection. Ships its authoritative `palette.json` inventory,

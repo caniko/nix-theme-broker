@@ -46,13 +46,32 @@ themeBroker = {
 ```
 
 Generic target IDs come from the checked-in `lib/generated-targets.nix`
-compatibility registry for the pinned Stylix release. The broker records only
-availability and platform metadata; Stylix still owns each target
-implementation.
+compatibility registry for the pinned Stylix release. Stylix owns generic target
+implementations; the broker supplies temporary COSMIC and OpenCode v2 engines
+where the pinned integrations are not compatible.
 
 Use `backend = "generated"` to force Stylix, `backend = "native"` to require
 an allowed adapter, or `backend = "auto"` (the default) to prefer an exact
 native adapter. Inspect `themeBroker.resolved.targets` with `nix eval --json`.
+
+## OpenCode v2 terminal themes
+
+Enroll OpenCode to generate a complete v2 theme from the selected provider's
+semantic palette, including its accent and named/role overrides:
+
+```nix
+themeBroker.targets.opencode.backend = "auto";
+themeBroker.opencode.cliSettings = {
+  tabs.mode = "off";
+  animations = false;
+};
+```
+
+The Home Manager target writes `opencode/themes/theme-broker.json` and selects
+it in `opencode/cli.json` under the configured XDG config directory. The mode
+defaults to the selected variant's light/dark appearance. See
+[OpenCode v2 integration](docs/opencode-v2.md) for settings composition and
+migration from the pinned v1 integrations.
 
 Consumers may register relative wallpaper collections under
 `themeBroker.registry.wallpapers`. The selected collection is exposed as

@@ -25,6 +25,7 @@ in
   assert builtins.all (target: target.optionPath != [] && target.platforms != []) targets;
   assert builtins.all (target: builtins.elem target.rendererKind rendererKinds) targets;
   assert builtins.all (adapter: builtins.elem adapter.rendererKind rendererKinds) adapters;
+  assert builtins.all (adapter: adapter.target != "opencode") adapters;
   assert builtins.all (name: manifest.targets.${name}.rendererKind == "vscode-profile") vscodeTargets;
   assert manifest.targets.firefox.rendererKind == "firefox-profile";
   assert builtins.all (target: target.profiles == builtins.elem target.rendererKind profileRendererKinds) targets;

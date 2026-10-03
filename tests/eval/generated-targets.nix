@@ -6,11 +6,12 @@
 in
   assert builtins.all (name: builtins.hasAttr name registry) expected;
   assert !registry.vscode.autoSafe;
+  assert registry.opencode.engine == "opencode-v2";
   assert builtins.all (
     target:
       target.platforms
       != []
       && builtins.all (platform: builtins.elem platform validPlatforms) target.platforms
       && builtins.isBool target.autoSafe
-      && builtins.elem (target.engine or "stylix") ["stylix" "cosmic-manager"]
+      && builtins.elem (target.engine or "stylix") ["stylix" "cosmic-manager" "opencode-v2"]
   ) (builtins.attrValues registry); true

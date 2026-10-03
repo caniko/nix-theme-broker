@@ -515,13 +515,36 @@
         normalizedThemeSchemaInput = pkgs.writeText "theme-broker-normalized-theme.json" (builtins.toJSON darkHard);
         opencodeThemeInputs = let
           render = import ./lib/renderers/opencode-v2.nix {inherit lib;};
+          variantSelections = lib.concatMap (provider:
+            lib.concatMap (variant:
+              [{inherit provider variant;}]
+              ++ map (accent: {inherit provider variant accent;})
+              (builtins.attrNames (providers.${provider}.variants.${variant}.accents or {})))
+            (builtins.attrNames providers.${provider}.variants))
+          (builtins.attrNames providers);
+          overrideSelections = lib.concatMap (variant:
+            map (overrides: {
+              provider = "gruvbox";
+              inherit variant overrides;
+            }) [
+              {named.bright_green = "#12ab34";}
+              {
+                roles.ui.accent = "#123456";
+                roles.ui.background = "#010203";
+                roles.syntax.keyword = "#abcdef";
+              }
+              {
+                named.bright_green = "#12ab34";
+                roles.ui.accent = "#123456";
+                roles.ui.background = "#010203";
+                roles.syntax.keyword = "#abcdef";
+              }
+            ]) ["dark-hard" "light-soft"];
         in
-          lib.concatMap (provider:
-            map (variant:
-              pkgs.writeText "opencode-${provider}-${variant}.json" (builtins.toJSON (render (themeBrokerLib.resolveSelection {
-                inherit providers;
-                selection = {inherit provider variant;};
-              })))) (builtins.attrNames providers.${provider}.variants)) (builtins.attrNames providers);
+          lib.imap0 (index: selection:
+            pkgs.writeText "opencode-${selection.provider}-${selection.variant}-${toString index}.json" (builtins.toJSON (render (themeBrokerLib.resolveSelection {
+              inherit providers selection;
+            })))) (variantSelections ++ overrideSelections);
         blackboxHome = import ./tests/home/blackbox.nix {
           inherit pkgs providers adapters;
           homeManager = home-manager;

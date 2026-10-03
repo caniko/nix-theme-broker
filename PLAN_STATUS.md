@@ -1,6 +1,6 @@
 # Theme Broker implementation status
 
-Updated 2026-08-15.  “Complete” means the task has an implementation and a
+Updated 2026-10-03.  “Complete” means the task has an implementation and a
 passing narrow check in this checkout.  “Partial” means the public shape is in
 place but the task's full acceptance matrix is still pending.
 
@@ -33,7 +33,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-052 | complete | profile-aware Firefox and all six VS Code-family renderers use the pinned upstream modules and profile option |
 | TB-053 | complete | NixOS Plymouth, Home Assistant, graphical asset, and cursor option-path integrations are evaluated |
 | TB-054 | complete | option-path, profile, plugin/extension, package, cursor, graphical, and service integration classes have focused evaluation coverage |
-| TB-055 | complete | all 95 pinned Catppuccin inventory entries have a supported renderer kind and no unexplained support-matrix gaps |
+| TB-055 | complete | 95 pinned Catppuccin inventory entries; 94 active adapters, with the v1 OpenCode port explicitly excluded for v2 compatibility in docs/upstream.md |
 | TB-060 | complete | pinned, hashed Gruvbox Vim and Neovim provenance with canonical/maintained trust tiers |
 | TB-061–TB-063 | complete | reusable Vim/Neovim native modules, all six variant evaluations, and mixed native/generated end-to-end checks |
 | TB-070 | complete | generated JSON/Markdown packages plus checked-in stale-file comparison |
@@ -46,6 +46,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-091 | complete | temporary COSMIC target is tracked by open Stylix issue #265 (checked 2026-08-15); removal conditions remain unmet |
 | TB-092 | complete | Rosé Pine is the third provider and passes the shared conformance, golden, and Tinted checks |
 | TB-093 | complete | v1.0.3 tag and GitHub release published: https://github.com/caniko/nix-theme-broker/releases/tag/v1.0.3 |
+| TB-094 | complete | OpenCode v2 semantic renderer, offline schema validation for all 14 variants, real Home Manager composition/ownership checks, and v2.0.12 TUI theme-picker/truecolor smoke tests for Blackbox dark and Catppuccin Latte; all supported systems evaluate |
 
 The Atlas deployment slice selects Gruvbox `dark-hard` through the parent
 canix Home Manager profile. Stylix owns generic targets, while the broker has

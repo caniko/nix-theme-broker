@@ -107,6 +107,10 @@
         type = lib.types.attrsOf lib.types.anything;
         default = {};
       };
+      xdg.configFile = lib.mkOption {
+        type = lib.types.attrsOf lib.types.anything;
+        default = {};
+      };
       assertions = lib.mkOption {
         type = lib.types.listOf lib.types.attrs;
         default = [];
@@ -346,6 +350,20 @@
     themeBroker.enable = true;
     themeBroker.targets.custom.backend = "native";
   };
+  customOpencode =
+    evalWithCustomAdapters [
+      (customAdapter
+        // {
+          id = "custom-opencode-v2";
+          target = "opencode";
+        })
+    ] {
+      themeBroker.enable = true;
+      themeBroker.selection.provider = "gruvbox";
+      themeBroker.targets.opencode.backend = "native";
+      stylix.targets.opencode.enable = true;
+      catppuccin.opencode.enable = true;
+    };
   optionAdapter =
     customAdapter
     // {
@@ -508,6 +526,11 @@ in
   assert !(catppuccinTerminals.config.programs.ghostty.settings ? "window-theme");
   assert customNative.config.themeBroker.resolved.targets.custom.adapter == "custom-simple";
   assert customNative.config.programs.custom-theme.enable;
+  assert customOpencode.config.themeBroker.resolved.targets.opencode.adapter == "custom-opencode-v2";
+  assert customOpencode.config.programs.custom-theme.enable;
+  assert !customOpencode.config.stylix.targets.opencode.enable;
+  assert !customOpencode.config.catppuccin.opencode.enable;
+  assert !(customOpencode.config.xdg.configFile ? "opencode/cli.json");
   assert customNativeOptions.config.programs.custom-theme.theme == "dark";
   assert customNativeOptions.config.themeBroker.resolved.targets.custom.adapter == "custom-options";
   assert !invalidRawRenderer.success;

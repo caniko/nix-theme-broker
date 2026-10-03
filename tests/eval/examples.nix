@@ -39,6 +39,10 @@
         type = lib.types.attrsOf lib.types.anything;
         default = {};
       };
+      xdg.configFile = lib.mkOption {
+        type = lib.types.attrsOf lib.types.anything;
+        default = {};
+      };
       assertions = lib.mkOption {
         type = lib.types.listOf lib.types.attrs;
         default = [];

@@ -81,6 +81,10 @@
         type = lib.types.attrsOf lib.types.anything;
         default = {};
       };
+      xdg.configFile = lib.mkOption {
+        type = lib.types.attrsOf lib.types.anything;
+        default = {};
+      };
       assertions = lib.mkOption {
         type = lib.types.listOf lib.types.attrs;
         default = [];
@@ -144,7 +148,11 @@
           base00 = result.config.stylix.base16Scheme.base00;
           backends = map (target: result.config.themeBroker.resolved.targets.${target}.backend) configTargets;
           adapters = map (target: result.config.themeBroker.resolved.targets.${target}.adapter) configTargets;
-          generatedEnabled = map (target: result.config.stylix.targets.${target}.enable) configTargets;
+          generatedEnabled = map (target:
+            if target == "opencode"
+            then !result.config.stylix.targets.opencode.enable && result.config.xdg.configFile ? "opencode/themes/theme-broker.json"
+            else result.config.stylix.targets.${target}.enable)
+          configTargets;
           inherit selection;
         })
         selections

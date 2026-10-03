@@ -85,7 +85,6 @@ Every listed adapter has an implemented renderer; machine-readable renderer and 
 | catppuccin-nushell | catppuccin | nushell | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-obs | catppuccin | obs | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-obsidian | catppuccin | obsidian | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
-| catppuccin-opencode | catppuccin | opencode | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-plymouth | catppuccin | plymouth | nixos | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-polybar | catppuccin | polybar | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |
 | catppuccin-qt5ct | catppuccin | qt5ct | homeManager | official | 673f730d0fc8db3468c51575f1d3d777cc55e51f |

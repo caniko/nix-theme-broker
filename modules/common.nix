@@ -58,8 +58,8 @@
         })
         rawTargetsCfg)
     else throw "themeBroker: target aliases and canonical target IDs cannot both be configured";
-  # Stylix owns target implementations; this registry only records the
-  # stable IDs the broker may coordinate without copying those implementations.
+  # Stylix owns generic implementations. Registry engine tags identify the
+  # temporary compatibility targets implemented by the broker.
   generatedRegistry = themeLib.generatedTargets;
   generatedTargets = builtins.attrNames generatedRegistry;
   cosmicAvailable =
@@ -108,8 +108,8 @@
   };
   targetSelections =
     lib.mapAttrs (
-      target: targetCfg: (
-        themeLib.resolveBackend {
+      target: targetCfg: let
+        resolved = themeLib.resolveBackend {
           providerId = selected.provider;
           variantId = selected.variant;
           selection =
@@ -144,9 +144,15 @@
           adapters = customRenderers;
           trustedAdapters = trustedRenderers;
           policy = policyCfg;
-        }
+        };
+        engine = (generatedRegistry.${target} or {}).engine or "stylix";
+      in
+        resolved
         // {nativeOptions = targetCfg.nativeOptions;}
-      )
+        // lib.optionalAttrs (resolved.backend == "generated" && engine == "opencode-v2") {
+          inherit engine;
+          reasons = ["OpenCode v2 generated target selected" "theme rendered from the broker's resolved semantic palette"];
+        }
     )
     targetsCfg;
   adaptersById = lib.listToAttrs (map (adapter: {
@@ -294,6 +300,15 @@
       ) "ghostty";
     }
     else {};
+  opencodeConfig =
+    if themeBrokerPlatform == "homeManager"
+    then
+      import ../targets/opencode-v2.nix {
+        inherit config lib selected;
+        enabled = targetSelections ? opencode && targetSelections.opencode.backend == "generated";
+        managed = targetSelections ? opencode;
+      }
+    else {};
 in {
   imports = lib.optionals (themeBrokerPlatform == "homeManager") profileRendererModules;
   options.themeBroker = {
@@ -424,7 +439,12 @@ in {
     generatedTargets = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       readOnly = true;
-      description = "Stylix generated target IDs in the pinned compatibility registry.";
+      description = "Generated target IDs in the pinned compatibility registry, including broker compatibility engines.";
+    };
+    opencode.cliSettings = lib.mkOption {
+      type = (pkgs.formats.json {}).type;
+      default = {};
+      description = "Mergeable OpenCode v2 CLI settings written to opencode/cli.json when the Home Manager OpenCode target uses the generated backend. Theme name and mode default to the broker selection.";
     };
   };
 
@@ -453,6 +473,6 @@ in {
     ++ generatedConfig generatedConfigTargets
     ++ disabledGeneratedConfig generatedConfigTargets
     ++ nativeConfig
-    ++ [cosmicConfig ghosttyConfig]
+    ++ [cosmicConfig ghosttyConfig opencodeConfig]
   ));
 }

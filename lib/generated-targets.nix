@@ -50,6 +50,7 @@
   opencode = {
     platforms = ["homeManager"];
     autoSafe = true;
+    engine = "opencode-v2";
   };
   starship = {
     platforms = ["homeManager"];

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$comment": "OpenCode v2 Theme Tool contract, inspected 2026-10-03 at https://opencode.ai/theme/assets/index-CQ7B4SMg.js (j5/O5/k5/D5). This fixture validates the documented complete eight-hue palette emitted by the broker; upstream also permits additional hue names.",
+  "type": "object",
+  "required": ["base"],
+  "anyOf": [{"required": ["light"]}, {"required": ["dark"]}],
+  "properties": {
+    "$schema": {"type": "string"},
+    "base": {"$ref": "#/$defs/base"},
+    "light": {"$ref": "#/$defs/mode"},
+    "dark": {"$ref": "#/$defs/mode"}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "hex": {"type": "string", "pattern": "^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$"},
+    "color": {"anyOf": [{"$ref": "#/$defs/hex"}, {"const": "transparent"}, {"type": "string", "pattern": "^\\$.+$"}]},
+    "syntaxColor": {"anyOf": [{"$ref": "#/$defs/hex"}, {"type": "string", "pattern": "^\\$hue\\..+\\.(?:100|200|300|400|500|600|700|800|900)$"}]},
+    "state": {
+      "type": "object",
+      "required": ["base"],
+      "properties": {
+        "base": {"$ref": "#/$defs/color"},
+        "$hovered": {"$ref": "#/$defs/color"},
+        "$focused": {"$ref": "#/$defs/color"},
+        "$pressed": {"$ref": "#/$defs/color"},
+        "$selected": {"$ref": "#/$defs/color"},
+        "$disabled": {"$ref": "#/$defs/color"}
+      },
+      "additionalProperties": false
+    },
+    "actions": {
+      "type": "object",
+      "required": ["primary", "secondary", "destructive"],
+      "properties": {
+        "primary": {"$ref": "#/$defs/state"},
+        "secondary": {"$ref": "#/$defs/state"},
+        "destructive": {"$ref": "#/$defs/state"}
+      },
+      "additionalProperties": false
+    },
+    "fill": {"type": "object", "required": ["base"], "properties": {"base": {"$ref": "#/$defs/color"}}, "additionalProperties": false},
+    "feedbackText": {"type": "object", "required": ["base"], "properties": {"base": {"$ref": "#/$defs/color"}, "muted": {"$ref": "#/$defs/color"}}, "additionalProperties": false},
+    "feedback": {"type": "object", "required": ["error", "warning", "success", "info"], "additionalProperties": {"$ref": "#/$defs/fill"}},
+    "text": {
+      "type": "object",
+      "required": ["base", "muted", "action", "formfield", "feedback"],
+      "properties": {
+        "base": {"$ref": "#/$defs/color"}, "muted": {"$ref": "#/$defs/color"},
+        "action": {"$ref": "#/$defs/actions"}, "formfield": {"$ref": "#/$defs/state"},
+        "feedback": {"type": "object", "required": ["error", "warning", "success", "info"], "additionalProperties": {"$ref": "#/$defs/feedbackText"}}
+      },
+      "additionalProperties": false
+    },
+    "background": {
+      "type": "object",
+      "required": ["base", "raised", "action", "formfield", "feedback"],
+      "properties": {
+        "base": {"$ref": "#/$defs/color"},
+        "raised": {"type": "object", "required": ["base", "high", "max"], "additionalProperties": {"$ref": "#/$defs/color"}},
+        "action": {"$ref": "#/$defs/actions"}, "formfield": {"$ref": "#/$defs/state"}, "feedback": {"$ref": "#/$defs/feedback"}
+      },
+      "additionalProperties": false
+    },
+    "diffPair": {"type": "object", "required": ["added", "removed"], "additionalProperties": {"$ref": "#/$defs/color"}},
+    "diff": {
+      "type": "object",
+      "required": ["text", "background", "highlight", "lineNumber"],
+      "properties": {
+        "text": {"type": "object", "required": ["added", "removed", "context", "hunkHeader"], "additionalProperties": {"$ref": "#/$defs/color"}},
+        "background": {"type": "object", "required": ["added", "removed", "context"], "additionalProperties": {"$ref": "#/$defs/color"}},
+        "highlight": {"$ref": "#/$defs/diffPair"},
+        "lineNumber": {"type": "object", "required": ["text", "background"], "properties": {"text": {"$ref": "#/$defs/color"}, "background": {"$ref": "#/$defs/diffPair"}}, "additionalProperties": false}
+      },
+      "additionalProperties": false
+    },
+    "syntax": {"type": "object", "required": ["comment", "keyword", "function", "variable", "string", "number", "type", "operator", "punctuation"], "additionalProperties": {"$ref": "#/$defs/syntaxColor"}},
+    "markdown": {"type": "object", "required": ["text", "heading", "link", "linkText", "code", "blockQuote", "emphasis", "strong", "horizontalRule", "listItem", "listEnumeration", "image", "imageText", "codeBlock"], "additionalProperties": {"$ref": "#/$defs/syntaxColor"}},
+    "categorical": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "base": {
+      "type": "object",
+      "required": ["categorical", "text", "background", "border", "scrollbar", "diff", "syntax", "markdown"],
+      "properties": {
+        "categorical": {"$ref": "#/$defs/categorical"}, "text": {"$ref": "#/$defs/text"}, "background": {"$ref": "#/$defs/background"},
+        "border": {"$ref": "#/$defs/fill"}, "scrollbar": {"$ref": "#/$defs/fill"}, "diff": {"$ref": "#/$defs/diff"},
+        "syntax": {"$ref": "#/$defs/syntax"}, "markdown": {"$ref": "#/$defs/markdown"}, "@dialog": {"type": "object"}
+      },
+      "additionalProperties": false
+    },
+    "scale": {"type": "object", "required": ["100", "200", "300", "400", "500", "600", "700", "800", "900"], "additionalProperties": {"$ref": "#/$defs/hex"}},
+    "mode": {
+      "type": "object",
+      "required": ["hue"],
+      "properties": {
+        "hue": {"type": "object", "required": ["gray", "red", "orange", "yellow", "green", "cyan", "blue", "purple", "accent", "interactive", "neutral"], "additionalProperties": {"anyOf": [{"$ref": "#/$defs/scale"}, {"type": "string", "pattern": "^\\$hue\\..+$"}]}}
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -463,6 +463,7 @@
           })
           (import ./tests/eval/adapter.nix {inherit lib;})
           (import ./tests/eval/generated-targets.nix {inherit lib;})
+          (import ./tests/eval/opencode-v2.nix {inherit lib providers;})
           (import ./tests/resolver/table.nix {inherit lib;})
           (import ./tests/eval/module.nix {inherit lib pkgs providers adapters;})
           (import ./tests/eval/platforms.nix {inherit lib pkgs providers adapters;})
@@ -476,6 +477,10 @@
             nixDarwin = nix-darwin;
           })
           (import ./tests/eval/catppuccin-manifest.nix {inherit lib;})
+          (import ./tests/home/opencode-v2.nix {
+            inherit pkgs stylix catppuccin providers adapters;
+            homeManager = home-manager;
+          })
           (import ./tests/golden/check.nix {
             inherit lib providers;
             tintedRevision = tintedSchemesRevision;
@@ -508,6 +513,38 @@
         adapterSchemaInputs = lib.imap0 (index: adapter: pkgs.writeText "theme-broker-adapter-${toString index}.json" (builtins.toJSON adapter)) adapters;
         wallpaperSchemaInput = pkgs.writeText "theme-broker-wallpapers.json" (builtins.toJSON {});
         normalizedThemeSchemaInput = pkgs.writeText "theme-broker-normalized-theme.json" (builtins.toJSON darkHard);
+        opencodeThemeInputs = let
+          render = import ./lib/renderers/opencode-v2.nix {inherit lib;};
+          variantSelections = lib.concatMap (provider:
+            lib.concatMap (variant:
+              [{inherit provider variant;}]
+              ++ map (accent: {inherit provider variant accent;})
+              (builtins.attrNames (providers.${provider}.variants.${variant}.accents or {})))
+            (builtins.attrNames providers.${provider}.variants))
+          (builtins.attrNames providers);
+          overrideSelections = lib.concatMap (variant:
+            map (overrides: {
+              provider = "gruvbox";
+              inherit variant overrides;
+            }) [
+              {named.bright_green = "#12ab34";}
+              {
+                roles.ui.accent = "#123456";
+                roles.ui.background = "#010203";
+                roles.syntax.keyword = "#abcdef";
+              }
+              {
+                named.bright_green = "#12ab34";
+                roles.ui.accent = "#123456";
+                roles.ui.background = "#010203";
+                roles.syntax.keyword = "#abcdef";
+              }
+            ]) ["dark-hard" "light-soft"];
+        in
+          lib.imap0 (index: selection:
+            pkgs.writeText "opencode-${selection.provider}-${selection.variant}-${toString index}.json" (builtins.toJSON (render (themeBrokerLib.resolveSelection {
+              inherit providers selection;
+            })))) (variantSelections ++ overrideSelections);
         blackboxHome = import ./tests/home/blackbox.nix {
           inherit pkgs providers adapters;
           homeManager = home-manager;
@@ -532,6 +569,14 @@
           wallpaper-catalog-schema = pkgs.writeText "theme-broker-wallpaper-catalog.schema.json" (builtins.readFile ./schema/wallpaper-catalog.schema.json);
         };
         checks = {
+          opencode-v2-themes =
+            pkgs.runCommand "theme-broker-opencode-v2-themes" {
+              nativeBuildInputs = [pkgs.check-jsonschema];
+            } ''
+              check-jsonschema --check-metaschema ${./tests/fixtures/opencode-v2-theme.schema.json}
+              check-jsonschema --schemafile ${./tests/fixtures/opencode-v2-theme.schema.json} ${lib.escapeShellArgs (map toString opencodeThemeInputs)}
+              touch "$out"
+            '';
           gruvbox-dark-hard = pkgs.runCommand "theme-broker-gruvbox-dark-hard" {} ''
             test ${pkgs.lib.escapeShellArg darkHard.base16.base00.withHashtag} = '#1d2021'
             test ${pkgs.lib.escapeShellArg darkHard.roles.ui.background.withHashtag} = '#1d2021'

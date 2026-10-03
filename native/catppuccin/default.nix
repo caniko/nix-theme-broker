@@ -39,4 +39,6 @@ map (
     module = "catppuccin";
   }
 )
-(builtins.attrValues manifest.targets)
+# The pinned upstream OpenCode port writes v1 tui.json settings. Keep it in
+# the source inventory, but do not advertise it as a working v2 adapter.
+(builtins.filter (item: item.id != "opencode") (builtins.attrValues manifest.targets))

@@ -4,8 +4,8 @@
 
 - Add `lib.readWallpaperCatalog`, which loads a `theme-broker.wallpapers/v1`
   catalog file and returns its validated provider registry, and
-  `lib.hasAdapter { provider, target; }` for auto-safe built-in adapter
-  presence. The exported wallpaper catalog schema also accepts that envelope.
+  `lib.hasAdapter { provider, variant, target, platform; }` for auto-safe
+  built-in adapter coverage. The exported wallpaper catalog schema also accepts that envelope.
 
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,
   light/dark variants, accent and named/role override fidelity, and mergeable

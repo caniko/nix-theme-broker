@@ -170,25 +170,28 @@
     });
   catalog = themeLib.readWallpaperCatalog (catalogFile "theme-broker.wallpapers/v1");
   unknownCatalog = builtins.tryEval (themeLib.readWallpaperCatalog (catalogFile "theme-broker.wallpapers/v2"));
+  hasAdapter = provider: variant: target:
+    themeLib.hasAdapter {
+      inherit provider variant target;
+      platform = "homeManager";
+    };
 in
   assert catalog.gruvbox.default == "gruvbox/a.png";
   assert !unknownCatalog.success;
-  assert themeLib.hasAdapter {
-    provider = "gruvbox";
-    target = "cursors";
-  };
-  assert !themeLib.hasAdapter {
-    provider = "blackbox";
-    target = "cursors";
-  };
-  assert themeLib.hasAdapter {
-    provider = "gruvbox";
-    target = "nvim";
-  };
+  assert hasAdapter "gruvbox" "dark-hard" "cursors";
+  assert !hasAdapter "blackbox" "dark" "cursors";
+  assert hasAdapter "gruvbox" "dark-hard" "nvim";
   # The VS Code adapter exists but is not auto-safe.
+  assert !hasAdapter "gruvbox" "dark-hard" "code";
+  # The Chromium adapter is auto-safe but only covers dark-hard.
+  assert hasAdapter "gruvbox" "dark-hard" "chromium";
+  assert !hasAdapter "gruvbox" "dark-medium" "chromium";
   assert !themeLib.hasAdapter {
     provider = "gruvbox";
-    target = "code";
+    variant = "dark-hard";
+    target = "cursors";
+    platform = "homeManager";
+    allowedTiers = ["official"];
   };
   assert builtins.isAttrs selected;
   assert builtins.isAttrs selected.formatted.base16Scheme;

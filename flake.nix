@@ -251,13 +251,20 @@
       // {
         hasAdapter = {
           provider,
+          variant,
           target,
+          platform,
+          allowedTiers ? builtins.attrNames adapterLib.tierRank,
         }:
           lib.any (
             adapter:
               (adapter.autoSafe or false)
-              && adapter.provider == provider
-              && adapter.target == adapterLib.canonicalTarget target
+              && adapterLib.adapterMatches {
+                inherit adapter platform allowedTiers;
+                providerId = provider;
+                variantId = variant;
+                targetId = adapterLib.canonicalTarget target;
+              }
           )
           adapters;
         resolveBackend = args: let

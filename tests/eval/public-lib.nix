@@ -159,7 +159,28 @@
       };
     })
     true);
+  catalogFile = schema:
+    builtins.toFile "wallpapers-catalog.json" (builtins.toJSON {
+      inherit schema;
+      providers.gruvbox = {
+        variants = ["dark"];
+        default = "gruvbox/a.png";
+        paths = ["gruvbox/a.png"];
+      };
+    });
+  catalog = themeLib.readWallpaperCatalog (catalogFile "theme-broker.wallpapers/v1");
+  unknownCatalog = builtins.tryEval (themeLib.readWallpaperCatalog (catalogFile "theme-broker.wallpapers/v2"));
 in
+  assert catalog.gruvbox.default == "gruvbox/a.png";
+  assert !unknownCatalog.success;
+  assert themeLib.hasAdapter {
+    provider = "gruvbox";
+    target = "cursors";
+  };
+  assert !themeLib.hasAdapter {
+    provider = "blackbox";
+    target = "cursors";
+  };
   assert builtins.isAttrs selected;
   assert builtins.isAttrs selected.formatted.base16Scheme;
   assert builtins.isAttrs themeLib.types;

@@ -249,6 +249,11 @@
     publicThemeBrokerLib =
       themeBrokerLib
       // {
+        hasAdapter = {
+          provider,
+          target,
+        }:
+          lib.any (adapter: adapter.provider == provider && adapter.target == target) adapters;
         resolveBackend = args: let
           suppliedAdapters = args.adapters or [];
           suppliedTrusted = args.trustedAdapters or [];

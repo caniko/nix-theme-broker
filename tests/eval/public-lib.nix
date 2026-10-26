@@ -181,6 +181,15 @@ in
     provider = "blackbox";
     target = "cursors";
   };
+  assert themeLib.hasAdapter {
+    provider = "gruvbox";
+    target = "nvim";
+  };
+  # The VS Code adapter exists but is not auto-safe.
+  assert !themeLib.hasAdapter {
+    provider = "gruvbox";
+    target = "code";
+  };
   assert builtins.isAttrs selected;
   assert builtins.isAttrs selected.formatted.base16Scheme;
   assert builtins.isAttrs themeLib.types;

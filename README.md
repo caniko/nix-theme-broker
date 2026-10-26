@@ -78,8 +78,9 @@ Consumers may register relative wallpaper collections under
 `themeBroker.selected.wallpapers`; the consumer still owns the source root and
 desktop wallpaper configuration. `lib.readWallpaperCatalog` loads a
 `theme-broker.wallpapers/v1` catalog file (`{ schema, providers }`) into a
-validated registry. `lib.hasAdapter { provider, target; }` reports whether a
-built-in adapter exists, so consumers can request `auto` only where one does.
+validated registry. `lib.hasAdapter { provider, target; }` reports whether an auto-safe
+built-in adapter exists for that provider and (alias-normalized) target, so
+consumers can request `auto` only where one does.
 
 The flake exports `packages.<system>.support-matrix-json` and
 `support-matrix-markdown`, plus the provider, normalized-theme, wallpaper

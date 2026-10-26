@@ -19,6 +19,7 @@ in {
   inherit generatedTargets;
   inherit (wallpaper) validateRegistry;
   resolveWallpapers = wallpaper.resolve;
+  readWallpaperCatalog = wallpaper.readCatalog;
   inherit (provider) mkProvider normalizeProvider;
   inherit (adapter) mkAdapter;
   targetAliases = adapter.aliases or {};

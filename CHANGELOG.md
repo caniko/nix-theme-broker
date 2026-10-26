@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add `lib.readWallpaperCatalog`, which loads a `theme-broker.wallpapers/v1`
+  catalog file and returns its validated provider registry, and
+  `lib.hasAdapter { provider, target; }` for built-in adapter presence.
+
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,
   light/dark variants, accent and named/role override fidelity, and mergeable
   `themeBroker.opencode.cliSettings` written to `cli.json`. The generated

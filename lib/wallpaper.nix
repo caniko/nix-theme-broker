@@ -47,6 +47,15 @@
     if entry == null || !builtins.elem variant entry.variants
     then null
     else removeAttrs entry ["variants"];
+
+  # Reads a `theme-broker.wallpapers/v1` catalog file and returns its
+  # validated provider registry.
+  readCatalog = file: let
+    catalog = builtins.fromJSON (builtins.readFile file);
+  in
+    if (catalog.schema or null) == "theme-broker.wallpapers/v1"
+    then validateRegistry (catalog.providers or null)
+    else throw "themeBroker: unsupported wallpaper catalog schema";
 in {
-  inherit resolve validateRegistry;
+  inherit readCatalog resolve validateRegistry;
 }

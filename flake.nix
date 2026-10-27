@@ -907,7 +907,7 @@
             mkdir -p "$TMPDIR/home" "$TMPDIR/state" "$TMPDIR/cache"
             cat > "$TMPDIR/no-ifd.nix" <<'EOF'
             let
-              lib = (import ${pkgs.path} {}).lib;
+              lib = import ${pkgs.path}/lib;
               themeLib = import ${./lib} {inherit lib;};
               catppuccinProvider = import ${./providers/catppuccin} {
                 inherit lib;
@@ -920,7 +920,7 @@
             EOF
             mkdir -p "$TMPDIR/home" "$TMPDIR/state" "$TMPDIR/cache"
             HOME="$TMPDIR/home" XDG_STATE_HOME="$TMPDIR/state" XDG_CACHE_HOME="$TMPDIR/cache" \
-              ${pkgs.nix}/bin/nix --extra-experimental-features nix-command eval --option allow-import-from-derivation false --raw --file "$TMPDIR/no-ifd.nix"
+              ${pkgs.nix}/bin/nix --extra-experimental-features nix-command eval --store dummy:// --option allow-import-from-derivation false --raw --file "$TMPDIR/no-ifd.nix"
             touch "$out"
           '';
         };

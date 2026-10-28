@@ -5,7 +5,7 @@
   adapters,
 }: let
   themeLib = import ../../lib {inherit lib;};
-  targetNames = ["alacritty" "bat" "blender" "btop" "chromium" "console" "floorp" "font-packages" "fontconfig" "foot" "ghostty" "helix" "k9s" "kitty" "mpv" "nushell" "obsidian" "opencode" "qt" "rio" "starship" "tmux" "waybar" "zed" "zellij"];
+  targetNames = ["alacritty" "bat" "blender" "brave" "btop" "chromium" "console" "floorp" "font-packages" "fontconfig" "foot" "ghostty" "helix" "k9s" "kitty" "mpv" "nushell" "obsidian" "opencode" "qt" "rio" "starship" "tmux" "waybar" "zed" "zellij"];
   selections = [
     {
       provider = "catppuccin";
@@ -151,6 +151,8 @@
           generatedEnabled = map (target:
             if target == "opencode"
             then !result.config.stylix.targets.opencode.enable && result.config.xdg.configFile ? "opencode/themes/theme-broker.json"
+            else if platform == "homeManager" && (target == "chromium" || target == "brave")
+            then builtins.length result.config.programs.${target}.extensions == 1
             else result.config.stylix.targets.${target}.enable)
           configTargets;
           inherit selection;

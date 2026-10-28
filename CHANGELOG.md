@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add a provider-neutral Chromium/Brave theme extension: `chromium` and `brave`
+  accept `backend = "generated"` on Home Manager (engine `chrome-theme`), reusing
+  the Gruvbox theme renderer with the selection name and a separate stable
+  extension id. Registry entries may now set `engines.<platform>` to override
+  `engine` per platform; NixOS `chromium` stays on Stylix.
+
 - Name the Stylix Base16 scheme (`scheme`, `slug`) after the selected provider
   variant so targets no longer show "untitled"; provider display names are now
   complete (for example `Gruvbox Dark Hard`).

@@ -62,6 +62,9 @@
   # temporary compatibility targets implemented by the broker.
   generatedRegistry = themeLib.generatedTargets;
   generatedTargets = builtins.attrNames generatedRegistry;
+  # A registry entry may override its engine per platform (`engines`).
+  engineOf = target:
+    generatedRegistry.${target}.engines.${themeBrokerPlatform} or generatedRegistry.${target}.engine or "stylix";
   cosmicAvailable =
     lib.hasAttrByPath ["wayland" "desktopManager" "cosmic" "appearance"] options
     && cosmicLib != null;
@@ -95,8 +98,7 @@
   generatedConfigTargets =
     builtins.filter (
       target:
-        (generatedRegistry.${target}.engine or "stylix")
-        == "stylix"
+        engineOf target == "stylix"
         && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
     )
     generatedTargets;
@@ -128,7 +130,7 @@
             builtins.elem target generatedTargets
             && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
             && (
-              (generatedRegistry.${target}.engine or "stylix")
+              engineOf target
               != "cosmic-manager"
               || (
                 if cosmicLib == null
@@ -145,7 +147,10 @@
           trustedAdapters = trustedRenderers;
           policy = policyCfg;
         };
-        engine = (generatedRegistry.${target} or {}).engine or "stylix";
+        engine =
+          if generatedRegistry ? ${target}
+          then engineOf target
+          else "stylix";
       in
         resolved
         // {nativeOptions = targetCfg.nativeOptions;}
@@ -249,6 +254,20 @@
           && targetSelections.${target}.backend == "native"
           && targetSelections.${target}.adapter == "gruvbox-${target}"
         ) (import ../native/gruvbox/chromium.nix {inherit lib pkgs selected target;})
+    ) ["chromium" "brave"]))
+    ++ lib.optional (themeBrokerPlatform == "homeManager") (lib.mkMerge (map (
+      target:
+        lib.mkIf (
+          targetSelections ? ${target}
+          && targetSelections.${target}.backend == "generated"
+          && engineOf target == "chrome-theme"
+        ) (import ../native/gruvbox/chromium.nix {
+          inherit lib pkgs selected target;
+          name = selected.formatted.base16Scheme.scheme;
+          id = "dfohnijoepiancdeidnfelabpepkhmmc";
+          pem = ../native/chromium-theme.pem;
+          crxName = "theme-broker-browser-theme";
+        })
     ) ["chromium" "brave"]))
     ++ lib.optionals (themeBrokerPlatform != "darwin") [
       (lib.mkIf (

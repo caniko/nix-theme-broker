@@ -15,9 +15,17 @@
     platforms = ["homeManager"];
     autoSafe = true;
   };
+  # Stylix owns the NixOS policy; the broker renders the Home Manager theme
+  # extension itself, so the engine is chosen per platform.
   chromium = {
-    platforms = ["nixos"];
+    platforms = ["homeManager" "nixos"];
     autoSafe = true;
+    engines.homeManager = "chrome-theme";
+  };
+  brave = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+    engine = "chrome-theme";
   };
   console = {
     platforms = ["nixos"];

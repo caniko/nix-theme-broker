@@ -208,6 +208,13 @@
     themeBroker.targets.chromium.backend = "native";
     themeBroker.targets.brave.backend = "native";
   };
+  browserGenerated = eval {
+    themeBroker.enable = true;
+    themeBroker.selection.provider = "blackbox";
+    themeBroker.selection.variant = "dark";
+    themeBroker.targets.chromium.backend = "generated";
+    themeBroker.targets.brave.backend = "generated";
+  };
   vscodeVariants = map (variant: let
     result = eval {
       themeBroker.enable = true;
@@ -492,6 +499,11 @@ in
   assert (builtins.head browserNative.config.programs.chromium.extensions).id == "lmfonlemcgahfkfdalcnjgjibaiinhna";
   assert (builtins.head browserNative.config.programs.brave.extensions).id == "lmfonlemcgahfkfdalcnjgjibaiinhna";
   assert (builtins.head browserNative.config.programs.chromium.extensions).crxPath == (builtins.head browserNative.config.programs.brave.extensions).crxPath;
+  assert browserGenerated.config.themeBroker.resolved.targets.chromium.backend == "generated";
+  assert browserGenerated.config.themeBroker.resolved.targets.brave.backend == "generated";
+  assert (builtins.head browserGenerated.config.programs.chromium.extensions).id == "dfohnijoepiancdeidnfelabpepkhmmc";
+  assert (builtins.head browserGenerated.config.programs.brave.extensions).id == "dfohnijoepiancdeidnfelabpepkhmmc";
+  assert (builtins.head browserGenerated.config.programs.chromium.extensions).crxPath.name == "theme-broker-browser-theme-1.0.0.crx";
   assert builtins.all (
     row:
       row.settings."workbench.colorTheme"

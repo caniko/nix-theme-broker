@@ -101,7 +101,14 @@
     ++ lib.optional (base24 != null) (validateKeys "base24" base24Keys base24)
   );
   formatted = {
-    base16Scheme = lib.mapAttrs (_: value: value.withHashtag) base16;
+    # Stylix (base16.nix) names the theme from these; without them targets
+    # such as Zed show "Base16 untitled".
+    base16Scheme =
+      lib.mapAttrs (_: value: value.withHashtag) base16
+      // {
+        scheme = variant.metadata.displayName or "${providerId} ${variantId}";
+        slug = "${providerId}-${variantId}";
+      };
     ansi = lib.mapAttrs (_: group: lib.mapAttrs (_: value: value.withHashtag) group) ansi;
   };
   selectedWallpapers = wallpaper.resolve {

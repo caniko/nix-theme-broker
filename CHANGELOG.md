@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Name the Stylix Base16 scheme (`scheme`, `slug`) after the selected provider
+  variant so targets no longer show "untitled"; provider display names are now
+  complete (for example `Gruvbox Dark Hard`).
+
 - Add the `rio` generated (Stylix) target.
 
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,

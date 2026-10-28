@@ -52,6 +52,10 @@
     autoSafe = true;
     engine = "opencode-v2";
   };
+  rio = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+  };
   starship = {
     platforms = ["homeManager"];
     autoSafe = true;

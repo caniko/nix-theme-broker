@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add the `rio` generated (Stylix) target.
+
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,
   light/dark variants, accent and named/role override fidelity, and mergeable
   `themeBroker.opencode.cliSettings` written to `cli.json`. The generated

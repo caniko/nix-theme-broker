@@ -5,7 +5,7 @@
   adapters,
 }: let
   themeLib = import ../../lib {inherit lib;};
-  targetNames = ["alacritty" "bat" "btop" "console" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "starship" "tmux" "waybar" "zed" "neovim" "vim" "vscode"];
+  targetNames = ["alacritty" "bat" "btop" "console" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "rio" "starship" "tmux" "waybar" "zed" "neovim" "vim" "vscode"];
   profileTargetType = lib.types.submodule {
     options.profiles = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {

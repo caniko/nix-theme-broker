@@ -6,6 +6,12 @@
   variant so targets no longer show "untitled"; provider display names are now
   complete (for example `Gruvbox Dark Hard`).
 
+- Add the `blender`, `floorp`, `k9s`, `qt`, `fontconfig` and `font-packages`
+  generated (Stylix) targets; `qt`, `fontconfig` and `font-packages` also cover
+  NixOS. `qt` (sets the Qt platform theme and Kvantum style) and `fontconfig`
+  (replaces the default font families) change global behaviour, so neither is
+  `autoSafe`.
+
 - Add the `rio` generated (Stylix) target.
 
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,

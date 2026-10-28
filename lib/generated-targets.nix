@@ -7,6 +7,10 @@
     platforms = ["homeManager"];
     autoSafe = true;
   };
+  blender = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+  };
   btop = {
     platforms = ["homeManager"];
     autoSafe = true;
@@ -19,6 +23,18 @@
     platforms = ["nixos"];
     autoSafe = true;
   };
+  floorp = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+  };
+  font-packages = {
+    platforms = ["homeManager" "nixos"];
+    autoSafe = true;
+  };
+  fontconfig = {
+    platforms = ["homeManager" "nixos"];
+    autoSafe = false;
+  };
   foot = {
     platforms = ["homeManager"];
     autoSafe = true;
@@ -28,6 +44,10 @@
     autoSafe = true;
   };
   helix = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+  };
+  k9s = {
     platforms = ["homeManager"];
     autoSafe = true;
   };
@@ -51,6 +71,10 @@
     platforms = ["homeManager"];
     autoSafe = true;
     engine = "opencode-v2";
+  };
+  qt = {
+    platforms = ["homeManager" "nixos"];
+    autoSafe = false;
   };
   rio = {
     platforms = ["homeManager"];

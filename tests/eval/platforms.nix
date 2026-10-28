@@ -5,7 +5,7 @@
   adapters,
 }: let
   themeLib = import ../../lib {inherit lib;};
-  targetNames = ["alacritty" "bat" "btop" "chromium" "console" "foot" "ghostty" "helix" "kitty" "mpv" "nushell" "obsidian" "opencode" "rio" "starship" "tmux" "waybar" "zed" "zellij"];
+  targetNames = ["alacritty" "bat" "blender" "btop" "chromium" "console" "floorp" "font-packages" "fontconfig" "foot" "ghostty" "helix" "k9s" "kitty" "mpv" "nushell" "obsidian" "opencode" "qt" "rio" "starship" "tmux" "waybar" "zed" "zellij"];
   selections = [
     {
       provider = "catppuccin";

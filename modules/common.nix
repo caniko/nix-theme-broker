@@ -98,7 +98,8 @@
   generatedConfigTargets =
     builtins.filter (
       target:
-        engineOf target == "stylix"
+        engineOf target
+        == "stylix"
         && builtins.elem themeBrokerPlatform (generatedRegistry.${target}.platforms or [])
     )
     generatedTargets;

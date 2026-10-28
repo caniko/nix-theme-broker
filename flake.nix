@@ -894,7 +894,7 @@
             EOF
             mkdir -p "$TMPDIR/home" "$TMPDIR/state" "$TMPDIR/cache"
             HOME="$TMPDIR/home" XDG_STATE_HOME="$TMPDIR/state" XDG_CACHE_HOME="$TMPDIR/cache" \
-              ${pkgs.nix}/bin/nix --extra-experimental-features nix-command eval --option allow-import-from-derivation false --raw --file "$TMPDIR/no-ifd.nix"
+              ${pkgs.nix}/bin/nix --extra-experimental-features nix-command eval --store "local?root=$TMPDIR/store" --option allow-import-from-derivation false --raw --file "$TMPDIR/no-ifd.nix"
             touch "$out"
           '';
         };

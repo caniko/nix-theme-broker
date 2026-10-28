@@ -2,7 +2,7 @@
   themeLib = import ../../lib {inherit lib;};
   registry = themeLib.generatedTargets;
   validPlatforms = ["homeManager" "nixos" "darwin"];
-  expected = ["alacritty" "bat" "blender" "brave" "btop" "chromium" "console" "cosmic" "floorp" "font-packages" "fontconfig" "foot" "ghostty" "helix" "k9s" "kitty" "mpv" "nushell" "obsidian" "opencode" "qt" "rio" "starship" "tmux" "vscode" "waybar" "zed" "zellij"];
+  expected = ["alacritty" "bat" "blender" "brave" "btop" "chromium" "console" "cosmic" "floorp" "font-packages" "fontconfig" "foot" "ghostty" "helix" "k9s" "kitty" "mpv" "nushell" "obsidian" "opencode" "qt" "rio" "starship" "tmux" "vencord" "vscode" "waybar" "zed" "zellij"];
 in
   assert builtins.all (name: builtins.hasAttr name registry) expected;
   assert !registry.vscode.autoSafe;

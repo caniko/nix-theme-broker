@@ -100,6 +100,10 @@
     platforms = ["homeManager"];
     autoSafe = true;
   };
+  vencord = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+  };
   vscode = {
     platforms = ["homeManager"];
     autoSafe = false;

@@ -12,6 +12,10 @@
   variant so targets no longer show "untitled"; provider display names are now
   complete (for example `Gruvbox Dark Hard`).
 
+- Add the `vencord` generated (Stylix) target; it only writes
+  `Vencord/themes/stylix.theme.css`. `vesktop` is left out because it also edits
+  `programs.vesktop.vencord.settings`.
+
 - Add the `blender`, `floorp`, `k9s`, `qt`, `fontconfig` and `font-packages`
   generated (Stylix) targets; `qt`, `fontconfig` and `font-packages` also cover
   NixOS. `qt` (sets the Qt platform theme and Kvantum style) and `fontconfig`

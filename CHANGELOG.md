@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+- Add a provider-neutral Chromium/Brave theme extension: `chromium` and `brave`
+  accept `backend = "generated"` on Home Manager (engine `chrome-theme`), reusing
+  the Gruvbox theme renderer with the selection name and a separate stable
+  extension id. Registry entries may now set `engines.<platform>` to override
+  `engine` per platform; NixOS `chromium` stays on Stylix.
+
+- Name the Stylix Base16 scheme (`scheme`, `slug`) after the selected provider
+  variant so targets no longer show "untitled"; provider display names are now
+  complete (for example `Gruvbox Dark Hard`).
+
+- Add the `vencord` generated (Stylix) target; it only writes
+  `Vencord/themes/stylix.theme.css`. `vesktop` is left out because it also edits
+  `programs.vesktop.vencord.settings`.
+
+- Add the `blender`, `floorp`, `k9s`, `qt`, `fontconfig` and `font-packages`
+  generated (Stylix) targets; `qt`, `fontconfig` and `font-packages` also cover
+  NixOS. `qt` (sets the Qt platform theme and Kvantum style) and `fontconfig`
+  (replaces the default font families) change global behaviour, so neither is
+  `autoSafe`.
+
 - Add the `rio` generated (Stylix) target.
 
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,

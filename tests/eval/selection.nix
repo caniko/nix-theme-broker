@@ -116,7 +116,22 @@
       catppuccin = wallpapers.catppuccin // {default = "../outside.png";};
     })
     true);
+  schemeNames = lib.concatMap (provider:
+    map (variant: {
+      inherit provider variant;
+      scheme =
+        (themeLib.resolveSelection {
+          inherit providers;
+          selection = {
+            inherit provider variant;
+            accent = null;
+          };
+        }).formatted.base16Scheme;
+    }) (builtins.attrNames providers.${provider}.variants)) (builtins.attrNames providers);
 in
+  # Stylix names the theme from scheme/slug; "untitled" is base16.nix's fallback.
+  assert builtins.all (s: builtins.isString s.scheme.scheme && s.scheme.scheme != "" && s.scheme.scheme != "untitled" && s.scheme.slug == "${s.provider}-${s.variant}") schemeNames;
+  assert (builtins.head (builtins.filter (s: s.provider == "blackbox") schemeNames)).scheme.scheme == "Blackbox Dark";
   assert selected.provider == "catppuccin";
   assert selected.variant == "mocha";
   assert selected.accent == "blue";

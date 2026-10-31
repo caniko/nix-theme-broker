@@ -34,7 +34,7 @@
   in {
     metadata = {
       inherit (source) appearance contrast;
-      displayName = "Blackbox ${id}";
+      displayName = "Blackbox ${lib.toSentenceCase id}";
     };
     named = palette.named // aliases;
     accents = {};

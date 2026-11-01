@@ -11,7 +11,7 @@ aliases, semantic roles, ANSI, and Base16 from it. Provenance records the
 derivation from Gruvbox revision
 `5d15b2765f59754d7ac263c88a0f6e3e58124951` in this repository.
 
-Select it (single `dark` variant, no accent axis):
+Select it (`dark` or `light`, no accent axis):
 
 ```nix
 themeBroker = {
@@ -62,6 +62,28 @@ Base16: `base00` = `background` (so `base00 == #000000`), `base01` =
 `base0C` = `bright_aqua`, `base0D` = `bright_blue`, `base0E` = `bright_purple`,
 `base0F` = `orange`. `base24` is `null` (no Base24 projection).
 
+### Light variant
+
+`light` keeps every role key and alias of `dark` on a near-white canvas. It
+carries its own `named` inventory in `palette.json` (`variants.light.named`) and
+a literal `border` alias:
+
+| Group | Colors |
+| --- | --- |
+| Backgrounds | `background #ffffff`, `surface_0 #f7f7f5`, `surface_1 #f2f2f0`, `surface_2 #e8e8e5`; `border #d9d9d6` |
+| Foregrounds | `foreground #1d2021`, `muted #5a5550`, `subtle #7c6f64`, `foreground_bright #000000` |
+| Normal | Gruvbox-light's regular hues: `red #cc241d`, `orange #d65d0e`, `yellow #d79921`, `green #98971a`, `aqua #689d6a`, `blue #458588`, `purple #b16286` |
+| Bright | Gruvbox-light's darker hues, which the status and syntax roles use: `bright_red #9d0006`, `bright_orange #af3a03`, `bright_yellow #b57614`, `bright_green #79740e`, `bright_aqua #427b58`, `bright_blue #076678`, `bright_purple #8f3f71` |
+| Extra | `magenta #8f3f71`, `bright_magenta #b4637a` |
+
+`foreground` and `muted` reach at least 6.0:1 against all four surface steps
+(WCAG AA needs 4.5:1).
+
+### Figure roles
+
+Both Blackbox variants carry the optional `roles.figure` group (see
+[Figure roles](#figure-roles)).
+
 Limitations:
 
 - Blackbox has no upstream Tinted scheme, so it is excluded from the
@@ -104,3 +126,47 @@ roles while recording Tinted's compatible Base16 values where they differ.
 
 Provider IDs and variant IDs are data, not core assumptions. Third-party
 providers can be added through the mergeable registry option.
+
+## Figure roles
+
+`roles.figure` is an optional group for scientific figures and web charts. A
+provider that omits it stays valid; one that declares it must declare every key.
+Colour keys (hex or `@name`) are `background`, `surface`, `surface_alt`,
+`border`, `ink`, `muted`, `link`, `accent`, `positive`, `negative`,
+`highlight`, `on_status`, `true_mask`, `false_mask`, `unavailable`, `point`,
+`box_fill`, `reference`, and `categorical` (a list of exactly 10 colours). Data
+keys pass through unresolved: `sequential_cmap`, `density_cmap`, `time_cmap`
+(matplotlib colormap names) and `time_range` (`[lo, hi]` fractions of the
+colormap). Blackbox `dark` and `light` hold the values bekiper's `themekit`
+crate shipped, verbatim, so published figures keep their colours; they are
+deliberately independent of the `ui` chrome.
+
+## Web renderer
+
+`lib.web` turns a `{providers, light, dark}` pair of selections (each resolved
+through `resolveSelection`) into:
+
+- `lib.web.css`: `:root` for light, an `@media (prefers-color-scheme: dark)`
+  block scoped to `:root:not([data-theme=light])`, and `[data-theme=dark]` /
+  `[data-theme=light]` overrides. Every scalar colour of `ui`, `status`,
+  `syntax` and `figure` becomes `--tb-<group>-<role>` (camelCase and
+  snake_case kebab-cased, e.g. `--tb-ui-background-alt`,
+  `--tb-figure-surface-alt`).
+- `lib.web.json`: both modes with every role, including figure lists and
+  colormap names.
+- `lib.web.uiPalette selected`: `roles.ui` as plain `"#rrggbb"` strings, the
+  mapping web surfaces without the module consume.
+
+`packages.<system>.web-theme-blackbox` contains `theme.css` and `theme.json` for
+`blackbox/light` + `blackbox/dark`. The Rust crate `crates/theme-broker`
+embeds committed copies in `crates/theme-broker/generated/`; refresh them after
+a palette change with
+
+```console
+nix build .#web-theme-blackbox
+cp result/theme.css result/theme.json crates/theme-broker/generated/
+chmod u+w crates/theme-broker/generated/*
+```
+
+The `theme-broker-snapshot` check fails when they drift, and `web-golden`
+pins the figure-less Gruvbox path in `tests/golden/web-gruvbox.css`.

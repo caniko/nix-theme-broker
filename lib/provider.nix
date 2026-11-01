@@ -4,7 +4,7 @@
 }: let
   types = import ./types.nix {inherit lib;};
   validation = import ./validation.nix {inherit lib;};
-  inherit (types) base16Keys ansiKeys requiredRoles;
+  inherit (types) base16Keys ansiKeys requiredRoles figureColorKeys figureDataKeys;
 
   providerError = providerId: variantId: path: message:
     validation.error providerId variantId path message;
@@ -36,6 +36,31 @@
     else if builtins.isList value
     then map (resolveTree named) value
     else resolveNamed named value;
+
+  # `roles.figure` mixes colours with plain data (colormap names, time_range):
+  # resolve the colour keys, pass the data keys through untouched.
+  splitFigure = roles: {
+    colors = roles // lib.optionalAttrs (roles ? figure) {figure = removeAttrs roles.figure figureDataKeys;};
+    data = lib.optionalAttrs (roles ? figure) {figure = lib.getAttrs (lib.filter (key: roles.figure ? ${key}) figureDataKeys) roles.figure;};
+  };
+
+  resolveRoles = named: roles: let
+    split = splitFigure roles;
+  in
+    lib.recursiveUpdate (resolveTree named split.colors) split.data;
+
+  validateFigure = providerId: variantId: figure: let
+    path = ["roles" "figure"];
+    actual = lib.attrNames figure;
+    keys = figureColorKeys ++ figureDataKeys;
+    isNumber = value: builtins.isInt value || builtins.isFloat value;
+  in [
+    (require providerId variantId path (lib.subtractLists actual keys == []) "missing figure keys: ${lib.concatStringsSep ", " (lib.subtractLists actual keys)}")
+    (require providerId variantId path (lib.subtractLists keys actual == []) "unexpected figure keys: ${lib.concatStringsSep ", " (lib.subtractLists keys actual)}")
+    (require providerId variantId (path ++ ["categorical"]) (builtins.isList (figure.categorical or null) && builtins.length figure.categorical == 10) "categorical must list exactly 10 colors")
+    (require providerId variantId (path ++ ["time_range"]) (builtins.isList (figure.time_range or null) && builtins.length figure.time_range == 2 && builtins.all isNumber figure.time_range) "time_range must be [lo, hi] numbers")
+    (require providerId variantId path (builtins.all (key: builtins.isString (figure.${key} or null) && figure.${key} != "") ["sequential_cmap" "density_cmap" "time_cmap"]) "colormap names must be non-empty strings")
+  ];
 
   validateValue = providerId: variantId: named: path: value:
     if builtins.isAttrs value && value ? hex
@@ -108,7 +133,8 @@
       ++ validateProjection providerId variantId "base16" base16 base16Keys
       ++ validateValue providerId variantId named ["named"] named
       ++ validateNamedReferences providerId variantId named
-      ++ validateValue providerId variantId named ["roles"] roles
+      ++ validateValue providerId variantId named ["roles"] (splitFigure roles).colors
+      ++ lib.optionals (roles ? figure) (validateFigure providerId variantId roles.figure)
       ++ validateValue providerId variantId named ["ansi"] ansi
       ++ validateValue providerId variantId named ["base16"] base16
       ++ (
@@ -130,7 +156,7 @@
     metadata = variant.metadata;
     _raw = variant;
     inherit named;
-    roles = resolveTree named (variant.roles or {});
+    roles = resolveRoles named (variant.roles or {});
     ansi = resolveTree named (variant.ansi or {});
     base16 = resolveTree named variant.base16;
     base24 =
@@ -193,6 +219,6 @@
       variants = lib.mapAttrs (normalizeVariant validated.id) validated.variants;
     };
 in {
-  inherit resolveTree validateProvider normalizeProvider;
+  inherit resolveTree resolveRoles validateProvider normalizeProvider;
   mkProvider = provider: normalizeProvider provider;
 }

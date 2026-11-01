@@ -36,50 +36,59 @@
       inherit (source) appearance contrast;
       displayName = "Blackbox ${id}";
     };
-    named = palette.named // aliases;
+    # Variants without their own `named` inventory share the top-level (dark)
+    # one; `aliases` replaces individual alias entries (light's literal border).
+    named = (source.named or palette.named) // aliases // (source.aliases or {});
     accents = {};
     accentBindings = [];
-    roles = {
-      ui = {
-        background = "@background";
-        backgroundAlt = "@backgroundAlt";
-        surface = "@surface";
-        surfaceAlt = "@surfaceAlt";
-        overlay = "@overlay";
-        foreground = "@foreground";
-        foregroundMuted = "@foregroundMuted";
-        border = "@border";
-        selectionBackground = "@selectionBackground";
-        selectionForeground = "@selectionForeground";
-        focus = "@focus";
-        accent = "@accent";
-        link = "@link";
+    roles =
+      {
+        ui = {
+          background = "@background";
+          backgroundAlt = "@backgroundAlt";
+          surface = "@surface";
+          surfaceAlt = "@surfaceAlt";
+          overlay = "@overlay";
+          foreground = "@foreground";
+          foregroundMuted = "@foregroundMuted";
+          border = "@border";
+          selectionBackground = "@selectionBackground";
+          selectionForeground = "@selectionForeground";
+          focus = "@focus";
+          accent = "@accent";
+          link = "@link";
+        };
+        status = {
+          error = "@bright_red";
+          warning = "@bright_orange";
+          success = "@bright_green";
+          info = "@bright_blue";
+          hint = "@bright_aqua";
+        };
+        # Same role assignments as the Gruvbox provider, expressed with the
+        # corresponding Blackbox bright accents; comments use `subtle`.
+        syntax = {
+          comment = "@subtle";
+          string = "@bright_green";
+          number = "@bright_purple";
+          boolean = "@bright_purple";
+          keyword = "@bright_red";
+          function = "@bright_green";
+          type = "@bright_yellow";
+          variable = "@foreground";
+          constant = "@bright_orange";
+          operator = "@bright_orange";
+          punctuation = "@muted";
+          tag = "@bright_aqua";
+          attribute = "@bright_yellow";
+        };
+      }
+      // lib.optionalAttrs (source ? figure) {
+        # Figure/chart palette (hex literals, colormap names, time_range) kept
+        # verbatim from the bekiper themekit snapshot so published figures stay
+        # stable; see lib/types.nix `figureKeys`.
+        figure = source.figure;
       };
-      status = {
-        error = "@bright_red";
-        warning = "@bright_orange";
-        success = "@bright_green";
-        info = "@bright_blue";
-        hint = "@bright_aqua";
-      };
-      # Same role assignments as the Gruvbox provider, expressed with the
-      # corresponding Blackbox bright accents; comments use `subtle`.
-      syntax = {
-        comment = "@subtle";
-        string = "@bright_green";
-        number = "@bright_purple";
-        boolean = "@bright_purple";
-        keyword = "@bright_red";
-        function = "@bright_green";
-        type = "@bright_yellow";
-        variable = "@foreground";
-        constant = "@bright_orange";
-        operator = "@bright_orange";
-        punctuation = "@muted";
-        tag = "@bright_aqua";
-        attribute = "@bright_yellow";
-      };
-    };
     ansi = {
       normal = {
         black = "@background";
@@ -130,7 +139,7 @@ in {
   schema = "theme-broker.provider/v1";
   id = "blackbox";
   name = "Blackbox";
-  description = "True-black, Gruvbox-inspired palette maintained in this repository";
+  description = "True-black (dark) and near-white (light) Gruvbox-inspired palette maintained in this repository";
   provenance = palette.source // {license = "MIT";};
   defaults = {
     variant = "dark";

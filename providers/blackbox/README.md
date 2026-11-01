@@ -20,4 +20,7 @@ The preview image labels are known to be wrong (mislabeled bright blue/aqua,
 an invalid purple hex, and `#1a1a1a` labeled `bright_black`); the JSON
 inventory and the tests are authoritative instead.
 
-The provider exposes one variant, `dark`, with `accent = null`.
+The provider exposes two variants, `dark` and `light`, with `accent = null`.
+`light` has its own `named` inventory (`variants.light.named`) and a literal
+`border` alias; variants without `named` share the top-level (dark) inventory.
+Each variant may also carry a `figure` object, exposed as `roles.figure`.

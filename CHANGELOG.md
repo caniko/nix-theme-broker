@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Add a Blackbox `light` variant (near-white canvas, Gruvbox-light's darker
+  hues for status and syntax) with the same role keys as `dark`.
+
+- Add the optional `roles.figure` group (figure/chart palette with a 10-colour
+  categorical cycle, colormap names and `time_range`) to the provider and
+  normalized-theme schemas; Blackbox `dark`/`light` carry bekiper's themekit
+  values verbatim.
+
+- Add the web renderer (`lib.web.{css,json,uiPalette}`,
+  `packages.<system>.web-theme-blackbox`) emitting `--tb-<group>-<role>` custom
+  properties for light and dark, and the framework-neutral `theme-broker` Rust
+  crate that embeds the generated snapshot (checked for drift in CI).
+
 - Add the `rio` generated (Stylix) target.
 
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,

@@ -1,0 +1,18 @@
+[package]
+name = "theme-broker"
+description = "Light/dark theme tokens from the theme broker's generated web snapshot (CSS, JSON, matplotlib)"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[features]
+# PyO3 functions a host extension module mounts with `theme_broker::python::register`.
+python = ["dep:pyo3"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Declared with default features only so the feature does not force
+# `extension-module`; the host extension enables that for its own build.
+pyo3 = { version = "0.26", optional = true }

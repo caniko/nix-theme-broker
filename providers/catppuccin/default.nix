@@ -51,7 +51,7 @@
         then "dark"
         else "light";
       contrast = "medium";
-      displayName = source.name;
+      displayName = "Catppuccin ${source.name}";
     };
     inherit named;
     roles = {

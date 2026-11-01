@@ -49,7 +49,7 @@
   in {
     metadata = {
       inherit (source) appearance contrast;
-      displayName = id;
+      displayName = "Gruvbox ${lib.concatMapStringsSep " " lib.toSentenceCase (lib.splitString "-" id)}";
     };
     named = palette.named // aliases;
     accents = {};

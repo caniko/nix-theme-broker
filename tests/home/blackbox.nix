@@ -12,6 +12,7 @@
     modules = [
       (homeManager.outPath + "/modules/programs/kitty.nix")
       (homeManager.outPath + "/modules/programs/helix.nix")
+      (homeManager.outPath + "/modules/programs/chromium.nix")
       stylix.homeModules.stylix
       catppuccin.homeModules.default
       (import ../../modules/home-manager.nix {
@@ -37,10 +38,13 @@
           targets = {
             kitty.backend = "generated";
             helix.backend = "generated";
+            # No Blackbox native adapter: the broker's own theme extension.
+            chromium.backend = "generated";
           };
         };
         programs.kitty.enable = true;
         programs.helix.enable = true;
+        programs.chromium.enable = true;
       }
     ];
   };
@@ -53,5 +57,6 @@ in {
   # Store paths of the generated per-target theme files; the checks build and
   # inspect their contents rather than only the normalized palette.
   kittyTheme = lib.removePrefix "include " (builtins.head includeLines);
+  chromiumExtension = builtins.head cfg.programs.chromium.extensions;
   helixTheme = toString cfg.programs.helix.themes.stylix;
 }

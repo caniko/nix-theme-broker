@@ -661,6 +661,23 @@
             ' unpacked/manifest.json
             touch "$out"
           '';
+          blackbox-browser-theme = let
+            extension = blackboxHome.chromiumExtension;
+          in
+            pkgs.runCommand "theme-broker-blackbox-browser-theme" {nativeBuildInputs = [pkgs.go-crx3 pkgs.jq];} ''
+              mkdir unpacked
+              crx3 unpack --disable-subdir --outfile unpacked ${extension.crxPath}
+              test "$(crx3 id ${extension.crxPath})" = ${extension.id}
+              test ${extension.id} != lmfonlemcgahfkfdalcnjgjibaiinhna
+              jq -e '
+                .name == "Blackbox Dark"
+                and .theme.colors.frame == [0, 0, 0]
+                and .theme.colors.ntp_background == [0, 0, 0]
+                and .theme.colors.toolbar == [26, 26, 26]
+                and .theme.colors.omnibox_text == [235, 219, 178]
+              ' unpacked/manifest.json
+              touch "$out"
+            '';
           provider-shape = pkgs.runCommand "theme-broker-provider-shape" {} ''
             test ${toString (builtins.length (builtins.attrNames gruvbox.variants))} = 6
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants))} = 4

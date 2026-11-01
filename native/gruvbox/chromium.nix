@@ -3,16 +3,20 @@
   pkgs,
   selected,
   target,
+  # Defaults keep the Gruvbox adapter byte-identical; the provider-neutral
+  # engine passes its own name, key and extension id.
+  name ? "Gruvbox Dark Hard",
+  id ? "lmfonlemcgahfkfdalcnjgjibaiinhna",
+  pem ? ./chromium.pem,
+  crxName ? "gruvbox-browser-theme",
 }: let
   version = "1.0.0";
-  id = "lmfonlemcgahfkfdalcnjgjibaiinhna";
   rgb = color:
     with color.rgb; [r g b];
   inherit (selected.roles) ui;
   manifest = pkgs.writeTextDir "manifest.json" (builtins.toJSON {
     manifest_version = 3;
-    name = "Gruvbox Dark Hard";
-    inherit version;
+    inherit name version;
     theme.colors = {
       background_tab = rgb ui.background;
       background_tab_inactive = rgb ui.background;
@@ -40,8 +44,8 @@
       toolbar_text = rgb ui.foreground;
     };
   });
-  crx = pkgs.runCommand "gruvbox-browser-theme-${version}.crx" {nativeBuildInputs = [pkgs.go-crx3];} ''
-    crx3 pack ${manifest} --pem ${./chromium.pem} --outfile "$out"
+  crx = pkgs.runCommand "${crxName}-${version}.crx" {nativeBuildInputs = [pkgs.go-crx3];} ''
+    crx3 pack ${manifest} --pem ${pem} --outfile "$out"
   '';
 in {
   programs.${target}.extensions = lib.mkAfter [

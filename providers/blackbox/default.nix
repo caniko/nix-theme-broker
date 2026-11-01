@@ -34,7 +34,7 @@
   in {
     metadata = {
       inherit (source) appearance contrast;
-      displayName = "Blackbox ${id}";
+      displayName = "Blackbox ${lib.toSentenceCase id}";
     };
     # Variants without their own `named` inventory share the top-level (dark)
     # one; `aliases` replaces individual alias entries (light's literal border).

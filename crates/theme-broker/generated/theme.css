@@ -1,10 +1,10 @@
 :root {
   color-scheme: light;
-  --tb-ui-accent: #af3a03;
+  --tb-ui-accent: #076678;
   --tb-ui-background: #ffffff;
   --tb-ui-background-alt: #f7f7f5;
   --tb-ui-border: #d9d9d6;
-  --tb-ui-focus: #af3a03;
+  --tb-ui-focus: #076678;
   --tb-ui-foreground: #1d2021;
   --tb-ui-foreground-muted: #5a5550;
   --tb-ui-link: #076678;
@@ -53,11 +53,11 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme=light]) {
     color-scheme: dark;
-    --tb-ui-accent: #fe8019;
+    --tb-ui-accent: #83a598;
     --tb-ui-background: #000000;
     --tb-ui-background-alt: #1a1a1a;
     --tb-ui-border: #3a3a3a;
-    --tb-ui-focus: #fe8019;
+    --tb-ui-focus: #83a598;
     --tb-ui-foreground: #ebdbb2;
     --tb-ui-foreground-muted: #bdae93;
     --tb-ui-link: #83a598;
@@ -106,11 +106,11 @@
 }
 [data-theme=dark] {
   color-scheme: dark;
-  --tb-ui-accent: #fe8019;
+  --tb-ui-accent: #83a598;
   --tb-ui-background: #000000;
   --tb-ui-background-alt: #1a1a1a;
   --tb-ui-border: #3a3a3a;
-  --tb-ui-focus: #fe8019;
+  --tb-ui-focus: #83a598;
   --tb-ui-foreground: #ebdbb2;
   --tb-ui-foreground-muted: #bdae93;
   --tb-ui-link: #83a598;
@@ -158,11 +158,11 @@
 }
 [data-theme=light] {
   color-scheme: light;
-  --tb-ui-accent: #af3a03;
+  --tb-ui-accent: #076678;
   --tb-ui-background: #ffffff;
   --tb-ui-background-alt: #f7f7f5;
   --tb-ui-border: #d9d9d6;
-  --tb-ui-focus: #af3a03;
+  --tb-ui-focus: #076678;
   --tb-ui-foreground: #1d2021;
   --tb-ui-foreground-muted: #5a5550;
   --tb-ui-link: #076678;

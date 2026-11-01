@@ -16,8 +16,8 @@
       foregroundMuted = "@muted";
       selectionBackground = "@surface_1";
       selectionForeground = "@foreground_bright";
-      focus = "@bright_orange";
-      accent = "@bright_orange";
+      focus = "@bright_blue";
+      accent = "@bright_blue";
       link = "@bright_blue";
       # Short names in the shape Gruvbox consumers already use.
       bg0 = "@background";

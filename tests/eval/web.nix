@@ -28,7 +28,7 @@
     dark = select "gruvbox" "dark-hard";
   };
 in
-  assert lib.hasPrefix ":root {\n  color-scheme: light;\n  --tb-ui-accent: #af3a03;" css;
+  assert lib.hasPrefix ":root {\n  color-scheme: light;\n  --tb-ui-accent: #076678;" css;
   assert has "@media (prefers-color-scheme: dark) {\n  :root:not([data-theme=light]) {\n    color-scheme: dark;";
   assert has "[data-theme=dark] {\n  color-scheme: dark;";
   assert has "[data-theme=light] {\n  color-scheme: light;";

@@ -65,11 +65,11 @@
         "variable": "#ebdbb2"
       },
       "ui": {
-        "accent": "#fe8019",
+        "accent": "#83a598",
         "background": "#000000",
         "backgroundAlt": "#1a1a1a",
         "border": "#3a3a3a",
-        "focus": "#fe8019",
+        "focus": "#83a598",
         "foreground": "#ebdbb2",
         "foregroundMuted": "#bdae93",
         "link": "#83a598",
@@ -148,11 +148,11 @@
         "variable": "#1d2021"
       },
       "ui": {
-        "accent": "#af3a03",
+        "accent": "#076678",
         "background": "#ffffff",
         "backgroundAlt": "#f7f7f5",
         "border": "#d9d9d6",
-        "focus": "#af3a03",
+        "focus": "#076678",
         "foreground": "#1d2021",
         "foregroundMuted": "#5a5550",
         "link": "#076678",

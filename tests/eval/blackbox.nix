@@ -65,8 +65,8 @@
       border = "#3a3a3a";
       selectionBackground = "#262626";
       selectionForeground = "#fbf1c7";
-      focus = "#fe8019";
-      accent = "#fe8019";
+      focus = "#83a598";
+      accent = "#83a598";
       link = "#83a598";
     };
     status = {
@@ -188,6 +188,7 @@
       overrides.named = {
         surface_0 = "#0a0a0a";
         bright_orange = "#123456";
+        bright_blue = "#654321";
       };
     };
   };
@@ -205,9 +206,10 @@
     (surfaceOverride.named.backgroundAlt.withHashtag == "#0a0a0a")
     (surfaceOverride.roles.ui.backgroundAlt.withHashtag == "#0a0a0a")
     (surfaceOverride.base16.base01.withHashtag == "#0a0a0a")
-    (surfaceOverride.named.focus.withHashtag == "#123456")
-    (surfaceOverride.roles.ui.focus.withHashtag == "#123456")
-    (surfaceOverride.roles.ui.accent.withHashtag == "#123456")
+    (surfaceOverride.named.focus.withHashtag == "#654321")
+    (surfaceOverride.roles.ui.focus.withHashtag == "#654321")
+    (surfaceOverride.roles.ui.accent.withHashtag == "#654321")
+    (surfaceOverride.roles.ui.link.withHashtag == "#654321")
     (surfaceOverride.roles.status.warning.withHashtag == "#123456")
     (surfaceOverride.roles.syntax.constant.withHashtag == "#123456")
     (surfaceOverride.base16.base09.withHashtag == "#123456")
@@ -404,7 +406,7 @@ in
   assert lightRoles.ui.border == "#d9d9d6";
   assert lightRoles.ui.foreground == "#1d2021";
   assert lightRoles.ui.foregroundMuted == "#5a5550";
-  assert lightRoles.ui.accent == "#af3a03";
+  assert lightRoles.ui.accent == "#076678";
   assert lightRoles.ui.link == "#076678";
   assert lightRoles.status
   == {

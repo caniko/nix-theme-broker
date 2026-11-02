@@ -10,23 +10,25 @@
   adapter = import ./adapter.nix {inherit lib;};
   target = import ./target.nix {inherit lib;};
   generatedTargets = import ./generated-targets.nix;
-in {
-  inherit color;
-  inherit types validation projection;
-  inherit supportMatrix;
-  inherit target;
-  inherit (target) rendererOwners rendererSupported;
-  inherit generatedTargets;
-  inherit (wallpaper) validateRegistry;
-  resolveWallpapers = wallpaper.resolve;
-  inherit (provider) mkProvider normalizeProvider;
-  inherit (adapter) mkAdapter;
-  targetAliases = adapter.aliases or {};
-  resolveBackend = adapter.resolve;
   resolveSelection = args:
     selection {
       providers = lib.mapAttrs (_: provider.normalizeProvider) args.providers;
       selection = args.selection;
       wallpapers = args.wallpapers or {};
     };
+  web = import ./renderers/web.nix {inherit lib resolveSelection;};
+in {
+  inherit color;
+  inherit types validation projection;
+  inherit supportMatrix;
+  inherit target;
+  inherit (target) rendererOwners rendererSupported;
+  inherit generatedTargets web;
+  inherit (wallpaper) validateRegistry;
+  resolveWallpapers = wallpaper.resolve;
+  inherit (provider) mkProvider normalizeProvider;
+  inherit (adapter) mkAdapter;
+  targetAliases = adapter.aliases or {};
+  resolveBackend = adapter.resolve;
+  inherit resolveSelection;
 }

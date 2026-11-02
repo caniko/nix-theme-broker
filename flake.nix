@@ -464,6 +464,10 @@
           (import ./tests/eval/adapter.nix {inherit lib;})
           (import ./tests/eval/generated-targets.nix {inherit lib;})
           (import ./tests/eval/opencode-v2.nix {inherit lib providers;})
+          (import ./tests/eval/web.nix {
+            inherit lib providers;
+            publicLib = publicThemeBrokerLib;
+          })
           (import ./tests/resolver/table.nix {inherit lib;})
           (import ./tests/eval/module.nix {inherit lib pkgs providers adapters;})
           (import ./tests/eval/platforms.nix {inherit lib pkgs providers adapters;})
@@ -512,7 +516,17 @@
         providerSchemaInputs = lib.mapAttrsToList (id: provider: pkgs.writeText "theme-broker-provider-${id}.json" (builtins.toJSON provider)) providers;
         adapterSchemaInputs = lib.imap0 (index: adapter: pkgs.writeText "theme-broker-adapter-${toString index}.json" (builtins.toJSON adapter)) adapters;
         wallpaperSchemaInput = pkgs.writeText "theme-broker-wallpapers.json" (builtins.toJSON {});
-        normalizedThemeSchemaInput = pkgs.writeText "theme-broker-normalized-theme.json" (builtins.toJSON darkHard);
+        normalizedThemeSchemaInputs = map (selected: pkgs.writeText "theme-broker-normalized-theme-${selected.provider}-${selected.variant}.json" (builtins.toJSON selected)) [
+          darkHard
+          (themeBrokerLib.resolveSelection {
+            inherit providers;
+            selection = {
+              provider = "blackbox";
+              variant = "light";
+              accent = null;
+            };
+          })
+        ];
         opencodeThemeInputs = let
           render = import ./lib/renderers/opencode-v2.nix {inherit lib;};
           variantSelections = lib.concatMap (provider:
@@ -545,6 +559,49 @@
             pkgs.writeText "opencode-${selection.provider}-${selection.variant}-${toString index}.json" (builtins.toJSON (render (themeBrokerLib.resolveSelection {
               inherit providers selection;
             })))) (variantSelections ++ overrideSelections);
+        webBlackbox = {
+          inherit providers;
+          light = {
+            provider = "blackbox";
+            variant = "light";
+            accent = null;
+          };
+          dark = {
+            provider = "blackbox";
+            variant = "dark";
+            accent = null;
+          };
+        };
+        # theme.css + theme.json for the Blackbox light/dark pair; the Rust
+        # crate embeds a committed copy (`crates/theme-broker/generated`).
+        webThemeBlackbox =
+          pkgs.runCommand "web-theme-blackbox" {
+            nativeBuildInputs = [pkgs.jq];
+            css = themeBrokerLib.web.css webBlackbox;
+            json = themeBrokerLib.web.json webBlackbox;
+            passAsFile = ["css" "json"];
+          } ''
+            mkdir "$out"
+            cp "$cssPath" "$out/theme.css"
+            jq -S . "$jsonPath" > "$out/theme.json"
+          '';
+        webGruvboxCss = pkgs.writeText "web-gruvbox.css" (themeBrokerLib.web.css {
+          inherit providers;
+          light = {
+            provider = "gruvbox";
+            variant = "light-hard";
+            accent = null;
+          };
+          dark = {
+            provider = "gruvbox";
+            variant = "dark-hard";
+            accent = null;
+          };
+        });
+        themeBrokerCrateSrc = lib.fileset.toSource {
+          root = ./.;
+          fileset = lib.fileset.unions [./Cargo.toml ./Cargo.lock ./crates];
+        };
         blackboxHome = import ./tests/home/blackbox.nix {
           inherit pkgs providers adapters;
           homeManager = home-manager;
@@ -561,6 +618,7 @@
         formatter = pkgs.alejandra;
         devShells.default = pkgs.mkShell {packages = [pkgs.alejandra pkgs.python3];};
         packages = {
+          web-theme-blackbox = webThemeBlackbox;
           support-matrix-json = pkgs.writeText "theme-broker-support-matrix.json" supportMatrix.json;
           support-matrix-markdown = pkgs.writeText "theme-broker-support-matrix.md" supportMatrix.markdown;
           provider-schema = pkgs.writeText "theme-broker-provider.schema.json" (builtins.readFile ./schema/provider.schema.json);
@@ -577,6 +635,25 @@
               check-jsonschema --schemafile ${./tests/fixtures/opencode-v2-theme.schema.json} ${lib.escapeShellArgs (map toString opencodeThemeInputs)}
               touch "$out"
             '';
+          # Gruvbox has no figure roles: golden for the chrome-only renderer path.
+          web-golden = pkgs.runCommand "theme-broker-web-golden" {} ''
+            diff -u ${./tests/golden/web-gruvbox.css} ${webGruvboxCss}
+            touch "$out"
+          '';
+          # The committed Rust snapshot must equal the renderer output.
+          theme-broker-snapshot = pkgs.runCommand "theme-broker-snapshot" {} ''
+            diff -u ${./crates/theme-broker/generated/theme.css} ${webThemeBlackbox}/theme.css
+            diff -u ${./crates/theme-broker/generated/theme.json} ${webThemeBlackbox}/theme.json
+            touch "$out"
+          '';
+          theme-broker-crate = pkgs.rustPlatform.buildRustPackage {
+            pname = "theme-broker";
+            version = "0.1.0";
+            src = themeBrokerCrateSrc;
+            cargoLock.lockFile = ./Cargo.lock;
+            buildAndTestSubdir = "crates/theme-broker";
+            doCheck = true;
+          };
           gruvbox-dark-hard = pkgs.runCommand "theme-broker-gruvbox-dark-hard" {} ''
             test ${pkgs.lib.escapeShellArg darkHard.base16.base00.withHashtag} = '#1d2021'
             test ${pkgs.lib.escapeShellArg darkHard.roles.ui.background.withHashtag} = '#1d2021'
@@ -684,7 +761,7 @@
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants.mocha.accents))} = 14
             test ${toString (builtins.length (builtins.attrNames rosePine.variants))} = 3
             test ${toString (builtins.length (builtins.attrNames rosePine.variants.main.accents))} = 6
-            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 1
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 2
             test ${toString (builtins.length (builtins.attrNames blackbox.variants.dark.accents))} = 0
             test ${
               toString (
@@ -828,7 +905,7 @@
                 exit 1
               fi
               check-jsonschema --schemafile ${./schema/wallpaper-catalog.schema.json} ${wallpaperSchemaInput}
-              check-jsonschema --schemafile ${./schema/normalized-theme.schema.json} ${normalizedThemeSchemaInput}
+              check-jsonschema --schemafile ${./schema/normalized-theme.schema.json} ${lib.concatStringsSep " " normalizedThemeSchemaInputs}
               test ${pkgs.lib.escapeShellArg catppuccinNativeRevision} = ${pkgs.lib.escapeShellArg catppuccinManifest.source.revision}
               test ${pkgs.lib.escapeShellArg catppuccinPaletteRevision} = ${pkgs.lib.escapeShellArg catppuccinProvider.provenance.revision}
               test ${pkgs.lib.escapeShellArg rosePinePaletteRevision} = ${pkgs.lib.escapeShellArg rosePine.provenance.revision}

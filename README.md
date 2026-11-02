@@ -2,7 +2,7 @@
 
 This flake exposes a palette-neutral `themeBroker` module and provider library.
 Gruvbox's six variants, Catppuccin's four appearances, Rosé Pine's three
-variants, and Blackbox's single true-black variant normalize into semantic
+variants, and Blackbox's true-black dark and near-white light variants normalize into semantic
 roles, ANSI, Base16, and optional Base24 projections. The broker also ships
 curated Gruvbox Vim/Neovim/VS Code/cursor adapters, complete pinned
 Catppuccin target renderers, and a deterministic generated/native backend

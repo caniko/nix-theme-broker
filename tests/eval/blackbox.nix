@@ -48,7 +48,9 @@
       accent = null;
     };
   };
-  formattedRoles = lib.mapAttrs (_: group: lib.mapAttrs (_: color: color.withHashtag) group) selected.roles;
+  # `figure` mixes colours with colormap names; it has its own assertions below.
+  colorRoles = removeAttrs selected.roles ["figure"];
+  formattedRoles = lib.mapAttrs (_: group: lib.mapAttrs (_: color: color.withHashtag) group) colorRoles;
   formattedAnsi = lib.mapAttrs (_: group: lib.mapAttrs (_: color: color.withHashtag) group) selected.ansi;
   formattedBase16 = lib.mapAttrs (_: color: color.withHashtag) selected.base16;
   expectedRoles = {
@@ -63,8 +65,8 @@
       border = "#3a3a3a";
       selectionBackground = "#262626";
       selectionForeground = "#fbf1c7";
-      focus = "#fe8019";
-      accent = "#fe8019";
+      focus = "#83a598";
+      accent = "#83a598";
       link = "#83a598";
     };
     status = {
@@ -138,6 +140,44 @@
       && builtins.match "#[0-9a-f]{6}" hex != null
   ) (lib.filterAttrs (name: _: expectedNamed ? ${name}) raw.variants.dark.named);
   requiredRoleChecks = map (path: lib.hasAttrByPath path selected.roles) themeLib.types.requiredRoles;
+  light = themeLib.resolveSelection {
+    inherit providers;
+    selection = {
+      provider = "blackbox";
+      variant = "light";
+      accent = null;
+    };
+  };
+  hexOf = lib.mapAttrs (_: group: lib.mapAttrs (_: color: color.withHashtag) group);
+  lightRoles = hexOf (removeAttrs light.roles ["figure"]);
+  figureHex = selected: {
+    colors = lib.mapAttrs (_: color: color.withHashtag) (removeAttrs selected.roles.figure ["categorical" "sequential_cmap" "density_cmap" "time_cmap" "time_range"]);
+    categorical = map (color: color.withHashtag) selected.roles.figure.categorical;
+    inherit (selected.roles.figure) sequential_cmap density_cmap time_cmap time_range;
+  };
+  # Figure values are the bekiper themekit DARK/LIGHT snapshot, verbatim.
+  darkFigure = figureHex selected;
+  lightFigure = figureHex light;
+  # Providers without a figure group stay valid and expose none.
+  gruvboxNoFigure =
+    !(themeLib.resolveSelection {
+      inherit providers;
+      selection = {
+        provider = "gruvbox";
+        variant = "dark-hard";
+        accent = null;
+      };
+    }).roles ? figure;
+  badFigure = builtins.tryEval (builtins.deepSeq
+    (themeLib.mkProvider (raw
+      // {
+        variants =
+          raw.variants
+          // {
+            dark = raw.variants.dark // {roles = raw.variants.dark.roles // {figure = raw.variants.dark.roles.figure // {categorical = ["#000000"];};};};
+          };
+      })).variants
+    true);
   # Named overrides must propagate through aliases, roles, ANSI, and Base16.
   surfaceOverride = themeLib.resolveSelection {
     inherit providers;
@@ -148,6 +188,7 @@
       overrides.named = {
         surface_0 = "#0a0a0a";
         bright_orange = "#123456";
+        bright_blue = "#654321";
       };
     };
   };
@@ -165,9 +206,10 @@
     (surfaceOverride.named.backgroundAlt.withHashtag == "#0a0a0a")
     (surfaceOverride.roles.ui.backgroundAlt.withHashtag == "#0a0a0a")
     (surfaceOverride.base16.base01.withHashtag == "#0a0a0a")
-    (surfaceOverride.named.focus.withHashtag == "#123456")
-    (surfaceOverride.roles.ui.focus.withHashtag == "#123456")
-    (surfaceOverride.roles.ui.accent.withHashtag == "#123456")
+    (surfaceOverride.named.focus.withHashtag == "#654321")
+    (surfaceOverride.roles.ui.focus.withHashtag == "#654321")
+    (surfaceOverride.roles.ui.accent.withHashtag == "#654321")
+    (surfaceOverride.roles.ui.link.withHashtag == "#654321")
     (surfaceOverride.roles.status.warning.withHashtag == "#123456")
     (surfaceOverride.roles.syntax.constant.withHashtag == "#123456")
     (surfaceOverride.base16.base09.withHashtag == "#123456")
@@ -299,7 +341,7 @@
   projectedValues =
     (lib.flatten (lib.mapAttrsToList (_: group: map (color: color.withHashtag) (lib.attrValues group)) selected.ansi))
     ++ (map (color: color.withHashtag) (lib.attrValues selected.base16))
-    ++ (lib.flatten (lib.mapAttrsToList (_: group: map (color: color.withHashtag) (lib.attrValues group)) selected.roles));
+    ++ (lib.flatten (lib.mapAttrsToList (_: group: map (color: color.withHashtag) (lib.attrValues group)) colorRoles));
 in
   assert raw.schema == "theme-broker.provider/v1";
   assert raw.id == "blackbox";
@@ -310,7 +352,7 @@ in
     variant = "dark";
     accent = null;
   };
-  assert lib.attrNames raw.variants == ["dark"];
+  assert lib.attrNames raw.variants == ["dark" "light"];
   assert (themeLib.mkProvider raw).id == "blackbox";
   assert raw.variants.dark.metadata.appearance == "dark";
   assert raw.variants.dark.metadata.contrast == "hard";
@@ -352,6 +394,47 @@ in
   assert selected.named.bright_magenta.withHashtag == "#eb6f92";
   assert !(builtins.elem "#eb6f92" projectedValues);
   assert builtins.all (value: value) propagationChecks;
+  # Light variant: near-white canvas, Gruvbox-light's darker hues for accents.
+  assert raw.variants.light.metadata.appearance == "light";
+  assert light.variant == "light";
+  assert light.base24 == null;
+  assert builtins.all (value: value) (map (path: lib.hasAttrByPath path light.roles) themeLib.types.requiredRoles);
+  assert lightRoles.ui.background == "#ffffff";
+  assert lightRoles.ui.backgroundAlt == "#f7f7f5";
+  assert lightRoles.ui.surface == "#f2f2f0";
+  assert lightRoles.ui.surfaceAlt == "#e8e8e5";
+  assert lightRoles.ui.border == "#d9d9d6";
+  assert lightRoles.ui.foreground == "#1d2021";
+  assert lightRoles.ui.foregroundMuted == "#5a5550";
+  assert lightRoles.ui.accent == "#076678";
+  assert lightRoles.ui.link == "#076678";
+  assert lightRoles.status
+  == {
+    error = "#9d0006";
+    warning = "#af3a03";
+    success = "#79740e";
+    info = "#076678";
+    hint = "#427b58";
+  };
+  assert lightRoles.syntax.attribute == "#b57614";
+  assert lightRoles.syntax.boolean == "#8f3f71";
+  assert light.base16.base00.withHashtag == "#ffffff";
+  assert light.ansi.normal.black.withHashtag == "#ffffff";
+  assert light.ansi.normal.red.withHashtag == "#cc241d";
+  assert light.ansi.bright.red.withHashtag == "#9d0006";
+  # Figure roles: verbatim themekit snapshot, independent of the UI chrome.
+  assert darkFigure.colors.background == "#0f1318";
+  assert darkFigure.colors.on_status == "#0f1318";
+  assert builtins.length darkFigure.categorical == 10;
+  assert builtins.elemAt darkFigure.categorical 0 == "#4c9bff";
+  assert darkFigure.density_cmap == "magma";
+  assert darkFigure.time_range == [0.25 1.0];
+  assert lightFigure.colors.surface == "#f6f7f9";
+  assert builtins.elemAt lightFigure.categorical 9 == "#17becf";
+  assert lightFigure.density_cmap == "hot";
+  assert lightFigure.time_range == [0.0 0.85];
+  assert gruvboxNoFigure;
+  assert !badFigure.success;
   # Generated-backend resolution for blackbox/dark.
   assert autoKitty.backend == "generated";
   assert autoKitty.adapter == null;

@@ -71,7 +71,7 @@
     then raw.roles or {}
     else setBindings (raw.roles or {}) (variant.accentBindings or []) accentValue;
   rolesWithOverrides = lib.recursiveUpdate rolesWithAccent (overrides.roles or {});
-  roles = provider.resolveTree named rolesWithOverrides;
+  roles = provider.resolveRoles named rolesWithOverrides;
   ansi = provider.resolveTree named (lib.recursiveUpdate (raw.ansi or {}) (overrides.ansi or {}));
   base16 = provider.resolveTree named (lib.recursiveUpdate (raw.base16 or {}) (overrides.base16 or {}));
   rawBase24 = raw.base24 or null;

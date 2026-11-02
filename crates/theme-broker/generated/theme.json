@@ -1,0 +1,168 @@
+{
+  "dark": {
+    "appearance": "dark",
+    "provider": "blackbox",
+    "roles": {
+      "figure": {
+        "accent": "#7cb8ff",
+        "background": "#0f1318",
+        "border": "#2e3744",
+        "box_fill": "#2b3a4a",
+        "categorical": [
+          "#4c9bff",
+          "#ffa94d",
+          "#3fd18b",
+          "#ff6b9a",
+          "#c299ff",
+          "#5ce1e6",
+          "#f5d547",
+          "#ff7b54",
+          "#a3e635",
+          "#e879f9"
+        ],
+        "density_cmap": "magma",
+        "false_mask": "#ff6b6b",
+        "highlight": "#4c9bff",
+        "ink": "#e6e9ee",
+        "link": "#7cb8ff",
+        "muted": "#9aa4b2",
+        "negative": "#f85149",
+        "on_status": "#0f1318",
+        "point": "#8cc8ff",
+        "positive": "#3fb950",
+        "reference": "#8b949e",
+        "sequential_cmap": "viridis",
+        "surface": "#171c23",
+        "surface_alt": "#1f2630",
+        "time_cmap": "viridis",
+        "time_range": [
+          0.25,
+          1.0
+        ],
+        "true_mask": "#4c9bff",
+        "unavailable": "#6e7681"
+      },
+      "status": {
+        "error": "#fb4934",
+        "hint": "#8ec07c",
+        "info": "#83a598",
+        "success": "#b8bb26",
+        "warning": "#fe8019"
+      },
+      "syntax": {
+        "attribute": "#fabd2f",
+        "boolean": "#d3869b",
+        "comment": "#928374",
+        "constant": "#fe8019",
+        "function": "#b8bb26",
+        "keyword": "#fb4934",
+        "number": "#d3869b",
+        "operator": "#fe8019",
+        "punctuation": "#bdae93",
+        "string": "#b8bb26",
+        "tag": "#8ec07c",
+        "type": "#fabd2f",
+        "variable": "#ebdbb2"
+      },
+      "ui": {
+        "accent": "#83a598",
+        "background": "#000000",
+        "backgroundAlt": "#1a1a1a",
+        "border": "#3a3a3a",
+        "focus": "#83a598",
+        "foreground": "#ebdbb2",
+        "foregroundMuted": "#bdae93",
+        "link": "#83a598",
+        "overlay": "#3a3a3a",
+        "selectionBackground": "#262626",
+        "selectionForeground": "#fbf1c7",
+        "surface": "#262626",
+        "surfaceAlt": "#3a3a3a"
+      }
+    },
+    "variant": "dark"
+  },
+  "light": {
+    "appearance": "light",
+    "provider": "blackbox",
+    "roles": {
+      "figure": {
+        "accent": "#0b5cad",
+        "background": "#ffffff",
+        "border": "#d9dee5",
+        "box_fill": "#c4d7e3",
+        "categorical": [
+          "#1f77b4",
+          "#ff7f0e",
+          "#2ca02c",
+          "#d62728",
+          "#9467bd",
+          "#8c564b",
+          "#e377c2",
+          "#7f7f7f",
+          "#bcbd22",
+          "#17becf"
+        ],
+        "density_cmap": "hot",
+        "false_mask": "#d62828",
+        "highlight": "#1565c0",
+        "ink": "#1d2733",
+        "link": "#0b5cad",
+        "muted": "#5b6775",
+        "negative": "#c62828",
+        "on_status": "#ffffff",
+        "point": "#24577a",
+        "positive": "#2e7d32",
+        "reference": "#808080",
+        "sequential_cmap": "viridis",
+        "surface": "#f6f7f9",
+        "surface_alt": "#eef1f5",
+        "time_cmap": "viridis",
+        "time_range": [
+          0.0,
+          0.85
+        ],
+        "true_mask": "#1f5fd6",
+        "unavailable": "#9a9a9a"
+      },
+      "status": {
+        "error": "#9d0006",
+        "hint": "#427b58",
+        "info": "#076678",
+        "success": "#79740e",
+        "warning": "#af3a03"
+      },
+      "syntax": {
+        "attribute": "#b57614",
+        "boolean": "#8f3f71",
+        "comment": "#7c6f64",
+        "constant": "#af3a03",
+        "function": "#79740e",
+        "keyword": "#9d0006",
+        "number": "#8f3f71",
+        "operator": "#af3a03",
+        "punctuation": "#5a5550",
+        "string": "#79740e",
+        "tag": "#427b58",
+        "type": "#b57614",
+        "variable": "#1d2021"
+      },
+      "ui": {
+        "accent": "#076678",
+        "background": "#ffffff",
+        "backgroundAlt": "#f7f7f5",
+        "border": "#d9d9d6",
+        "focus": "#076678",
+        "foreground": "#1d2021",
+        "foregroundMuted": "#5a5550",
+        "link": "#076678",
+        "overlay": "#e8e8e5",
+        "selectionBackground": "#f2f2f0",
+        "selectionForeground": "#000000",
+        "surface": "#f2f2f0",
+        "surfaceAlt": "#e8e8e5"
+      }
+    },
+    "variant": "light"
+  }
+}

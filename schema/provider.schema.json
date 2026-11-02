@@ -35,6 +35,37 @@
     }
   },
   "$defs": {
+    "figure": {
+      "description": "Optional figure/chart palette: scalar colours, a 10-colour categorical cycle, matplotlib colormap names and a time_range sub-interval.",
+      "type": "object",
+      "required": ["background", "surface", "surface_alt", "border", "ink", "muted", "link", "accent", "positive", "negative", "highlight", "on_status", "true_mask", "false_mask", "unavailable", "point", "box_fill", "reference", "categorical", "sequential_cmap", "density_cmap", "time_cmap", "time_range"],
+      "properties": {
+        "background": {"$ref": "#/$defs/colorValue"},
+        "surface": {"$ref": "#/$defs/colorValue"},
+        "surface_alt": {"$ref": "#/$defs/colorValue"},
+        "border": {"$ref": "#/$defs/colorValue"},
+        "ink": {"$ref": "#/$defs/colorValue"},
+        "muted": {"$ref": "#/$defs/colorValue"},
+        "link": {"$ref": "#/$defs/colorValue"},
+        "accent": {"$ref": "#/$defs/colorValue"},
+        "positive": {"$ref": "#/$defs/colorValue"},
+        "negative": {"$ref": "#/$defs/colorValue"},
+        "highlight": {"$ref": "#/$defs/colorValue"},
+        "on_status": {"$ref": "#/$defs/colorValue"},
+        "true_mask": {"$ref": "#/$defs/colorValue"},
+        "false_mask": {"$ref": "#/$defs/colorValue"},
+        "unavailable": {"$ref": "#/$defs/colorValue"},
+        "point": {"$ref": "#/$defs/colorValue"},
+        "box_fill": {"$ref": "#/$defs/colorValue"},
+        "reference": {"$ref": "#/$defs/colorValue"},
+        "categorical": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"$ref": "#/$defs/colorValue"}},
+        "sequential_cmap": {"type": "string", "minLength": 1},
+        "density_cmap": {"type": "string", "minLength": 1},
+        "time_cmap": {"type": "string", "minLength": 1},
+        "time_range": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}
+      },
+      "additionalProperties": false
+    },
     "color": {
       "type": "string",
       "pattern": "^#?[0-9A-Fa-f]{6}$"
@@ -75,7 +106,7 @@
           "additionalProperties": true
         },
         "named": {"$ref": "#/$defs/colorMap"},
-        "roles": {"type": "object"},
+        "roles": {"type": "object", "properties": {"figure": {"$ref": "#/$defs/figure"}}},
         "accents": {"$ref": "#/$defs/colorMap"},
         "accentBindings": {"type": "array", "items": {"oneOf": [{"type": "string"}, {"type": "array", "items": {"type": "string"}}]}},
         "ansi": {

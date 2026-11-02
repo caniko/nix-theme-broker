@@ -1,0 +1,9 @@
+[workspace]
+resolver = "3"
+members = ["crates/theme-broker"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+authors = ["Can H. Tartanoglu <canhtart@gmail.com>"]

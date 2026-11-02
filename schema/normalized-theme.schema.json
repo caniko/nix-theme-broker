@@ -11,7 +11,7 @@
     "metadata": {"type": "object"},
     "wallpapers": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/wallpapers"}]},
     "named": {"type": "object", "additionalProperties": {"$ref": "#/$defs/color"}},
-    "roles": {"type": "object"},
+    "roles": {"type": "object", "properties": {"figure": {"$ref": "#/$defs/figure"}}},
     "ansi": {"type": "object"},
     "base16": {
       "type": "object",
@@ -22,6 +22,37 @@
     "formatted": {"type": "object"}
   },
   "$defs": {
+    "figure": {
+      "description": "Optional figure/chart palette: scalar colours, a 10-colour categorical cycle, matplotlib colormap names and a time_range sub-interval.",
+      "type": "object",
+      "required": ["background", "surface", "surface_alt", "border", "ink", "muted", "link", "accent", "positive", "negative", "highlight", "on_status", "true_mask", "false_mask", "unavailable", "point", "box_fill", "reference", "categorical", "sequential_cmap", "density_cmap", "time_cmap", "time_range"],
+      "properties": {
+        "background": {"$ref": "#/$defs/color"},
+        "surface": {"$ref": "#/$defs/color"},
+        "surface_alt": {"$ref": "#/$defs/color"},
+        "border": {"$ref": "#/$defs/color"},
+        "ink": {"$ref": "#/$defs/color"},
+        "muted": {"$ref": "#/$defs/color"},
+        "link": {"$ref": "#/$defs/color"},
+        "accent": {"$ref": "#/$defs/color"},
+        "positive": {"$ref": "#/$defs/color"},
+        "negative": {"$ref": "#/$defs/color"},
+        "highlight": {"$ref": "#/$defs/color"},
+        "on_status": {"$ref": "#/$defs/color"},
+        "true_mask": {"$ref": "#/$defs/color"},
+        "false_mask": {"$ref": "#/$defs/color"},
+        "unavailable": {"$ref": "#/$defs/color"},
+        "point": {"$ref": "#/$defs/color"},
+        "box_fill": {"$ref": "#/$defs/color"},
+        "reference": {"$ref": "#/$defs/color"},
+        "categorical": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"$ref": "#/$defs/color"}},
+        "sequential_cmap": {"type": "string", "minLength": 1},
+        "density_cmap": {"type": "string", "minLength": 1},
+        "time_cmap": {"type": "string", "minLength": 1},
+        "time_range": {"type": "array", "minItems": 2, "maxItems": 2, "items": {"type": "number"}}
+      },
+      "additionalProperties": false
+    },
     "wallpapers": {
       "type": "object",
       "required": ["default", "paths"],

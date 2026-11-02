@@ -51,4 +51,28 @@
     ["syntax" "tag"]
     ["syntax" "attribute"]
   ];
+  # Optional `roles.figure` group (scientific figures and web charts). Colour
+  # keys take hex or `@name` references; `figureDataKeys` carry plain data.
+  figureColorKeys = [
+    "background"
+    "surface"
+    "surface_alt"
+    "border"
+    "ink"
+    "muted"
+    "link"
+    "accent"
+    "positive"
+    "negative"
+    "highlight"
+    "on_status"
+    "true_mask"
+    "false_mask"
+    "unavailable"
+    "point"
+    "box_fill"
+    "reference"
+    "categorical"
+  ];
+  figureDataKeys = ["sequential_cmap" "density_cmap" "time_cmap" "time_range"];
 }

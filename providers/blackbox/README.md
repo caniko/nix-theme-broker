@@ -20,7 +20,11 @@ The preview image labels are known to be wrong (mislabeled bright blue/aqua,
 an invalid purple hex, and `#1a1a1a` labeled `bright_black`); the JSON
 inventory and the tests are authoritative instead.
 
-The provider exposes two variants, `dark` and `light`, with `accent = null`.
+The provider exposes two variants, `dark` and `light`, each with two accents
+bound to `ui.accent` and `ui.focus`: `orange` ("Blackbox Orange", the default
+and the desktop look, bright_orange: `#fe8019` dark) and `blue` ("Blackbox
+Blue", used by the web theme, bright_blue: `#83a598` dark, `#076678` light).
+Selections with `accent = null` resolve to `orange`.
 `light` has its own `named` inventory (`variants.light.named`) and a literal
 `border` alias; variants without `named` share the top-level (dark) inventory.
 Each variant may also carry a `figure` object, exposed as `roles.figure`.

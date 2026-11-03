@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Blackbox gains orange (default) and blue accents; the web theme uses blue.
+  `accent = null` resolves to orange (`#fe8019` dark), blue is `#83a598`
+  (dark) / `#076678` (light).
+
 - Add a Blackbox `light` variant (near-white canvas, Gruvbox-light's darker
   hues for status and syntax) with the same role keys as `dark`.
 

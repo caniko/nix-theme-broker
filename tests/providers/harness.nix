@@ -12,7 +12,7 @@
         };
       };
       accentChecks = lib.mapAttrsToList (
-        accent: _: let
+        accent: expected: let
           withAccent = themeLib.resolveSelection {
             providers = {${normalized.id} = provider;};
             selection = {
@@ -22,7 +22,7 @@
             };
           };
         in
-          withAccent.roles.ui.accent.hex == withAccent.named.${accent}.hex
+          withAccent.roles.ui.accent.hex == expected.hex
       ) (normalized.variants.${id}.accents or {});
       requiredRoleChecks = map (path: lib.hasAttrByPath path selected.roles) (import ../../lib/types.nix {inherit lib;}).requiredRoles;
     in {

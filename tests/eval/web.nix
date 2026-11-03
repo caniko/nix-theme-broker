@@ -8,10 +8,12 @@
     inherit provider variant;
     accent = null;
   };
+  # The web theme uses Blackbox Blue.
+  blue = variant: (select "blackbox" variant) // {accent = "blue";};
   args = {
     inherit providers;
-    light = select "blackbox" "light";
-    dark = select "blackbox" "dark";
+    light = blue "light";
+    dark = blue "dark";
   };
   css = web.css args;
   json = builtins.fromJSON (web.json args);
@@ -19,7 +21,7 @@
   # canix's mdBook palette: roles.ui as plain hex, unchanged by the move.
   ui = web.uiPalette (publicLib.resolveSelection {
     inherit providers;
-    selection = select "blackbox" "dark";
+    selection = blue "dark";
   });
   # A provider without figure roles still renders; only chrome variables exist.
   plain = web.css {

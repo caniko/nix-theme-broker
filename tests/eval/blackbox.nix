@@ -65,8 +65,8 @@
       border = "#3a3a3a";
       selectionBackground = "#262626";
       selectionForeground = "#fbf1c7";
-      focus = "#83a598";
-      accent = "#83a598";
+      focus = "#fe8019";
+      accent = "#fe8019";
       link = "#83a598";
     };
     status = {
@@ -201,14 +201,55 @@
       overrides.named.background = "#050505";
     };
   };
+  blueOverride = themeLib.resolveSelection {
+    inherit providers;
+    selection = {
+      provider = "blackbox";
+      variant = "dark";
+      accent = "blue";
+      overrides.named = {
+        bright_orange = "#123456";
+        bright_blue = "#654321";
+      };
+    };
+  };
+  accentOf = variant: accent:
+    (themeLib.resolveSelection {
+      inherit providers;
+      selection = {
+        provider = "blackbox";
+        inherit variant accent;
+      };
+    }).roles.ui;
+  accentChecks = builtins.all (c: c) (lib.concatMap (variant:
+      lib.concatMap (accent: let
+        ui = accentOf variant accent;
+      in [
+        (ui.accent.withHashtag == ui.focus.withHashtag)
+      ]) [null "orange" "blue"]) ["dark" "light"]
+    ++ [
+      # Selections with accent = null stay orange, exactly as before blue was added.
+      ((accentOf "dark" null).accent.withHashtag == "#fe8019")
+      ((accentOf "dark" null).focus.withHashtag == "#fe8019")
+      ((accentOf "dark" "orange").accent.withHashtag == "#fe8019")
+      ((accentOf "light" null).accent.withHashtag == "#af3a03")
+      ((accentOf "light" "orange").focus.withHashtag == "#af3a03")
+      ((accentOf "dark" "blue").accent.withHashtag == "#83a598")
+      ((accentOf "dark" "blue").focus.withHashtag == "#83a598")
+      ((accentOf "light" "blue").accent.withHashtag == "#076678")
+      ((accentOf "light" "blue").focus.withHashtag == "#076678")
+    ]);
   propagationChecks = [
     (surfaceOverride.named.bg1.withHashtag == "#0a0a0a")
     (surfaceOverride.named.backgroundAlt.withHashtag == "#0a0a0a")
     (surfaceOverride.roles.ui.backgroundAlt.withHashtag == "#0a0a0a")
     (surfaceOverride.base16.base01.withHashtag == "#0a0a0a")
-    (surfaceOverride.named.focus.withHashtag == "#654321")
-    (surfaceOverride.roles.ui.focus.withHashtag == "#654321")
-    (surfaceOverride.roles.ui.accent.withHashtag == "#654321")
+    (surfaceOverride.named.focus.withHashtag == "#123456")
+    (surfaceOverride.roles.ui.focus.withHashtag == "#123456")
+    (surfaceOverride.roles.ui.accent.withHashtag == "#123456")
+    (blueOverride.roles.ui.focus.withHashtag == "#654321")
+    (blueOverride.roles.ui.accent.withHashtag == "#654321")
+    (blueOverride.roles.status.warning.withHashtag == "#123456")
     (surfaceOverride.roles.ui.link.withHashtag == "#654321")
     (surfaceOverride.roles.status.warning.withHashtag == "#123456")
     (surfaceOverride.roles.syntax.constant.withHashtag == "#123456")
@@ -350,7 +391,7 @@ in
   assert raw.defaults
   == {
     variant = "dark";
-    accent = null;
+    accent = "orange";
   };
   assert lib.attrNames raw.variants == ["dark" "light"];
   assert (themeLib.mkProvider raw).id == "blackbox";
@@ -365,9 +406,9 @@ in
   assert raw.provenance.license == "MIT";
   assert selected.provider == "blackbox";
   assert selected.variant == "dark";
-  assert selected.accent == null;
+  assert selected.accent == "orange";
   assert defaulted.variant == "dark";
-  assert defaulted.accent == null;
+  assert defaulted.accent == "orange";
   assert builtins.all (value: value) rawHexFormatChecks;
   assert builtins.length (builtins.attrNames (lib.filterAttrs (name: _: expectedNamed ? ${name}) raw.variants.dark.named)) == 24;
   assert builtins.all (value: value) namedChecks;
@@ -406,7 +447,9 @@ in
   assert lightRoles.ui.border == "#d9d9d6";
   assert lightRoles.ui.foreground == "#1d2021";
   assert lightRoles.ui.foregroundMuted == "#5a5550";
-  assert lightRoles.ui.accent == "#076678";
+  assert lightRoles.ui.accent == "#af3a03";
+  assert lightRoles.ui.focus == lightRoles.ui.accent;
+  assert accentChecks;
   assert lightRoles.ui.link == "#076678";
   assert lightRoles.status
   == {

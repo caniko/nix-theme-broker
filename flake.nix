@@ -564,12 +564,12 @@
           light = {
             provider = "blackbox";
             variant = "light";
-            accent = null;
+            accent = "blue";
           };
           dark = {
             provider = "blackbox";
             variant = "dark";
-            accent = null;
+            accent = "blue";
           };
         };
         # theme.css + theme.json for the Blackbox light/dark pair; the Rust
@@ -762,7 +762,7 @@
             test ${toString (builtins.length (builtins.attrNames rosePine.variants))} = 3
             test ${toString (builtins.length (builtins.attrNames rosePine.variants.main.accents))} = 6
             test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 2
-            test ${toString (builtins.length (builtins.attrNames blackbox.variants.dark.accents))} = 0
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants.dark.accents))} = 2
             test ${
               toString (
                 builtins.length (

@@ -16,8 +16,8 @@
       foregroundMuted = "@muted";
       selectionBackground = "@surface_1";
       selectionForeground = "@foreground_bright";
-      focus = "@bright_blue";
-      accent = "@bright_blue";
+      focus = "@bright_orange";
+      accent = "@bright_orange";
       link = "@bright_blue";
       # Short names in the shape Gruvbox consumers already use.
       bg0 = "@background";
@@ -39,8 +39,14 @@
     # Variants without their own `named` inventory share the top-level (dark)
     # one; `aliases` replaces individual alias entries (light's literal border).
     named = (source.named or palette.named) // aliases // (source.aliases or {});
-    accents = {};
-    accentBindings = [];
+    # "Blackbox Orange" (default; every desktop) and "Blackbox Blue" (web).
+    # The binding overwrites ui.accent/ui.focus with the chosen accent, so
+    # named overrides of bright_orange / bright_blue still propagate.
+    accents = {
+      orange = "@bright_orange";
+      blue = "@bright_blue";
+    };
+    accentBindings = [["ui" "accent"] ["ui" "focus"]];
     roles =
       {
         ui = {
@@ -143,7 +149,7 @@ in {
   provenance = palette.source // {license = "MIT";};
   defaults = {
     variant = "dark";
-    accent = null;
+    accent = "orange";
   };
   variants = lib.mapAttrs mkVariant palette.variants;
 }

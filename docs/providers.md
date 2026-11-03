@@ -11,7 +11,10 @@ aliases, semantic roles, ANSI, and Base16 from it. Provenance records the
 derivation from Gruvbox revision
 `5d15b2765f59754d7ac263c88a0f6e3e58124951` in this repository.
 
-Select it (`dark` or `light`, no accent axis):
+Select it (`dark` or `light`). The accent axis offers `orange` ("Blackbox Orange", the
+default, so `accent = null` is orange and every desktop keeps its look) and
+`blue` ("Blackbox Blue", used by `web-theme-blackbox`); the accent drives
+`ui.accent` and `ui.focus`:
 
 ```nix
 themeBroker = {

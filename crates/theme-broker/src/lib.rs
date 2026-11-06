@@ -1,12 +1,14 @@
-//! Light/dark theme tokens from the theme broker's generated web snapshot.
+//! Light/dark theme tokens from the theme broker's generated web snapshots.
 //!
-//! `generated/theme.{css,json}` are the `web-theme-blackbox` flake output,
+//! `generated/theme.{css,json}` are the `web-theme-blackbox` flake output and
+//! `generated/honey/theme.{css,json}` the `web-theme-blackbox-honey` output,
 //! committed so this crate builds without Nix (a flake check fails when they
 //! drift). One [`Palette`] per [`Mode`] carries the figure roles and feeds HTML
 //! ([`Palette::css`]), matplotlib ([`Palette::matplotlib_rc`]) and Python hosts
-//! (`python::register`, feature `python`); [`stylesheet`] is the full
-//! `--tb-*` stylesheet for injection into any web framework. Dark is the
-//! default mode.
+//! (`python::register`, feature `python`); the free [`stylesheet`] and [`role`]
+//! functions are the default Blackbox snapshot, and [`BLACKBOX_HONEY`] exposes
+//! the same API for the paired Blackbox light + Honey dark snapshot. Dark is
+//! the default mode.
 //!
 //! Colours drawn *on* video frames (keypoint identities, object outlines, black
 //! label boxes) are deliberately not themed here: they are relative to the frame,
@@ -18,6 +20,8 @@ use std::{collections::BTreeMap, fmt, str::FromStr, sync::LazyLock};
 
 const CSS: &str = include_str!("../generated/theme.css");
 const JSON: &str = include_str!("../generated/theme.json");
+const HONEY_CSS: &str = include_str!("../generated/honey/theme.css");
+const HONEY_JSON: &str = include_str!("../generated/honey/theme.json");
 
 /// The complete generated stylesheet: `:root` for light, the
 /// `prefers-color-scheme: dark` media query and `[data-theme=light|dark]`
@@ -168,9 +172,43 @@ struct Snapshot {
     light: ModeData,
 }
 
-static SNAPSHOT: LazyLock<Snapshot> = LazyLock::new(|| {
-    serde_json::from_str(JSON).expect("generated/theme.json matches the web renderer schema")
-});
+static SNAPSHOT: LazyLock<Snapshot> = LazyLock::new(|| parse_snapshot(JSON));
+static HONEY_SNAPSHOT: LazyLock<Snapshot> = LazyLock::new(|| parse_snapshot(HONEY_JSON));
+
+fn parse_snapshot(json: &str) -> Snapshot {
+    serde_json::from_str(json).expect("generated theme snapshot matches the web renderer schema")
+}
+
+/// A generated web snapshot: one `--tb-*` stylesheet plus the dark and light
+/// role maps. [`BLACKBOX_HONEY`] is the paired Blackbox light + Honey dark
+/// output. Modes stay [`Mode::Dark`]/[`Mode::Light`]; the Honey variant is
+/// carried by the theme, not by a new mode.
+#[derive(Clone, Copy)]
+pub struct Theme {
+    pub name: &'static str,
+    css: &'static str,
+    snapshot: &'static LazyLock<Snapshot>,
+}
+
+impl Theme {
+    /// The complete generated stylesheet, including both colour schemes.
+    pub fn stylesheet(&self) -> &'static str {
+        self.css
+    }
+
+    /// One role of this snapshot as `#rrggbb`, e.g.
+    /// `role(Mode::Dark, "ui", "accent")`.
+    pub fn role(&self, mode: Mode, group: &str, name: &str) -> Option<&'static str> {
+        role_in(self.snapshot, mode, group, name)
+    }
+}
+
+/// The Blackbox light + Honey dark pair (`web-theme-blackbox-honey`).
+pub static BLACKBOX_HONEY: Theme = Theme {
+    name: "blackbox-honey",
+    css: HONEY_CSS,
+    snapshot: &HONEY_SNAPSHOT,
+};
 
 /// The palette lives for the whole process, so its strings are leaked once.
 /// ponytail: a one-shot leak of a few hundred bytes; switch to build.rs codegen
@@ -213,12 +251,23 @@ fn palette(mode: Mode, data: &ModeData) -> Palette {
 pub static DARK: LazyLock<Palette> = LazyLock::new(|| palette(Mode::Dark, &SNAPSHOT.dark));
 pub static LIGHT: LazyLock<Palette> = LazyLock::new(|| palette(Mode::Light, &SNAPSHOT.light));
 
-/// One non-figure role of a mode as `#rrggbb`, e.g. `role(Mode::Dark, "ui",
-/// "foregroundMuted")`; groups are `ui`, `status` and `syntax`.
+/// One role of the default Blackbox snapshot as `#rrggbb`, e.g.
+/// `role(Mode::Dark, "ui", "foregroundMuted")`; groups are `ui`, `status`,
+/// `syntax` and `figure` when the snapshot has one. Use [`Theme::role`] for
+/// another snapshot.
 pub fn role(mode: Mode, group: &str, name: &str) -> Option<&'static str> {
+    role_in(&SNAPSHOT, mode, group, name)
+}
+
+fn role_in(
+    snapshot: &'static Snapshot,
+    mode: Mode,
+    group: &str,
+    name: &str,
+) -> Option<&'static str> {
     let data = match mode {
-        Mode::Dark => &SNAPSHOT.dark,
-        Mode::Light => &SNAPSHOT.light,
+        Mode::Dark => &snapshot.dark,
+        Mode::Light => &snapshot.light,
     };
     data.roles.get(group)?.get(name)?.as_str()
 }
@@ -448,7 +497,10 @@ mod tests {
             }
             for (group, text, surface) in pairs {
                 let ratio = contrast(text, surface).unwrap();
-                assert!(ratio >= 4.5, "{mode} {group} {text} on {surface}: {ratio:.2}");
+                assert!(
+                    ratio >= 4.5,
+                    "{mode} {group} {text} on {surface}: {ratio:.2}"
+                );
             }
         }
     }
@@ -526,5 +578,161 @@ mod tests {
         assert!(Mode::resolve(Some("sepia"), None, None).is_err());
         assert_eq!(Mode::Light.to_string(), "light");
         assert_eq!(contrast("#fff", "#000"), None);
+    }
+
+    fn kebab(name: &str) -> String {
+        let mut out = String::new();
+        for c in name.chars() {
+            if c == '_' {
+                out.push('-');
+            } else if c.is_ascii_uppercase() {
+                out.push('-');
+                out.push(c.to_ascii_lowercase());
+            } else {
+                out.push(c);
+            }
+        }
+        out
+    }
+
+    #[test]
+    fn honey_roles_match_the_inventory() {
+        let ui = [
+            ("background", "#000000"),
+            ("backgroundAlt", "#181714"),
+            ("surface", "#24221d"),
+            ("surfaceAlt", "#353128"),
+            ("overlay", "#353128"),
+            ("foreground", "#ebdbb2"),
+            ("foregroundMuted", "#bdae93"),
+            ("foregroundSubtle", "#928374"),
+            ("foregroundBright", "#fff1c4"),
+            ("border", "#353128"),
+            ("borderSubtle", "#24221d"),
+            ("accent", "#e5a72b"),
+            ("accentHover", "#f3c04f"),
+            ("accentActive", "#c88a22"),
+            ("accentMuted", "#8f6317"),
+            ("onAccent", "#000000"),
+            ("focus", "#f3c04f"),
+            ("link", "#f3c04f"),
+            ("selectionBackground", "#353128"),
+            ("selectionForeground", "#ebdbb2"),
+        ];
+        for (name, expected) in ui {
+            assert_eq!(
+                BLACKBOX_HONEY.role(Mode::Dark, "ui", name),
+                Some(expected),
+                "ui.{name}"
+            );
+        }
+
+        let status = [
+            ("error", "#fb4934"),
+            ("warning", "#e5a72b"),
+            ("success", "#b8bb26"),
+            ("info", "#83a598"),
+            ("hint", "#8ec07c"),
+        ];
+        for (name, expected) in status {
+            assert_eq!(
+                BLACKBOX_HONEY.role(Mode::Dark, "status", name),
+                Some(expected),
+                "status.{name}"
+            );
+        }
+
+        let syntax = [
+            ("comment", "#928374"),
+            ("string", "#b8bb26"),
+            ("number", "#d3869b"),
+            ("boolean", "#d3869b"),
+            ("keyword", "#fb4934"),
+            ("function", "#b8bb26"),
+            ("type", "#f3c04f"),
+            ("variable", "#ebdbb2"),
+            ("constant", "#fe8019"),
+            ("operator", "#fe8019"),
+            ("punctuation", "#bdae93"),
+            ("tag", "#8ec07c"),
+            ("attribute", "#f3c04f"),
+        ];
+        for (name, expected) in syntax {
+            assert_eq!(
+                BLACKBOX_HONEY.role(Mode::Dark, "syntax", name),
+                Some(expected),
+                "syntax.{name}"
+            );
+        }
+    }
+
+    /// The paired output reuses the existing Blackbox light snapshot verbatim;
+    /// scientific figures stay on `DARK`/`LIGHT` and are not replaced by Honey.
+    #[test]
+    fn honey_keeps_the_default_light_snapshot_and_figure_palettes() {
+        assert_eq!(SNAPSHOT.light.roles, HONEY_SNAPSHOT.light.roles);
+        assert_eq!(stylesheet(), CSS);
+        assert_eq!(BLACKBOX_HONEY.stylesheet(), HONEY_CSS);
+        assert_eq!(BLACKBOX_HONEY.name, "blackbox-honey");
+        assert_eq!(DARK.background, "#0f1318");
+        assert_eq!(LIGHT.surface, "#f6f7f9");
+        assert_eq!(
+            BLACKBOX_HONEY.role(Mode::Dark, "figure", "background"),
+            Some(DARK.background)
+        );
+        assert_eq!(
+            BLACKBOX_HONEY.role(Mode::Light, "figure", "surface"),
+            Some(LIGHT.surface)
+        );
+    }
+
+    /// Every UI role in the Honey dark snapshot appears in its stylesheet, and
+    /// `.role()` returns the same value. Default free functions stay unchanged.
+    #[test]
+    fn honey_stylesheet_and_role_lookup_agree() {
+        let css = BLACKBOX_HONEY.stylesheet();
+        let ui = HONEY_SNAPSHOT.dark.roles["ui"].as_object().unwrap();
+        for (name, value) in ui {
+            let needle = format!("--tb-ui-{}: {};", kebab(name), value.as_str().unwrap());
+            assert!(css.contains(&needle), "missing {needle}");
+        }
+        assert_eq!(
+            BLACKBOX_HONEY.role(Mode::Dark, "ui", "accent"),
+            Some("#e5a72b")
+        );
+        assert_eq!(
+            BLACKBOX_HONEY.role(Mode::Light, "ui", "background"),
+            Some("#ffffff")
+        );
+        assert_eq!(BLACKBOX_HONEY.role(Mode::Dark, "ui", "missing"), None);
+        assert_eq!(role(Mode::Dark, "ui", "accent"), Some("#83a598"));
+    }
+
+    /// Primary/secondary text on every Honey surface, plus the accent pair.
+    /// `subtle` is checked only against the page background: it is a tertiary
+    /// token and does not meet AA on every surface step.
+    #[test]
+    fn honey_text_and_accent_contrast() {
+        let ui = |name| BLACKBOX_HONEY.role(Mode::Dark, "ui", name).unwrap();
+        for surface in ["background", "backgroundAlt", "surface", "surfaceAlt"] {
+            assert!(
+                contrast(ui("foreground"), ui(surface)).unwrap() >= 7.0,
+                "foreground on {surface}"
+            );
+            assert!(
+                contrast(ui("foregroundMuted"), ui(surface)).unwrap() >= 4.5,
+                "foregroundMuted on {surface}"
+            );
+        }
+        assert!(contrast(ui("foregroundSubtle"), ui("background")).unwrap() >= 4.5);
+        assert!(contrast(ui("onAccent"), ui("accent")).unwrap() >= 4.5);
+        assert!(contrast(ui("accent"), ui("background")).unwrap() >= 3.0);
+        for status in ["error", "warning", "success", "info", "hint"] {
+            let color = BLACKBOX_HONEY.role(Mode::Dark, "status", status).unwrap();
+            assert!(
+                contrast(color, ui("background")).unwrap() >= 3.0,
+                "status.{status}"
+            );
+        }
     }
 }

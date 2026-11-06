@@ -1,6 +1,15 @@
 {lib}: let
   palette = builtins.fromJSON (builtins.readFile ./palette.json);
   mkVariant = id: source: let
+    # Variants without their own `figure` may reuse another variant's group
+    # verbatim (Honey reuses the scientific DARK figures instead of leaking
+    # the light `:root` variables into dark mode).
+    figure =
+      if source ? figure
+      then source.figure
+      else if source ? figureFrom
+      then palette.variants.${source.figureFrom}.figure
+      else null;
     # Aliases are data-only convenience names for consumers, adapters, and
     # overrides.  Each alias points one hop at a literal color in
     # `palette.json` (the provider validator forbids alias chains), so a named
@@ -39,15 +48,17 @@
     # Variants without their own `named` inventory share the top-level (dark)
     # one; `aliases` replaces individual alias entries (light's literal border).
     named = (source.named or palette.named) // aliases // (source.aliases or {});
-    # "Blackbox Orange" (default; every desktop) and "Blackbox Blue" (web).
-    # The binding overwrites ui.accent/ui.focus with the chosen accent, so
-    # named overrides of bright_orange / bright_blue still propagate.
-    accents = {
-      orange = "@bright_orange";
-      blue = "@bright_blue";
-    };
-    accentBindings = [["ui" "accent"] ["ui" "focus"]];
+    # Variant-local accents replace the shared map; an empty map has no axis.
+    accents =
+      if source ? accents
+      then source.accents
+      else {
+        orange = "@bright_orange";
+        blue = "@bright_blue";
+      };
+    accentBindings = source.accentBindings or [["ui" "accent"] ["ui" "focus"]];
     roles =
+      lib.recursiveUpdate
       {
         ui = {
           background = "@background";
@@ -89,12 +100,13 @@
           attribute = "@bright_yellow";
         };
       }
-      // lib.optionalAttrs (source ? figure) {
-        # Figure/chart palette (hex literals, colormap names, time_range) kept
-        # verbatim from the bekiper themekit snapshot so published figures stay
-        # stable; see lib/types.nix `figureKeys`.
-        figure = source.figure;
-      };
+      (lib.optionalAttrs (figure != null) {
+          # Figure/chart palette (hex literals, colormap names, time_range) kept
+          # verbatim from the bekiper themekit snapshot so published figures stay
+          # stable; see lib/types.nix `figureKeys`.
+          inherit figure;
+        }
+        // (source.roles or {}));
     ansi = {
       normal = {
         black = "@background";
@@ -145,7 +157,7 @@ in {
   schema = "theme-broker.provider/v1";
   id = "blackbox";
   name = "Blackbox";
-  description = "True-black (dark) and near-white (light) Gruvbox-inspired palette maintained in this repository";
+  description = "True-black (dark), near-white (light) and warm-accent (honey) Gruvbox-inspired palette maintained in this repository";
   provenance = palette.source // {license = "MIT";};
   defaults = {
     variant = "dark";

@@ -26,6 +26,9 @@
   requestedAccent =
     if builtins.hasAttr "accent" selection && selection.accent != null
     then selection.accent
+    # A variant without an accent axis cannot inherit a provider-wide accent.
+    else if variant.accents == {}
+    then null
     else selectedProvider.defaults.accent;
   accent = requestedAccent;
   _accentCheck =

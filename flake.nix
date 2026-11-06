@@ -572,6 +572,16 @@
             accent = "blue";
           };
         };
+        # The paired Honey output reuses the existing light snapshot.
+        webBlackboxHoney =
+          webBlackbox
+          // {
+            dark = {
+              provider = "blackbox";
+              variant = "honey";
+              accent = null;
+            };
+          };
         # theme.css + theme.json for the Blackbox light/dark pair; the Rust
         # crate embeds a committed copy (`crates/theme-broker/generated`).
         webThemeBlackbox =
@@ -579,6 +589,18 @@
             nativeBuildInputs = [pkgs.jq];
             css = themeBrokerLib.web.css webBlackbox;
             json = themeBrokerLib.web.json webBlackbox;
+            passAsFile = ["css" "json"];
+          } ''
+            mkdir "$out"
+            cp "$cssPath" "$out/theme.css"
+            jq -S . "$jsonPath" > "$out/theme.json"
+          '';
+        # Same renderer, paired with Honey dark; snapshotted under `generated/honey`.
+        webThemeBlackboxHoney =
+          pkgs.runCommand "web-theme-blackbox-honey" {
+            nativeBuildInputs = [pkgs.jq];
+            css = themeBrokerLib.web.css webBlackboxHoney;
+            json = themeBrokerLib.web.json webBlackboxHoney;
             passAsFile = ["css" "json"];
           } ''
             mkdir "$out"
@@ -619,6 +641,7 @@
         devShells.default = pkgs.mkShell {packages = [pkgs.alejandra pkgs.python3];};
         packages = {
           web-theme-blackbox = webThemeBlackbox;
+          web-theme-blackbox-honey = webThemeBlackboxHoney;
           support-matrix-json = pkgs.writeText "theme-broker-support-matrix.json" supportMatrix.json;
           support-matrix-markdown = pkgs.writeText "theme-broker-support-matrix.md" supportMatrix.markdown;
           provider-schema = pkgs.writeText "theme-broker-provider.schema.json" (builtins.readFile ./schema/provider.schema.json);
@@ -644,6 +667,11 @@
           theme-broker-snapshot = pkgs.runCommand "theme-broker-snapshot" {} ''
             diff -u ${./crates/theme-broker/generated/theme.css} ${webThemeBlackbox}/theme.css
             diff -u ${./crates/theme-broker/generated/theme.json} ${webThemeBlackbox}/theme.json
+            touch "$out"
+          '';
+          theme-broker-snapshot-honey = pkgs.runCommand "theme-broker-snapshot-honey" {} ''
+            diff -u ${./crates/theme-broker/generated/honey/theme.css} ${webThemeBlackboxHoney}/theme.css
+            diff -u ${./crates/theme-broker/generated/honey/theme.json} ${webThemeBlackboxHoney}/theme.json
             touch "$out"
           '';
           theme-broker-crate = pkgs.rustPlatform.buildRustPackage {
@@ -761,7 +789,8 @@
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants.mocha.accents))} = 14
             test ${toString (builtins.length (builtins.attrNames rosePine.variants))} = 3
             test ${toString (builtins.length (builtins.attrNames rosePine.variants.main.accents))} = 6
-            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 2
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 3
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants.honey.accents))} = 0
             test ${toString (builtins.length (builtins.attrNames blackbox.variants.dark.accents))} = 2
             test ${
               toString (

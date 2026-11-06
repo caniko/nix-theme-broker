@@ -127,6 +127,73 @@
         "time_cmap": "viridis",
         "time_range": [0.0, 0.85]
       }
+    },
+    "honey": {
+      "appearance": "dark",
+      "contrast": "hard",
+      "note": "Warm honey accents on the true-black Blackbox canvas. UI aliases point at the honey ramp; syntax/ANSI keep the existing Gruvbox-derived functional hues.",
+      "figureFrom": "dark",
+      "accents": {},
+      "aliases": {
+        "foregroundSubtle": "@subtle",
+        "foregroundBright": "@foreground_bright",
+        "borderSubtle": "@surface_1",
+        "accent": "@honey_primary",
+        "accentHover": "@honey_bright",
+        "accentActive": "@honey",
+        "accentMuted": "@honey_dark",
+        "onAccent": "@background",
+        "focus": "@honey_bright",
+        "link": "@honey_bright",
+        "selectionBackground": "@surface_2",
+        "selectionForeground": "@foreground"
+      },
+      "roles": {
+        "ui": {
+          "foregroundSubtle": "@foregroundSubtle",
+          "foregroundBright": "@foregroundBright",
+          "borderSubtle": "@borderSubtle",
+          "accentHover": "@accentHover",
+          "accentActive": "@accentActive",
+          "accentMuted": "@accentMuted",
+          "onAccent": "@onAccent"
+        },
+        "status": {
+          "warning": "@honey_primary"
+        }
+      },
+      "named": {
+        "background": "#000000",
+        "surface_0": "#181714",
+        "surface_1": "#24221d",
+        "surface_2": "#353128",
+        "foreground": "#ebdbb2",
+        "muted": "#bdae93",
+        "subtle": "#928374",
+        "foreground_bright": "#fff1c4",
+        "honey_dark": "#8f6317",
+        "honey": "#c88a22",
+        "honey_primary": "#e5a72b",
+        "honey_bright": "#f3c04f",
+        "honey_soft": "#f6d784",
+        "honey_pale": "#ffe6a3",
+        "red": "#cc241d",
+        "bright_red": "#fb4934",
+        "orange": "#d65d0e",
+        "bright_orange": "#fe8019",
+        "yellow": "#d6a52a",
+        "bright_yellow": "#f3c04f",
+        "green": "#98971a",
+        "bright_green": "#b8bb26",
+        "aqua": "#689d6a",
+        "bright_aqua": "#8ec07c",
+        "blue": "#458588",
+        "bright_blue": "#83a598",
+        "purple": "#b16286",
+        "bright_purple": "#d3869b",
+        "magenta": "#d3869b",
+        "bright_magenta": "#eb6f92"
+      }
     }
   }
 }

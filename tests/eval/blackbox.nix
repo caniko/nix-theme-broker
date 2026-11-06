@@ -150,6 +150,49 @@
   };
   hexOf = lib.mapAttrs (_: group: lib.mapAttrs (_: color: color.withHashtag) group);
   lightRoles = hexOf (removeAttrs light.roles ["figure"]);
+  honey = themeLib.resolveSelection {
+    inherit providers;
+    selection = {
+      provider = "blackbox";
+      variant = "honey";
+      accent = null;
+    };
+  };
+  honeyRoles = hexOf (removeAttrs honey.roles ["figure"]);
+  # Exact Honey inventory from the owner request.
+  honeyNamed = {
+    background = "#000000";
+    surface_0 = "#181714";
+    surface_1 = "#24221d";
+    surface_2 = "#353128";
+    foreground = "#ebdbb2";
+    muted = "#bdae93";
+    subtle = "#928374";
+    foreground_bright = "#fff1c4";
+    honey_dark = "#8f6317";
+    honey = "#c88a22";
+    honey_primary = "#e5a72b";
+    honey_bright = "#f3c04f";
+    honey_soft = "#f6d784";
+    honey_pale = "#ffe6a3";
+    red = "#cc241d";
+    bright_red = "#fb4934";
+    orange = "#d65d0e";
+    bright_orange = "#fe8019";
+    yellow = "#d6a52a";
+    bright_yellow = "#f3c04f";
+    green = "#98971a";
+    bright_green = "#b8bb26";
+    aqua = "#689d6a";
+    bright_aqua = "#8ec07c";
+    blue = "#458588";
+    bright_blue = "#83a598";
+    purple = "#b16286";
+    bright_purple = "#d3869b";
+    magenta = "#d3869b";
+    bright_magenta = "#eb6f92";
+  };
+  honeyNamedChecks = lib.mapAttrsToList (name: hex: (honey.named.${name} or {withHashtag = null;}).withHashtag == hex) honeyNamed;
   figureHex = selected: {
     colors = lib.mapAttrs (_: color: color.withHashtag) (removeAttrs selected.roles.figure ["categorical" "sequential_cmap" "density_cmap" "time_cmap" "time_range"]);
     categorical = map (color: color.withHashtag) selected.roles.figure.categorical;
@@ -393,7 +436,7 @@ in
     variant = "dark";
     accent = "orange";
   };
-  assert lib.attrNames raw.variants == ["dark" "light"];
+  assert lib.attrNames raw.variants == ["dark" "honey" "light"];
   assert (themeLib.mkProvider raw).id == "blackbox";
   assert raw.variants.dark.metadata.appearance == "dark";
   assert raw.variants.dark.metadata.contrast == "hard";
@@ -465,9 +508,54 @@ in
   assert light.ansi.normal.black.withHashtag == "#ffffff";
   assert light.ansi.normal.red.withHashtag == "#cc241d";
   assert light.ansi.bright.red.withHashtag == "#9d0006";
+  # Honey variant: warm ramp over the true-black canvas; figures reuse dark.
+  assert raw.variants.honey.metadata.appearance == "dark";
+  assert raw.variants.honey.accents == {};
+  assert honey.variant == "honey";
+  assert honey.accent == null;
+  assert honey.base24 == null;
+  assert honey.roles ? figure;
+  assert builtins.all (value: value) (map (path: lib.hasAttrByPath path honey.roles) themeLib.types.requiredRoles);
+  assert builtins.all (value: value) honeyNamedChecks;
+  assert honeyRoles.ui
+  == {
+    background = "#000000";
+    backgroundAlt = "#181714";
+    surface = "#24221d";
+    surfaceAlt = "#353128";
+    overlay = "#353128";
+    foreground = "#ebdbb2";
+    foregroundMuted = "#bdae93";
+    foregroundSubtle = "#928374";
+    foregroundBright = "#fff1c4";
+    border = "#353128";
+    borderSubtle = "#24221d";
+    accent = "#e5a72b";
+    accentHover = "#f3c04f";
+    accentActive = "#c88a22";
+    accentMuted = "#8f6317";
+    onAccent = "#000000";
+    focus = "#f3c04f";
+    link = "#f3c04f";
+    selectionBackground = "#353128";
+    selectionForeground = "#ebdbb2";
+  };
+  assert honeyRoles.status
+  == {
+    error = "#fb4934";
+    warning = "#e5a72b";
+    success = "#b8bb26";
+    info = "#83a598";
+    hint = "#8ec07c";
+  };
+  assert honeyRoles.syntax.type == "#f3c04f";
+  assert honeyRoles.syntax.comment == "#928374";
+  assert honey.ansi.bright.yellow.withHashtag == "#f3c04f";
+  assert honey.base16.base00.withHashtag == "#000000";
   # Figure roles: verbatim themekit snapshot, independent of the UI chrome.
   assert darkFigure.colors.background == "#0f1318";
   assert darkFigure.colors.on_status == "#0f1318";
+  assert figureHex honey == darkFigure;
   assert builtins.length darkFigure.categorical == 10;
   assert builtins.elemAt darkFigure.categorical 0 == "#4c9bff";
   assert darkFigure.density_cmap == "magma";

@@ -6,6 +6,12 @@
   `accent = null` resolves to orange (`#fe8019` dark), blue is `#83a598`
   (dark) / `#076678` (light).
 
+- Add a Blackbox `honey` dark variant with a warm `honey_*` UI ramp, the
+  `web-theme-blackbox-honey` pair (existing light + Honey dark) and a committed
+  Rust snapshot exposed as `theme_broker::BLACKBOX_HONEY`. Honey opts out of the
+  accent axis so `focus` stays `honey_bright`; the `dark`/`light` snapshots and
+  the scientific figure palettes are unchanged.
+
 - Add a Blackbox `light` variant (near-white canvas, Gruvbox-light's darker
   hues for status and syntax) with the same role keys as `dark`.
 

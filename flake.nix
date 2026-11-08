@@ -485,6 +485,10 @@
             inherit pkgs stylix catppuccin providers adapters;
             homeManager = home-manager;
           })
+          (import ./tests/home/t3code.nix {
+            inherit pkgs stylix catppuccin providers adapters;
+            homeManager = home-manager;
+          })
           (import ./tests/golden/check.nix {
             inherit lib providers;
             tintedRevision = tintedSchemesRevision;

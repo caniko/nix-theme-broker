@@ -2,9 +2,24 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://example.invalid/theme-broker/wallpapers/v1",
   "title": "Theme Broker wallpaper registry",
-  "type": "object",
-  "additionalProperties": {"$ref": "#/$defs/collection"},
+  "description": "A bare registry, or a theme-broker.wallpapers/v1 catalog envelope as read by lib.readWallpaperCatalog.",
+  "oneOf": [
+    {"$ref": "#/$defs/registry"},
+    {
+      "type": "object",
+      "required": ["schema", "providers"],
+      "properties": {
+        "schema": {"const": "theme-broker.wallpapers/v1"},
+        "providers": {"$ref": "#/$defs/registry"}
+      },
+      "additionalProperties": false
+    }
+  ],
   "$defs": {
+    "registry": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/$defs/collection"}
+    },
     "relativePath": {
       "type": "string",
       "minLength": 1,

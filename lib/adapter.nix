@@ -95,7 +95,7 @@
       target = canonicalTarget adapter.target;
     };
 in {
-  inherit aliases canonicalTarget;
+  inherit adapterMatches aliases canonicalTarget tierRank;
 
   mkAdapter = normalizeAdapter;
   mkBuiltinAdapter = normalizeBuiltinAdapter;

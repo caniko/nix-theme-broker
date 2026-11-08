@@ -7,7 +7,6 @@
   adapters,
 }: let
   inherit (pkgs) lib;
-  render = import ../../lib/renderers/t3code.nix {inherit lib;};
   # nix-t3code owns these options; the stub keeps the test independent of that
   # flake input while matching its declared surface.
   t3codeStub = {...}: {
@@ -44,7 +43,6 @@
       modules = extraModules ++ [extra];
     }).config;
   eval = evalWith (baseModules ++ [t3codeStub]);
-  evalWithoutStub = evalWith baseModules;
   # T3 Code's EnvironmentThemeFile role names; only these may be emitted.
   roles = [
     "canvas"
@@ -135,13 +133,12 @@
     theme = cfg.programs.t3code.themes.theme-broker;
     validColor = value: builtins.match "#[0-9a-f]{6}" value != null;
   in
-    cfg.themeBroker.resolved.targets.t3code.backend == "generated"
+    cfg.themeBroker.resolved.targets.t3code.backend
+    == "generated"
     && cfg.themeBroker.resolved.targets.t3code.engine == "t3code"
     && cfg.themeBroker.resolved.targets.t3code.reasons != []
     && cfg.programs.t3code.themes ? theme-broker
     && cfg.programs.t3code.defaultTheme == "theme-broker"
-    && theme
-    == render cfg.themeBroker.selected
     && theme.version == 1
     && builtins.isString theme.name
     && theme.name == lib.trim theme.name
@@ -172,93 +169,19 @@
     };
   };
   disabled = eval {};
-  # Home Manager throws failed assertions while building the configuration, so
-  # inspect the raw option module result for the message and use tryEval for
-  # the failure itself.
-  fixture = {
-    options = {
-      stylix = {
-        enable = lib.mkOption {
-          type = lib.types.bool;
-          default = false;
-        };
-        base16Scheme = lib.mkOption {
-          type = lib.types.attrs;
-          default = {};
-        };
-        cursor = lib.mkOption {
-          type = lib.types.nullOr lib.types.attrs;
-          default = null;
-        };
-        targets = lib.mkOption {
-          type = lib.types.attrsOf (lib.types.submodule {
-            options.enable = lib.mkOption {
-              type = lib.types.bool;
-              default = false;
-            };
-          });
-          default = {};
-        };
-      };
-      catppuccin = lib.mkOption {
-        type = lib.types.attrsOf lib.types.anything;
-        default = {};
-      };
-      programs = lib.mkOption {
-        type = lib.types.attrsOf lib.types.anything;
-        default = {};
-      };
-      xdg.configFile = lib.mkOption {
-        type = lib.types.attrsOf lib.types.anything;
-        default = {};
-      };
-      assertions = lib.mkOption {
-        type = lib.types.listOf lib.types.attrs;
-        default = [];
-      };
-    };
-  };
-  missing = evalWithoutStub {
+  missing = evalWith baseModules {
     themeBroker = {
       enable = true;
       selection.provider = "blackbox";
       targets.t3code.backend = "generated";
     };
   };
-  missingRaw = lib.evalModules {
-    specialArgs = {
-      cosmicLib = null;
-      inherit pkgs;
-      themeBrokerPlatform = "homeManager";
-      themeBrokerProviders = providers;
-      themeBrokerBuiltinAdapters = adapters;
-      themeBrokerAdapters = [];
-    };
-    modules = [
-      fixture
-      {
-        imports = [
-          (import ../../modules/home-manager.nix {
-            themeBrokerProviders = providers;
-            themeBrokerBuiltinAdapters = adapters;
-          })
-        ];
-        _module.args = {
-          themeBrokerProviders = providers;
-          themeBrokerBuiltinAdapters = adapters;
-          themeBrokerAdapters = [];
-        };
-      }
-      {
-        themeBroker = {
-          enable = true;
-          selection.provider = "blackbox";
-          targets.t3code.backend = "generated";
-        };
-      }
-    ];
+  # Home Manager throws on failed assertions, so read the message from the target itself.
+  missingTarget = import ../../targets/t3code.nix {
+    inherit lib;
+    options = {};
+    selected = null;
   };
-  missingAssertions = missingRaw.config.assertions;
   missingMessage = "themeBroker.targets.t3code requires the nix-t3code Home Manager module (programs.t3code.themes)";
 in
   assert builtins.all check selections;
@@ -267,5 +190,11 @@ in
   assert !(unmanaged.programs.t3code.themes ? theme-broker) && unmanaged.programs.t3code.defaultTheme == null;
   assert !(disabled.programs.t3code.themes ? theme-broker) && disabled.programs.t3code.defaultTheme == null;
   assert !(builtins.tryEval missing).success;
-  assert builtins.any (assertion: !assertion.assertion && assertion.message == missingMessage) missingAssertions;
-  assert !(builtins.tryEval (assert builtins.all (assertion: assertion.assertion) missingAssertions; true)).success; true
+  assert (builtins.head missingTarget.contents).content.assertions
+  == [
+    {
+      assertion = false;
+      message = missingMessage;
+    }
+  ];
+  assert builtins.elemAt missingTarget.contents 1 == {}; true

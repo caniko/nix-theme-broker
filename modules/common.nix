@@ -155,9 +155,12 @@
       in
         resolved
         // {nativeOptions = targetCfg.nativeOptions;}
-        // lib.optionalAttrs (resolved.backend == "generated" && engine == "opencode-v2") {
+        // lib.optionalAttrs (resolved.backend == "generated" && builtins.elem engine ["opencode-v2" "t3code"]) {
           inherit engine;
-          reasons = ["OpenCode v2 generated target selected" "theme rendered from the broker's resolved semantic palette"];
+          reasons =
+            if engine == "t3code"
+            then ["T3 Code generated target selected" "theme rendered from the broker's resolved semantic palette"]
+            else ["OpenCode v2 generated target selected" "theme rendered from the broker's resolved semantic palette"];
         }
     )
     targetsCfg;
@@ -329,6 +332,14 @@
         managed = targetSelections ? opencode;
       }
     else {};
+  t3codeConfig =
+    if themeBrokerPlatform == "homeManager"
+    then
+      import ../targets/t3code.nix {
+        inherit lib options selected;
+        enabled = targetSelections ? t3code && targetSelections.t3code.backend == "generated";
+      }
+    else {};
 in {
   imports = lib.optionals (themeBrokerPlatform == "homeManager") profileRendererModules;
   options.themeBroker = {
@@ -493,6 +504,6 @@ in {
     ++ generatedConfig generatedConfigTargets
     ++ disabledGeneratedConfig generatedConfigTargets
     ++ nativeConfig
-    ++ [cosmicConfig ghosttyConfig opencodeConfig]
+    ++ [cosmicConfig ghosttyConfig opencodeConfig t3codeConfig]
   ));
 }

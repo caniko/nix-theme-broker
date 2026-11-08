@@ -92,6 +92,11 @@
     platforms = ["homeManager"];
     autoSafe = true;
   };
+  t3code = {
+    platforms = ["homeManager"];
+    autoSafe = true;
+    engine = "t3code";
+  };
   tmux = {
     platforms = ["homeManager"];
     autoSafe = true;

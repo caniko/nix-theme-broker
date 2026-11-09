@@ -17,7 +17,15 @@
   };
   css = web.css args;
   json = builtins.fromJSON (web.json args);
+  honeyArgs = {
+    inherit providers;
+    light = args.light;
+    dark = select "blackbox" "honey";
+  };
+  honeyCss = web.css honeyArgs;
+  honeyJson = builtins.fromJSON (web.json honeyArgs);
   has = needle: lib.hasInfix needle css;
+  honeyHas = needle: lib.hasInfix needle honeyCss;
   # canix's mdBook palette: roles.ui as plain hex, unchanged by the move.
   ui = web.uiPalette (publicLib.resolveSelection {
     inherit providers;
@@ -49,5 +57,17 @@ in
   assert json.dark.roles.figure.time_range == [0.25 1.0];
   assert ui.background == "#000000";
   assert ui.link == "#83a598";
+  # The Honey pair reuses the light snapshot and adds the optional UI roles.
+  assert honeyHas "--tb-ui-accent: #e5a72b;";
+  assert honeyHas "--tb-ui-accent-hover: #f3c04f;";
+  assert honeyHas "--tb-ui-foreground-subtle: #928374;";
+  assert honeyJson.light.variant == "light";
+  assert honeyJson.dark.variant == "honey";
+  assert honeyJson.light.roles.ui.accent == "#076678";
+  assert honeyJson.dark.roles.ui.onAccent == "#000000";
+  assert honeyJson.light.roles ? figure;
+  assert honeyJson.dark.roles ? figure;
+  assert honeyJson.dark.roles.figure.background == "#0f1318";
+  assert honeyJson.light.roles.figure.surface == "#f6f7f9";
   assert lib.hasInfix "--tb-ui-background: #1d2021;" plain;
   assert !lib.hasInfix "--tb-figure" plain; true

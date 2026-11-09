@@ -11,10 +11,11 @@ aliases, semantic roles, ANSI, and Base16 from it. Provenance records the
 derivation from Gruvbox revision
 `5d15b2765f59754d7ac263c88a0f6e3e58124951` in this repository.
 
-Select it (`dark` or `light`). The accent axis offers `orange` ("Blackbox Orange", the
-default, so `accent = null` is orange and every desktop keeps its look) and
-`blue` ("Blackbox Blue", used by `web-theme-blackbox`); the accent drives
-`ui.accent` and `ui.focus`:
+Select it (`dark` or `light`). The accent axis offers `orange` ("Blackbox
+Orange", the default, so `accent = null` is orange and every desktop keeps its
+look) and `blue` ("Blackbox Blue", used by `web-theme-blackbox`); the accent
+drives `ui.accent` and `ui.focus`. `honey` is a third variant with no accent
+axis and its own fixed honey ramp.
 
 ```nix
 themeBroker = {
@@ -82,10 +83,21 @@ a literal `border` alias:
 `foreground` and `muted` reach at least 6.0:1 against all four surface steps
 (WCAG AA needs 4.5:1).
 
+The `honey` variant is a dark, warm-accent alternative: it keeps the true-black
+canvas and Gruvbox-derived functional hues, and replaces the UI accent, focus
+and link roles with the `honey_*` ramp. It also adds optional `ui` roles
+(`foregroundSubtle`, `foregroundBright`, `borderSubtle`, `accentHover`,
+`accentActive`, `accentMuted`, `onAccent`) that the base variants do not need.
+Honey opts out of the accent axis, so `accent` stays `honey_primary` and
+`focus` stays `honey_bright` instead of the provider's orange default.
+
 ### Figure roles
 
-Both Blackbox variants carry the optional `roles.figure` group (see
-[Figure roles](#figure-roles)).
+Blackbox `dark` and `light` carry the optional `roles.figure` group (see
+[Figure roles](#figure-roles)). The `honey` variant reuses the `dark` group via
+`variants.honey.figureFrom` so scientific figures stay on the existing
+`DARK`/`LIGHT` values and dark web charts do not fall back to the light
+`:root` variables.
 
 Limitations:
 
@@ -161,15 +173,21 @@ through `resolveSelection`) into:
   mapping web surfaces without the module consume.
 
 `packages.<system>.web-theme-blackbox` contains `theme.css` and `theme.json` for
-`blackbox/light` + `blackbox/dark`. The Rust crate `crates/theme-broker`
-embeds committed copies in `crates/theme-broker/generated/`; refresh them after
-a palette change with
+`blackbox/light` + `blackbox/dark`. The Honey pair lives in
+`packages.<system>.web-theme-blackbox-honey` (the same `blackbox/light` plus
+`blackbox/honey`). The Rust crate `crates/theme-broker` embeds committed copies
+in `crates/theme-broker/generated/` and `crates/theme-broker/generated/honey/`;
+refresh them after a palette change with
 
 ```console
 nix build .#web-theme-blackbox
 cp result/theme.css result/theme.json crates/theme-broker/generated/
 chmod u+w crates/theme-broker/generated/*
+nix build .#web-theme-blackbox-honey
+cp result/theme.css result/theme.json crates/theme-broker/generated/honey/
+chmod u+w crates/theme-broker/generated/honey/*
 ```
 
-The `theme-broker-snapshot` check fails when they drift, and `web-golden`
-pins the figure-less Gruvbox path in `tests/golden/web-gruvbox.css`.
+The `theme-broker-snapshot` and `theme-broker-snapshot-honey` checks fail when
+they drift, and `web-golden` pins the figure-less Gruvbox path in
+`tests/golden/web-gruvbox.css`.

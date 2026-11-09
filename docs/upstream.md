@@ -20,6 +20,19 @@ CLI-settings composition and complete themes with broker accent/override
 fidelity. Re-enable Catppuccin's native adapter only after its pinned port
 supports v2. See [OpenCode v2 integration](opencode-v2.md).
 
+## T3 Code
+
+T3 Code environment themes are integrated through the `nix-t3code` Home Manager
+module rather than a Stylix target. The broker writes
+`programs.t3code.themes.theme-broker` (an `EnvironmentThemeFile`, `version = 1`)
+and defaults `programs.t3code.defaultTheme`; nix-t3code owns the schema and
+writes `<T3 home>/userdata/themes/<id>.json`. No T3 Code implementation is
+copied into this repository.
+
+Upstream coordination of environment theming (desktop clients of a service-hosted
+environment, and the `defaultThemeSetAt` generation contract) is open in
+[T3 Code discussion #33003](https://github.com/pingdotgg/t3code/discussions/33003).
+
 The temporary COSMIC manager target is tracked upstream in
 [Stylix issue #265](https://github.com/nix-community/stylix/issues/265).
 As checked on 2026-08-15, the issue is still open and Stylix has not shipped a

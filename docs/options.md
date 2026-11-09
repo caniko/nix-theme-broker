@@ -21,11 +21,14 @@ All options live below `themeBroker` and are disabled by default.
 | `targets.<id>.managed` | Leave a target outside broker ownership when `false`. |
 | `targets.<id>.nativeOptions` | Adapter-declared values only: `name` for Gruvbox cursors, `transparent` for Gruvbox Neovim, and `profile` for Catppuccin profile targets. Unsupported values fail resolution instead of being ignored. |
 | `opencode.cliSettings` | Mergeable OpenCode v2 terminal preferences. With the Home Manager generated OpenCode target, writes `opencode/cli.json`; theme name and mode default to the broker selection. |
+| `targets.t3code` | Home Manager T3 Code environment theme. Requires the nix-t3code module (`programs.t3code.themes`): writes `programs.t3code.themes.theme-broker` and defaults `programs.t3code.defaultTheme` to `theme-broker`. |
 
 `selected`, `resolved`, and `generatedTargets` are read-only debug outputs.
 The OpenCode generated target exposes `resolved.targets.opencode.engine =
 "opencode-v2"`; its CLI settings and theme file are described in
 [OpenCode v2 integration](opencode-v2.md).
+The T3 Code generated target exposes `resolved.targets.t3code.engine =
+"t3code"`; selecting it without the nix-t3code module fails with an assertion.
 `selected.wallpapers` is the matching `{ default, paths }` collection or `null`.
 The broker exposes wallpaper metadata but does not configure Stylix or desktop
 wallpaper options. The managed `cursors` target selects a provider-native

@@ -249,6 +249,24 @@
     publicThemeBrokerLib =
       themeBrokerLib
       // {
+        hasAdapter = {
+          provider,
+          variant,
+          target,
+          platform,
+          allowedTiers ? builtins.attrNames adapterLib.tierRank,
+        }:
+          lib.any (
+            adapter:
+              (adapter.autoSafe or false)
+              && adapterLib.adapterMatches {
+                inherit adapter platform allowedTiers;
+                providerId = provider;
+                variantId = variant;
+                targetId = adapterLib.canonicalTarget target;
+              }
+          )
+          adapters;
         resolveBackend = args: let
           suppliedAdapters = args.adapters or [];
           suppliedTrusted = args.trustedAdapters or [];
@@ -485,6 +503,10 @@
             inherit pkgs stylix catppuccin providers adapters;
             homeManager = home-manager;
           })
+          (import ./tests/home/t3code.nix {
+            inherit pkgs stylix catppuccin providers adapters;
+            homeManager = home-manager;
+          })
           (import ./tests/golden/check.nix {
             inherit lib providers;
             tintedRevision = tintedSchemesRevision;
@@ -516,6 +538,14 @@
         providerSchemaInputs = lib.mapAttrsToList (id: provider: pkgs.writeText "theme-broker-provider-${id}.json" (builtins.toJSON provider)) providers;
         adapterSchemaInputs = lib.imap0 (index: adapter: pkgs.writeText "theme-broker-adapter-${toString index}.json" (builtins.toJSON adapter)) adapters;
         wallpaperSchemaInput = pkgs.writeText "theme-broker-wallpapers.json" (builtins.toJSON {});
+        wallpaperCatalogSchemaInput = pkgs.writeText "theme-broker-wallpaper-catalog.json" (builtins.toJSON {
+          schema = "theme-broker.wallpapers/v1";
+          providers.gruvbox = {
+            variants = ["dark"];
+            default = "gruvbox/a.png";
+            paths = ["gruvbox/a.png"];
+          };
+        });
         normalizedThemeSchemaInputs = map (selected: pkgs.writeText "theme-broker-normalized-theme-${selected.provider}-${selected.variant}.json" (builtins.toJSON selected)) [
           darkHard
           (themeBrokerLib.resolveSelection {
@@ -933,7 +963,7 @@
                 echo "expected simple renderer fixture to fail schema validation" >&2
                 exit 1
               fi
-              check-jsonschema --schemafile ${./schema/wallpaper-catalog.schema.json} ${wallpaperSchemaInput}
+              check-jsonschema --schemafile ${./schema/wallpaper-catalog.schema.json} ${wallpaperSchemaInput} ${wallpaperCatalogSchemaInput}
               check-jsonschema --schemafile ${./schema/normalized-theme.schema.json} ${lib.concatStringsSep " " normalizedThemeSchemaInputs}
               test ${pkgs.lib.escapeShellArg catppuccinNativeRevision} = ${pkgs.lib.escapeShellArg catppuccinManifest.source.revision}
               test ${pkgs.lib.escapeShellArg catppuccinPaletteRevision} = ${pkgs.lib.escapeShellArg catppuccinProvider.provenance.revision}

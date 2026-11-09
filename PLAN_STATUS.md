@@ -1,6 +1,6 @@
 # Theme Broker implementation status
 
-Updated 2026-10-03.  “Complete” means the task has an implementation and a
+Updated 2026-11-08.  “Complete” means the task has an implementation and a
 passing narrow check in this checkout.  “Partial” means the public shape is in
 place but the task's full acceptance matrix is still pending.
 
@@ -47,6 +47,7 @@ place but the task's full acceptance matrix is still pending.
 | TB-092 | complete | Rosé Pine is the third provider and passes the shared conformance, golden, and Tinted checks |
 | TB-093 | complete | v1.0.3 tag and GitHub release published: https://github.com/caniko/nix-theme-broker/releases/tag/v1.0.3 |
 | TB-094 | complete | OpenCode v2 semantic renderer, offline schema validation for all 14 variants, real Home Manager composition/ownership checks, and v2.0.12 TUI theme-picker/truecolor smoke tests for Blackbox dark and Catppuccin Latte; all supported systems evaluate |
+| TB-095 | complete | T3 Code `version = 1` environment-theme renderer, Home Manager stub composition for dark/light selections and accents, `mkDefault` theme override, and missing-nix-t3code assertion coverage; upstream discussion pending |
 
 The Atlas deployment slice selects Gruvbox `dark-hard` through the parent
 canix Home Manager profile. Stylix owns generic targets, while the broker has

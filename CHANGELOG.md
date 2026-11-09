@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Add the `t3code` generated target for the nix-t3code Home Manager module:
+  writes `programs.t3code.themes.theme-broker` (a `version = 1` environment
+  theme from the resolved semantic palette) and defaults
+  `programs.t3code.defaultTheme`. Selecting `targets.t3code` without nix-t3code
+  fails with an assertion naming the missing module.
+
 - Blackbox gains orange (default) and blue accents; the web theme uses blue.
   `accent = null` resolves to orange (`#fe8019` dark), blue is `#83a598`
   (dark) / `#076678` (light).
@@ -46,6 +52,11 @@
   `autoSafe`.
 
 - Add the `rio` generated (Stylix) target.
+
+- Add `lib.readWallpaperCatalog`, which loads a `theme-broker.wallpapers/v1`
+  catalog file and returns its validated provider registry, and
+  `lib.hasAdapter { provider, variant, target, platform; }` for auto-safe
+  built-in adapter coverage. The exported wallpaper catalog schema also accepts that envelope.
 
 - Add OpenCode v2 terminal theming for every provider: complete semantic tokens,
   light/dark variants, accent and named/role override fidelity, and mergeable

@@ -159,6 +159,24 @@
     };
   };
   honeyRoles = hexOf (removeAttrs honey.roles ["figure"]);
+  pink = themeLib.resolveSelection {
+    inherit providers;
+    selection = {
+      provider = "blackbox";
+      variant = "pink";
+      accent = null;
+    };
+  };
+  pinkRoles = hexOf (removeAttrs pink.roles ["figure"]);
+  pinkLight = themeLib.resolveSelection {
+    inherit providers;
+    selection = {
+      provider = "blackbox";
+      variant = "pink-light";
+      accent = null;
+    };
+  };
+  pinkLightRoles = hexOf (removeAttrs pinkLight.roles ["figure"]);
   # Exact Honey inventory from the owner request.
   honeyNamed = {
     background = "#000000";
@@ -436,7 +454,7 @@ in
     variant = "dark";
     accent = "orange";
   };
-  assert lib.attrNames raw.variants == ["dark" "honey" "light"];
+  assert lib.attrNames raw.variants == ["dark" "honey" "light" "pink" "pink-light"];
   assert (themeLib.mkProvider raw).id == "blackbox";
   assert raw.variants.dark.metadata.appearance == "dark";
   assert raw.variants.dark.metadata.contrast == "hard";
@@ -552,6 +570,27 @@ in
   assert honeyRoles.syntax.comment == "#928374";
   assert honey.ansi.bright.yellow.withHashtag == "#f3c04f";
   assert honey.base16.base00.withHashtag == "#000000";
+  # Pink variants: rose ramp, no accent axis, only the required UI roles.
+  assert raw.variants.pink.metadata.appearance == "dark";
+  assert raw.variants.pink.accents == {};
+  assert pink.variant == "pink";
+  assert pink.accent == null;
+  assert pink.roles ? figure;
+  assert pinkRoles.ui.accent == "#da5b8d";
+  assert !(pinkRoles.ui ? onAccent);
+  assert pinkRoles.ui.focus == "#e97aa5";
+  assert pinkRoles.ui.link == "#e97aa5";
+  assert pink.roles.status.warning.withHashtag == "#fe8019";
+  assert raw.variants.pink-light.metadata.appearance == "light";
+  assert raw.variants.pink-light.accents == {};
+  assert pinkLight.variant == "pink-light";
+  assert pinkLight.accent == null;
+  assert pinkLight.roles ? figure;
+  assert pinkLightRoles.ui.accent == "#b8436c";
+  assert !(pinkLightRoles.ui ? accentHover);
+  assert pinkLightRoles.ui.focus == "#a8345f";
+  assert pinkLightRoles.ui.link == "#a8345f";
+  assert pinkLightRoles.ui.border == "#d9d9d6";
   # Figure roles: verbatim themekit snapshot, independent of the UI chrome.
   assert darkFigure.colors.background == "#0f1318";
   assert darkFigure.colors.on_status == "#0f1318";

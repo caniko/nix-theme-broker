@@ -1,6 +1,9 @@
 # Web renderer: one `theme.css` (custom properties for both colour schemes) and
 # one `theme.json` (every role of both modes) from a `{light, dark}` pair of
 # selections, each resolved through the shared `resolveSelection` projection.
+# `css` also takes an optional `palette` id (matching `^[a-z0-9-]+$`): the rules
+# are then scoped to `:root[data-palette=<id>]` so one stylesheet can hold
+# several palettes switched by the `data-palette` attribute.
 {
   lib,
   resolveSelection,
@@ -41,7 +44,8 @@
     )
     groups;
 
-  # `args` = `{providers, light, dark}`, the last two being selections.
+  # `args` = `{providers, light, dark}`, the last two being selections, plus an
+  # optional `palette` id that scopes every rule to `:root[data-palette=<id>]`.
   resolve = args: name:
     resolveSelection {
       inherit (args) providers;
@@ -51,17 +55,35 @@
   rule = selector: scheme: tree:
     ["${selector} {" "  color-scheme: ${scheme};"] ++ variables tree ++ ["}"];
 
+  # Without `palette` the selectors stay `:root` / `[data-theme=*]`,
+  # byte-identical to before. The id lands in a selector, so only a
+  # conservative character set is allowed.
+  paletteScope = args:
+    if args ? palette
+    then let
+      id = args.palette;
+    in
+      if builtins.isString id && builtins.match "[a-z0-9-]+" id != null
+      then ":root[data-palette=${id}]"
+      else throw "themeBroker: web.css palette `${toString id}` must match ^[a-z0-9-]+$"
+    else "";
+
   css = args: let
     light = roles (resolve args "light");
     dark = roles (resolve args "dark");
+    scope = paletteScope args;
+    root =
+      if scope == ""
+      then ":root"
+      else scope;
   in
     lib.concatStringsSep "\n" (
-      rule ":root" "light" light
+      rule root "light" light
       ++ ["@media (prefers-color-scheme: dark) {"]
-      ++ map (line: "  ${line}") (rule ":root:not([data-theme=light])" "dark" dark)
+      ++ map (line: "  ${line}") (rule "${root}:not([data-theme=light])" "dark" dark)
       ++ ["}"]
-      ++ rule "[data-theme=dark]" "dark" dark
-      ++ rule "[data-theme=light]" "light" light
+      ++ rule "${scope}[data-theme=dark]" "dark" dark
+      ++ rule "${scope}[data-theme=light]" "light" light
     )
     + "\n";
 

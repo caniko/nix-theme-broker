@@ -24,6 +24,16 @@
   };
   honeyCss = web.css honeyArgs;
   honeyJson = builtins.fromJSON (web.json honeyArgs);
+  # A palette-scoped render: Pink Raven light + Blackbox Pink dark in one file.
+  pinkArgs = {
+    inherit providers;
+    palette = "blackbox-pink";
+    light = select "blackbox" "pink-light";
+    dark = select "blackbox" "pink";
+  };
+  pinkCss = web.css pinkArgs;
+  pinkHas = needle: lib.hasInfix needle pinkCss;
+  badPalette = builtins.tryEval (builtins.deepSeq (web.css (args // {palette = "a]b";})) true);
   has = needle: lib.hasInfix needle css;
   honeyHas = needle: lib.hasInfix needle honeyCss;
   # canix's mdBook palette: roles.ui as plain hex, unchanged by the move.
@@ -69,5 +79,15 @@ in
   assert honeyJson.dark.roles ? figure;
   assert honeyJson.dark.roles.figure.background == "#0f1318";
   assert honeyJson.light.roles.figure.surface == "#f6f7f9";
+  # A `palette` scopes all four selectors; the rules and order are unchanged.
+  assert lib.hasPrefix ":root[data-palette=blackbox-pink] {\n  color-scheme: light;" pinkCss;
+  assert pinkHas "@media (prefers-color-scheme: dark) {\n  :root[data-palette=blackbox-pink]:not([data-theme=light]) {\n    color-scheme: dark;";
+  assert pinkHas ":root[data-palette=blackbox-pink][data-theme=dark] {\n  color-scheme: dark;";
+  assert pinkHas ":root[data-palette=blackbox-pink][data-theme=light] {\n  color-scheme: light;";
+  assert pinkHas "--tb-ui-accent: #da5b8d;";
+  assert pinkHas "--tb-ui-accent: #b8436c;";
+  assert !pinkHas "--tb-ui-on-accent";
+  # The id is interpolated into a selector: anything else must throw.
+  assert !badPalette.success;
   assert lib.hasInfix "--tb-ui-background: #1d2021;" plain;
   assert !lib.hasInfix "--tb-figure" plain; true

@@ -15,7 +15,8 @@ Select it (`dark` or `light`). The accent axis offers `orange` ("Blackbox
 Orange", the default, so `accent = null` is orange and every desktop keeps its
 look) and `blue` ("Blackbox Blue", used by `web-theme-blackbox`); the accent
 drives `ui.accent` and `ui.focus`. `honey` is a third variant with no accent
-axis and its own fixed honey ramp.
+axis and its own fixed honey ramp; `pink` (dark) and `pink-light` (light) are
+the rose-pink pair, also without an accent axis.
 
 ```nix
 themeBroker = {
@@ -90,6 +91,15 @@ and link roles with the `honey_*` ramp. It also adds optional `ui` roles
 `accentActive`, `accentMuted`, `onAccent`) that the base variants do not need.
 Honey opts out of the accent axis, so `accent` stays `honey_primary` and
 `focus` stays `honey_bright` instead of the provider's orange default.
+
+The `pink` (dark) and `pink-light` (light) variants follow the same shape on a
+rose-pink ramp: `pink_primary #da5b8d` on the true-black canvas, and the deeper
+`pink_primary #b8436c` on the near-white canvas so accent text reaches WCAG AA
+(5.18:1 against white, and white on it). Unlike `honey` they declare no
+optional `ui` roles: a stylesheet that scopes several palettes under
+`data-palette` keeps its default's optional roles in effect for every palette
+that lacks them, so a pink default must define only the shared role set. They
+reuse the `dark`/`light` figure groups via `figureFrom`.
 
 ### Figure roles
 
@@ -166,7 +176,10 @@ through `resolveSelection`) into:
   `[data-theme=light]` overrides. Every scalar colour of `ui`, `status`,
   `syntax` and `figure` becomes `--tb-<group>-<role>` (camelCase and
   snake_case kebab-cased, e.g. `--tb-ui-background-alt`,
-  `--tb-figure-surface-alt`).
+  `--tb-figure-surface-alt`). An optional `palette = "<id>"` argument (matching
+  `^[a-z0-9-]+$`) scopes all four selectors to `:root[data-palette=<id>]`, so
+  one stylesheet can hold several palettes switched by the `data-palette`
+  attribute; consumers concatenate one `css` call per palette.
 - `lib.web.json`: both modes with every role, including figure lists and
   colormap names.
 - `lib.web.uiPalette selected`: `roles.ui` as plain `"#rrggbb"` strings, the

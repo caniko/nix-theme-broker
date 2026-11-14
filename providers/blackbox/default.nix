@@ -157,7 +157,7 @@ in {
   schema = "theme-broker.provider/v1";
   id = "blackbox";
   name = "Blackbox";
-  description = "True-black (dark), near-white (light) and warm-accent (honey) Gruvbox-inspired palette maintained in this repository";
+  description = "True-black (dark), near-white (light), warm-accent (honey) and rose-pink (pink, pink-light) Gruvbox-inspired palette maintained in this repository";
   provenance = palette.source // {license = "MIT";};
   defaults = {
     variant = "dark";

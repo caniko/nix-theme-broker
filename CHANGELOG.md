@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Add Blackbox `pink` (dark) and `pink-light` (light) variants on a rose-pink
+  ramp (`pink_primary #da5b8d` and #b8436c), with only the required `ui` roles
+  and no accent axis; figures reuse the `dark`/`light` groups. The
+  web renderer's `css` gains an optional `palette` id that scopes all four
+  selectors to `:root[data-palette=<id>]`, so one stylesheet can hold several
+  palettes switched by the `data-palette` attribute.
+
 - Add the `t3code` generated target for the nix-t3code Home Manager module:
   writes `programs.t3code.themes.theme-broker` (a `version = 1` environment
   theme from the resolved semantic palette) and defaults
@@ -18,7 +25,7 @@
   accent axis so `focus` stays `honey_bright`; the `dark`/`light` snapshots and
   the scientific figure palettes are unchanged.
 
-- Add a Blackbox `light` variant (near-white canvas, Gruvbox-light's darker
+- Add Blackbox `light` variant (near-white canvas, Gruvbox-light's darker
   hues for status and syntax) with the same role keys as `dark`.
 
 - Add the optional `roles.figure` group (figure/chart palette with a 10-colour

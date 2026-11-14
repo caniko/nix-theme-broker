@@ -819,7 +819,7 @@
             test ${toString (builtins.length (builtins.attrNames catppuccinProvider.variants.mocha.accents))} = 14
             test ${toString (builtins.length (builtins.attrNames rosePine.variants))} = 3
             test ${toString (builtins.length (builtins.attrNames rosePine.variants.main.accents))} = 6
-            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 3
+            test ${toString (builtins.length (builtins.attrNames blackbox.variants))} = 5
             test ${toString (builtins.length (builtins.attrNames blackbox.variants.honey.accents))} = 0
             test ${toString (builtins.length (builtins.attrNames blackbox.variants.dark.accents))} = 2
             test ${

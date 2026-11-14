@@ -20,13 +20,18 @@ The preview image labels are known to be wrong (mislabeled bright blue/aqua,
 an invalid purple hex, and `#1a1a1a` labeled `bright_black`); the JSON
 inventory and the tests are authoritative instead.
 
-The provider exposes three variants, `dark`, `light`, and `honey`. `dark` and
-`light` expose `orange` ("Blackbox Orange", the default; `accent = null`
-resolves to it) and `blue` ("Blackbox Blue", used by the web theme) accents
-bound to `ui.accent` and `ui.focus`. `light` has its own `named` inventory
-(`variants.light.named`) and a literal `border` alias; `honey` has a warm named
-inventory plus alias and role overrides and no accent axis, so its accent and
-focus stay on the honey ramp.
+The provider exposes five variants, `dark`, `light`, `honey`, `pink`, and
+`pink-light`. `dark` and `light` expose `orange` ("Blackbox Orange", the
+default; `accent = null` resolves to it) and `blue` ("Blackbox Blue", used by
+the web theme) accents bound to `ui.accent` and `ui.focus`. `light` has its own
+`named` inventory (`variants.light.named`) and a literal `border` alias; `honey`
+has a warm named inventory plus alias and role overrides and no accent axis, so
+its accent and focus stay on the honey ramp. `pink` (dark) and `pink-light`
+(light) follow the same pattern on a rose-pink ramp: their accent, focus, and
+link roles come from the pink aliases. They add no optional `ui` roles, so a
+palette-scoped stylesheet that defaults to pink defines the same role set as
+the other palettes it switches between.
 Variants without `named` share the top-level (dark) inventory.
 Each variant may also carry a `figure` object, exposed as `roles.figure`.
-`honey` uses `figureFrom = "dark"` to reuse the scientific figure group.
+`honey` uses `figureFrom = "dark"` to reuse the scientific figure group;
+`pink` and `pink-light` reuse the `dark` and `light` figure groups respectively.
